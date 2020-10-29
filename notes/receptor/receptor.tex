@@ -1,0 +1,122 @@
+\pdfoutput=1
+% ***********************************************************
+% ******************* PHYSICS HEADER ************************
+% ***********************************************************
+% Version 2
+%\documentclass[conference, onecolumn]{IEEEtran}
+\documentclass[aps,onecolumn,superscriptaddress, notitlepage]{revtex4-1}
+
+
+\usepackage{amsmath} % AMS Math Package
+%\interdisplaylinepenalty=2500
+\usepackage{amsthm} % Theorem Formatting
+\usepackage{amssymb}	% Math symbols such as \mathbb
+\usepackage{physics}
+%\usepackage{cite}
+\usepackage[pdftex]{graphicx}
+\usepackage{xcolor}
+
+%\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+
+\newcommand{\comment}[1]{{\color{blue}#1}}
+\newcommand{\edit}[1]{{\color{magenta}#1}}
+
+% ***********************************************************
+% ********************** END HEADER *************************
+% ***********************************************************
+
+\begin{document}
+\title{Receptor Thermodynamic to Kinematic Conversion}
+
+%\author{\IEEEauthorblockN{Jason W. Rocks and Pankaj Mehta}
+%\IEEEauthorblockA{Department of Physics, Boston University\\
+%Boston, Massachusetts 02215\\
+%Email:}
+\author{Jason W. Rocks}
+\maketitle
+
+
+We have the following concentrations for the three constituent elements:
+\begin{itemize}
+\item Receptor domain 1: $[R_1]$
+\item Receptor domain 2: $[R_2]$
+\item Ligand: $[L]$
+\end{itemize}
+
+Now we have the following configurational states:
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ State/Concentration & Configuration & Energy \\\hline 
+ $[R_1]$ & Unbound receptor  & $\epsilon_0$ \\ 
+ $[C_{off}] = [R_1-R_2]$ & Bound receptor w/o ligand & $\epsilon_0+\Delta\epsilon_b-k_bT\ln [R_2]$  \\ 
+ $[C_{on}] = [R_1-R_2-L]$ & Bound receptor w/ ligand  & $\epsilon_0+\Delta\epsilon_b-k_bT\ln [R_2] + \Delta\epsilon_L-k_bT\ln [L]$ \\
+ \hline
+\end{tabular}
+\end{center}
+
+
+The probability of the unbound state is
+\begin{align}
+p(R_1) &= \frac{[R_1]}{[R_1]+[R_1-R_2]+[R_1-R_2-L]} = \frac{e^{-\beta\epsilon_0}}{e^{-\beta\epsilon_0} + e^{-\beta\qty(\epsilon_0+\Delta\epsilon_b-k_bT\ln [R_2])} +  e^{-\beta\qty(\epsilon_0+\Delta\epsilon_b-k_bT\ln [R_2] + \Delta\epsilon_L-k_bT\ln [L])}}\\
+&= \frac{1}{1 +   [R_2]e^{-\beta\Delta\epsilon_b}  +  [R_2][L]e^{-\beta(\Delta\epsilon_B+\Delta\epsilon_L)} }
+\end{align}
+Similarly, the probabilities of the other two states are 
+
+\begin{align}
+p(C_{off}) &=  \frac{[R_1-R_2]}{[R_1]+[R_1-R_2]+[R_1-R_2-L]} =  \frac{[R_2]e^{-\beta\Delta\epsilon_b}}{1 +   [R_2]e^{-\beta\Delta\epsilon_b}  +  [R_2][L]e^{-\beta(\Delta\epsilon_B+\Delta\epsilon_L)}}\\
+p(C_{on}) &=  \frac{[R_1-R_2-L]}{[R_1]+[R_1-R_2]+[R_1-R_2-L]} =  \frac{ [R_2][L]e^{-\beta(\Delta\epsilon_B+\Delta\epsilon_L)}}{1 +   [R_2]e^{-\beta\Delta\epsilon_b}  +  [R_2][L]e^{-\beta(\Delta\epsilon_B+\Delta\epsilon_L)}}\\
+\end{align}
+
+
+Now we can convert to kinetic coefficients. There are three transitions we can consider, each related to a ratio of probabilities.
+First the transitions from unbound to off
+\begin{align}
+k^+_{R_1\rightarrow off} [R_1][R_2] &= k^-_{R_1\rightarrow off}[C_{off}]
+\end{align}
+From this, we see that the kinetic coefficients are given by,
+\begin{align}
+\frac{k^+_{R_1\rightarrow off}}{k^-_{R_1\rightarrow off}} &= \frac{[C_{off}]}{[R_1][R_2]} = \frac{p(C_{off})}{p(R_1)[R_2]} =   e^{-\beta\Delta\epsilon_b}
+\end{align}
+
+Next, the transition from off to on,
+\begin{align}
+k^+_{off\rightarrow on}[C_{off}][L] = k^-_{off\rightarrow on}[C_{on}]
+\end{align}
+which gives us
+\begin{align}
+\frac{k^+_{off\rightarrow on}}{k^-_{off\rightarrow on}} &= \frac{[C_{on}]}{[C_{off}][L]} = \frac{p(C_{on})}{p(C_{off})[L]} = e^{-\beta\Delta\epsilon_L}
+\end{align}
+
+Finally, the transition from on to unbound,
+\begin{align}
+k^+_{on\rightarrow R_1}[C_{on}] = k^-_{on\rightarrow R_1}[R_1][R_2][L]
+\end{align}
+which gives us
+\begin{align}
+\frac{k^+_{on\rightarrow R_1}}{k^-_{on\rightarrow R_1}} = \frac{[R_1][R_2][L]}{[C_{on}]} = \frac{p(R_1)[R_2][L]}{p(C_{on})} = \frac{1}{e^{-\beta(\Delta\epsilon_B+\Delta\epsilon_L)}}\label{eq:kin3}
+\end{align}
+
+Note that the kinetic coefficients are related such that
+\begin{align}
+\frac{k^+_{R_1\rightarrow off}}{k^-_{R_1\rightarrow off}}\frac{k^+_{off\rightarrow on}}{k^-_{off\rightarrow on}}\frac{k^+_{on\rightarrow R_1}}{k^-_{on\rightarrow R_1}} = 1
+\end{align}
+
+
+Finally, we want the combined concentration of $[C_{off}]$ and  $[C_{on}]$,
+\begin{align}
+\frac{[C_{tot}]}{[R_1]+[C_{off}]+[C_{on}]} &= p(C_{off}) + p(C_{on})\\
+&= \frac{e^{-\beta\Delta\epsilon_b} + [R_2][L]e^{-\beta(\Delta\epsilon_B+\Delta\epsilon_L)}}{1 +   [R_2]e^{-\beta\Delta\epsilon_b}  +  [R_2][L]e^{-\beta(\Delta\epsilon_B+\Delta\epsilon_L)}}\\
+&= p(R_1) [R_2]e^{-\beta\Delta\epsilon_b}\qty(1 + [L]e^{-\beta\Delta\epsilon_L})\\
+&= \frac{[R_1]}{[R_1]+[C_{off}]+[C_{on}]} [R_2]\frac{k^+_{R_1\rightarrow off}}{k^-_{R_1\rightarrow off}}\qty(1+ [L]\frac{k^+_{off\rightarrow on}}{k^-_{off\rightarrow on}})
+\end{align}
+
+Multiplying both sides by the total concentration,
+\begin{align}
+[C_{tot}] &= [R_1][R_2]\frac{k^+_{R_1\rightarrow off}}{k^-_{R_1\rightarrow off}}\qty(1+ [L]\frac{k^+_{off\rightarrow on}}{k^-_{off\rightarrow on}})
+\end{align}
+
+
+\end{document}

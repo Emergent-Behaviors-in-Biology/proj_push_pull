@@ -1,3 +1,5 @@
+notebooks/.ipynb_checkpoints/*
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
@@ -31,6 +33,7 @@
 *-blx.aux
 *-blx.bib
 *.run.xml
+*Notes.bib
 
 ## Build tool auxiliary files:
 *.fdb_latexmk

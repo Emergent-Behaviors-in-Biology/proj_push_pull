@@ -1,0 +1,268 @@
+%% BASIC CLASS FILE
+%\documentclass[prl,twocolumn,amsmath]{revtex4-1}
+\documentclass[preprint,onecolumn,amsmath]{revtex4-1}
+
+%% ADDITIONAL OPTIONAL STYLE FILES
+\usepackage{graphicx}
+\usepackage{amssymb,amsfonts,amsmath, dsfont}
+
+%% OPTIONAL MACRO DEFINITIONS
+\def\s{\sigma}
+
+%  shorter names for greek alphabets
+\def \g{\gamma}    \def \a{\alpha}
+\def \w{\omega}    \def \b{\beta} 
+\def \s{\sigma}    \def \k{\kappa}  
+\def \e{\epsilon}   \def \r{\rho} 
+\def \th{\vec{\theta}}   \def \d{\delta} 
+\def \k{\kappa}    \def \l{\lambda} 
+\def \z{\zeta}      
+ 
+\def \O{\Omega}   \def \S{\Sigma} 
+\def \G{\Gamma}   \def \D{\Delta} 
+\def \Lam{\Lambda} 
+\def \h{\hbar}   %  \h won't be used for any greek letter 
+
+
+% operators
+\def \E{\rm{E}} % expectation
+\def \Var{\rm{Var}} % variance
+\def \Cov{\rm{Cov}} % covariance
+ 
+\def \f{\frac} 
+\def \del{\partial}    % for writing partial derivatives 
+ 
+\def \hf{\tfrac{1}{2}} 
+\def \HF{\dfrac{1}{2}}  % small and big half's. 
+\def \HQ{\dfrac{1}{4}}
+ 
+\def \ord{\mathcal{O}} 
+\def \ra{\rightarrow} 
+\def \>{\rangle} 
+\def \<{\langle} 
+\def\dg{^\dagger} 
+\def\lba{\left(}    %don't know if these are already defined, have to check 
+\def\rba{\right)} 
+\def\lbc{\left[} 
+\def\rbc{\right]} 
+\def\lbb{\left\{} 
+\def\rbb{\right\}} 
+\def\bra{\langle} 
+\def \ket{\rangle} 
+\def\ord{\mathcal{O}} 
+ 
+\def\CH{\cal{H}} 
+ 
+\def\be{\begin{equation}} 
+\def\ee{\end{equation}} 
+\def\longrightharpoonup{\relbar\joinrel\rightharpoonup}
+\def\longleftharpoondown{\leftharpoondown\joinrel\relbar}
+
+\def\longrightleftharpoons{
+  \mathop{
+    \vcenter{
+      \hbox{
+      \ooalign{
+        \raise1pt\hbox{$\longrightharpoonup\joinrel$}\crcr
+	  \lower1pt\hbox{$\longleftharpoondown\joinrel$}
+	  }
+      }
+    }
+  }
+}
+
+\newcommand{\rates}[2]{\displaystyle
+  \mathrel{\longrightleftharpoons^{#1\mathstrut}_{#2}}}
+\newcommand \bea {\begin{eqnarray}} 
+\newcommand \eea {\end{eqnarray}} 
+\newcommand \sign {\hbox{sign}} 
+\newcommand{\nn} {\nonumber}
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\sech}{sech}
+\DeclareMathOperator\erf{erf}
+
+\def \bvec{\textbf}
+\def \mat{\text}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\title{Two Step Amplifier System}
+
+\author{Pankaj Mehta}
+\author{Jason Rocks}
+\affiliation{Dept. of Physics, Boston University, Boston, MA 02215}
+
+\date{\today}
+
+\begin{abstract}
+These are notes on modeling the stop step amplifier system
+\end{abstract}
+
+\maketitle
+
+Let us start with the basic set-up. We have a receptor $R$ which here we will assume refers to the dimerized, active form of the receptor. This
+receptor can bind and phosphorylate a writer (i.e. kinase) $W$. The kinase $K$ can also bind an eraser (i.e phosphatase) $E$. Importantly, the $R$ and $P$ cannot
+be bound to the kinase at the same time. When the K is phosphorylated, it can bind a substrate $S$ and phosphorylate $S$. The substrate can also bind
+a second eraser $E_2$.
+
+\section{Kinase Equations}
+Let us start at viewing this from the view point of the phosphorylated kinase $W-P$. This can be found in one fo the following configurations
+\begin{itemize}
+\item $[W-P]_f$ -- concentration of unbound phophorylated kinase 
+\item $[WR-P]$ -- concentration of  phophorylated kinase bound to active (dimerized) receptor  
+\item $[WE-P]$ -- concentration of  phophorylated kinase bound to eraser  
+\item $[WS-P]$ -- concentration of phophorylated kinase bound to substrate
+\end{itemize}
+We can also consider the states of the unphorphorylated kinase (note this cannot bind substrate as is SH3 domain)
+\begin{itemize}
+\item $[W]_f$ -- concentration of unbound phophorylated kinase 
+\item $[WR]$ -- concentration of  phophorylated kinase bound to active (dimerized) receptor  
+\item $[WE]$ -- concentration of  phophorylated kinase bound to active (dimerized) receptor  
+\end{itemize}
+
+
+Since all the interactions in each of the lists is thermodynamic, we can use thermodynamic models to write separate partition functions for each of these. Let
+us denote the binding energies of the receptor to writer, phosphatase/substrate as $\Delta \epsilon_{WR}$ , $\Delta \epsilon_{WE}$, $\Delta \epsilon_{WS}$.
+We then can write the probabilities of being in each of these states as (where the subscript $f$ depicts the concentration of free, unbound species)
+\begin{align}
+p_{[W-P]_f}^P &= {1 \over Z_{WP}} \\
+p_{[WR-P]}^P &= {e^{-\beta (\Delta \epsilon_{WR} -k_B T \log{[R]_f}}  \over Z_{WP}}  \equiv { {[R]_f \over \alpha_{WR}} \over Z_{WP}} \\
+p_{[WE-P]}^P &= {e^{-\beta (\Delta \epsilon_{WE} -k_B T \log{[E]_f})}  \over Z_{WP}}  \equiv { {[E]_f \over \alpha_{WE}} \over Z_{WP}} \\
+p_{[SE-P]}^P &= {e^{-\beta (\Delta \epsilon_{SE} -k_B T \log{[S]_f})}  \over Z_{WP}}  \equiv { {[S]_f \over \alpha_{WE}} \over Z_{WP}} \\
+Z_{WP} &= 1+ {[R]_f \over \alpha_{WR}}+{[E]_f \over \alpha_{WE}}+{[S]_f \over \alpha_{WE}}
+\end{align}
+Similarly, we can do this for unphosphorylated stuff and since binding energies (except to the substrate) don't depend on the phosphorylation state
+we have
+\begin{align}
+p_{[W]_f} &= {1 \over Z_W} \\
+p_{[WR]} &= {e^{-\beta (\Delta \epsilon_{WR} -k_B T \log{[R]_f}}  \over Z}  \equiv { {[R]_f \over \alpha_{WR}} \over Z_W} \\
+p_{[WE]} &= {e^{-\beta (\Delta \epsilon_{WE} -k_B T \log{[E]_f})}  \over Z}  \equiv { {[E]_f \over \alpha_{WE}} \over Z_W} \\
+Z_W &=1+ {[R]_f \over \alpha_{WR}}+{[E]_f \over \alpha_{WE}}
+\end{align}
+
+So now let us denote the total amount of writer (all, phosphorylated, and unphosphorylated) by  $[W_{tot}]$, $[W-P]$, and $[W]$ respectively.
+Then, we know by definition we have that
+\be
+[W_{tot}] = [W-P] + [W].
+\ee
+Furthermore, the equations governing kinetics is just given by
+\begin{align}
+{d [W-P] \over dt} &= k_R^a [W] p_{[WR]}  + k_{bg}^a [W] - k_E^p [W-P]p_{[WE-P]}^P - k_{bg}^p [W-P] \\
+&= k_R^a ([W_{tot}] - [W-P] )p_{[WR]}  + k_{bg}^a ([W_{tot}] -[W-P]) - k_E^p [W-P]p_{[WE-P]}^P - k_{bg}^p [W-P] 
+\end{align}
+At steady-state this gives
+\be
+{ [W-P] \over [W_{tot}] } ={ v_R^a p_{[WR]} + v_{bg}^a \over   v_R^a  p_{[WR]} + v_{bg}^a + v_E^p p_{[WE-P]}^P +1}
+\ee
+where we have defined the velocities $v_R^a = k_R^a/k_{bg}^p$, $v_{bg}^a = k_{bg}^a/k_{bg}^p$,$v_E^p = k_E^p/k_{bg}^p$.
+This also gives combining equations above
+\be
+{ [W] \over [W_{tot}] }= 1- { [W-P] \over [W_{tot}] } = {v_E^p p_{[WE-P]}^P +1 \over  v_R^a  p_{[WR]} + v_{bg}^a + v_E^p p_{[WE-P]}^P +1}
+\ee
+Note that now we can use the probabilities above in terms of the free/unbound concentration of the receptor $[R_f]$, 
+the free/unbound concentration of the eraser $[E_f]$, and free substrate concentration, and the total amount of kinase, $[W_{tot}]$.
+
+
+
+\section{Receptor Equations}
+Let us start with treating the receptor. To do this, we will just use the fact that dimerized 
+receptor can be in three states, bound to the phosphorylated kinase, bound to unphosphorylated kinase. So we have the law
+\be
+[R_{tot}]= [R_f]+[WR]+[WR-P]
+\ee
+Furthermore, we can write the reader in three states and once again write the probability of these
+\begin{align}
+q_{[R]_f} &= {1 \over Z_{R}} \\
+q_{[WR-P]} &= {e^{-\beta (\Delta \epsilon_{WR} -k_B T \log{[W-P]_f})}  \over Z_{R}} ={ {[W-P]_f \over \alpha_{WR}} \over Z_R}=
+{ p_{[W-P]_f^P} {[W-P] \over \alpha_{WR}} \over Z_R} \\
+q_{[WR]} &= {e^{-\beta (\Delta \epsilon_{WR} -k_B T \log{[W]_f})}  \over Z_{R}} ={ {[W]_f \over \alpha_{WR}} \over Z_R}=
+{ p_{[W]_f} {[W] \over \alpha_{WR}} \over Z_R}\\
+Z_R  &= 1+  {[W]_f \over \alpha_{WR}}+ {[W-P]_f \over \alpha_{WR}}=1+   p_{[W-P]_f}^P {[W-P] \over \alpha_{WR}}+ p_{[W]_f} {[W] \over
+ \alpha_{WR}} 
+\end{align} 
+This of course gives us the equation
+\be
+{ [R_f] \over [R_{tot}]} = q_{[R]_f}={1 \over 1+   p_{[W]_f} {[W] \over \alpha_{WR}}+ p_{[W-P]_f}^P {[W-P] \over \alpha_{WR}}}
+\ee
+
+\section{Phosphatase Equation}
+
+We can also write the phosphatase equations which are essentially identical. We have 
+\be
+[E_{tot}]= [E_f]+[WE]+[WE-P]
+\ee
+Furthermore, we can write the reader in three states and once again write the probability of these
+\begin{align}
+h_{[E]_f} &= {1 \over Z_{E}} \\
+h_{[WE-P]} &= {e^{-\beta (\Delta \epsilon_{WE} -k_B T \log{[W-P]_f})}  \over Z_{E}} ={ {[W-P]_f \over \alpha_{WE}} \over Z_E}=
+{ p_{[W-P]_f^P} {[W-P] \over \alpha_{WE}} \over Z_E} \\
+h_{[WE]} &= {e^{-\beta (\Delta \epsilon_{WE} -k_B T \log{[W]_f})}  \over Z_{E}} ={ {[W]_f \over \alpha_{WE}} \over Z_E}=
+{ p_{[W]_f} {[W] \over \alpha_{WE}} \over Z_R}\\
+Z_R  &= 1+  {[W]_f \over \alpha_{WE}}+ {[W-P]_f \over \alpha_{WE}}=1+   p_{[W-P]_f}^P {[W-P] \over \alpha_{WE}}+ p_{[W]_f} {[W] \over
+ \alpha_{WE}} 
+\end{align} 
+This of course gives us the equation
+\be
+{ [E_f] \over [E_{tot}]} = h_{[E]_f}={1 \over 1+   p_{[W]_f} {[W] \over \alpha_{WE}}+ p_{[W-P]_f}^P {[W-P] \over \alpha_{WE}}}
+\ee
+
+
+\section{Substrate Equation}
+We now consider the substrate $[S]$ (we will not distinguish between phosphorylated or unphosphorylated substrate here). 
+\begin{itemize}
+\item $[S]_f$ -- concentration of unbound/free substrate 
+\item $[WS-P]$ -- concentration of  substrate bound to phosphorylated writer
+\item $[SE_2]$ -- concentration of substrate bound to it's own eraser/phosphatase ($E_2$).
+\end{itemize}
+As before we have that total number is conserved
+\be
+[S_{tot}]= [S]_f+[WS-P]+[SE_2-P]
+\ee
+Therefore, we can write usual partition function
+\begin{align}
+l_{[S]_f} &= {1 \over Z_{S}} \\
+l_{[WS-P]} &= {e^{-\beta (\Delta \epsilon_{WS} -k_B T \log{[W-P]_f})}  \over Z_{S}} ={ {[W-P]_f \over \alpha_{WS}} \over Z_S}=
+{ p_{[W-P]_f^P} {[W-P] \over \alpha_{WS}} \over Z_S} \\
+l_{[SE2]} &= {e^{-\beta (\Delta \epsilon_{SE_2} -k_B T \log{[E2]_f})}  \over Z_{S}} ={ {[E2]_f \over \alpha_{SE2}} \over Z_S} 
+={d_{[SE2]}{ [E2_{tot}] \over \alpha_{SE2}} \over Z_s} \\
+ Z_S&= 1+  {[W-P]_f \over \alpha_{WE}}+ {[E2]_f \over \alpha_{SE2}}
+ \end{align} 
+Now we just need the usual kinetic equation
+\begin{align}
+{d [S-P] \over dt} &= k_W^a [W] l_{[WS-P]}  + k_{bg}^a [S] - k_{E2}^p [S-P]l_{[SE2]} - k_{bg}^p [S-P] \\
+&= k_W^a ([S_{tot}] - [S-P] )l_{[WS-P]}  + k_{bg}^a ([S_{tot}] -[S-P]) - k_{E2}^p [S-P]l_{[SE2]}- k_{bg}^p [S-P] 
+\end{align}
+Setting this to zero gives ratio of phosphorylated substrate
+\be
+{[S-P] \over [S_{tot}]} ={ v_W^a l_{[WS-P]} +v_{bg}^a  \over v_W^a l_{[WS-P]}  + v_{E2}^p l_{[SE2]} + +v_{bg}^a+1}
+\ee
+and unphosphorylated substrate
+\be
+{[S] \over [S_{tot}]} ={ v_{E2}^p l_{[WS-P]} +1 \over v_W^a l_{[WS-P]}  + v_{E2}^p l_{[SE2]} + +v_{bg}^a+1}
+\ee
+
+\section{Second Phosphatase/Eraser}
+The final equation we will need is the final phosphatase equation $[E2]$. This will essentially be the same derivation as above
+\be
+[E2_{tot}]= [E2_f]+[SE2]
+\ee
+Furthermore, we can write the reader in three states and once again write the probability of these
+\begin{align}
+d_{[E2]_f} &= {1 \over Z_{E2}} \\
+d_{[SE2]} &= {e^{-\beta (\Delta \epsilon_{SE2} -k_B T \log{[S]_f})}  \over Z_{E2}}= {{[S_f] \over \alpha_{SE2}} \over Z_{E2}} \\
+Z_{E2}  &= 1+{[S_f] \over \alpha_{SE2}}
+\end{align} 
+This of course gives us the equation
+\be
+{ [E2_f] \over [E2_{tot}]} = d_{[E2]_f} = {1 \over 1+{[S_f] \over \alpha_{SE2}}}
+\ee
+
+
+
+\end{document}
+

@@ -1,0 +1,162 @@
+\pdfoutput=1
+% ***********************************************************
+% ******************* PHYSICS HEADER ************************
+% ***********************************************************
+% Version 2
+%\documentclass[11pt,twocolumn]{article}
+\documentclass[aps,onecolumn,superscriptaddress,notitlepage]{revtex4-1}
+
+
+\usepackage{amsmath} % AMS Math Package
+\usepackage{amsthm} % Theorem Formatting
+\usepackage{amssymb}	% Math symbols such as \mathbb
+\usepackage{physics}
+\usepackage[pdftex]{graphicx}
+\usepackage{hyperref} %clickable references.
+\hypersetup{
+    colorlinks,
+    citecolor=blue,
+    filecolor=black,
+    linkcolor=red,
+    urlcolor=blue
+}
+\usepackage{xcolor}
+\usepackage{url}
+
+\newcommand{\comment}[1]{{\color{blue}#1}}
+\newcommand{\edit}[1]{{\color{violet}#1}}
+\newcommand{\del}[1]{{\color{red}\st{#1}}}
+
+
+
+% ***********************************************************
+% ********************** END HEADER *************************
+% ***********************************************************
+
+\begin{document}
+
+\title{Quasi-thermodynamic Push-Pull Models}
+\author{Jason W. Rocks}
+\author{Pankaj Mehta}
+\maketitle
+
+
+\section{One-way Push Model}
+
+
+In this model, we have a substrate $S^u$ and a writer (kinase) $W$. 
+The writer is able to phosporylate the substrate from $S^u$ to $S^p$.
+In this model, we do not explicitly include an eraser (phosphatase), 
+but there is a dephosphoralation background rate (and a phosphoralation background rate).
+
+\textbf{Reactions:}
+\begin{gather}
+W + S^u \leftrightarrows WS^u \rightarrow WS^p \leftrightarrows W + S^p\\
+S^p \rightarrow S^u\\
+S^u \rightarrow S^p\\
+WS^p \rightarrow WS^u\\
+WS^u \rightarrow WS^p
+\end{gather}
+
+
+\textbf{Total Concentrations:}
+We define total concentrations for each species and also separately for unphosporylated and phosporylated states.
+\begin{itemize}
+\item Total writer: $[W_T] = [W] + [WS^u] + [WS^p]$
+\item Total substrate: $[S_T] = [S^u_T] + [S^p_T]$
+\item Total unphosporylated substrate: $[S^u_T] = [S^u] + [WS^u]$
+\item Total phosporylated substrate: $[S^p_T] = [S^p] + [WS^p]$
+\end{itemize}
+If we know the 
+
+\textbf{Binding Energies:}
+We assume the binding energies are the same for the unphosporylated and phosporylated states.
+\begin{itemize}
+\item Writer + substrate: $\Delta\epsilon_{WS}$
+\end{itemize}
+
+\textbf{One-way Reaction Rates:}
+These are the reaction rates that cannot be described by binding energies.
+\begin{itemize}
+\item Phosphorylation of substrate by writer: $k_{WS}^p$
+\item Background phosphorylation of substrate (independent of binding state): $k_S^p$
+\item Background dephosphorylation of substrate (independent of binding state): $k_S^u$
+\end{itemize}
+
+\textbf{Partition Functions and Probabilities:}
+We write down partition functions for each species based on the states listed in the total concentrations above. 
+Partition function cannot mix unphosporylated and phosporylated states for the same species, 
+so we do not write down a partition function for the total $S$.
+We assume the unbound state of each species is zero energy (although this choice doesn't matter).
+\begin{itemize}
+\item Writer: $Z_W = 1 + e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])} + e^{-\beta(\Delta\epsilon_{WS} -k_BT \log[S^p])}$
+\item Unphosphorylated substrate: $Z_{S^u} = 1 + e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}$
+\item Phosphorylated substrate: $Z_{S^p} = 1 + e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}$
+\end{itemize}
+We definee the reaction velocity
+\begin{align}
+v_{WS} &= e^{-\beta\Delta\epsilon_{WS}}
+\end{align}
+The associated conditional probabilities are then
+\begin{align}
+p(W|S^u,S^p) &= \frac{[W]}{[W_T]} = \frac{1}{Z_W} =  \frac{1}{1 + v_{WS}([S^u] +[S^p])}\\
+p(WS^u|S^u,S^p) &= \frac{[WS^u]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{v_{WS}[S^u]}{1 + v_{WS}([S^u] +[S^p])}\\
+p(WS^p|S^u,S^p) &= \frac{[WS^p]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^p])}}{Z_W} =  \frac{v_{WS}[S^p]}{1 + v_{WS}([S^u] +[S^p])}
+\end{align}
+\begin{align}
+p(S^u|W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + v_{WS}[W]}\\
+p(WS^u|W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]}
+\end{align}
+\begin{align}
+p(S^p|W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + v_{WS}[W]}\\
+p(WS^p|W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^p}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]}
+\end{align}
+
+
+\textbf{Reactions in Detailed Balance:}
+From the probabilities, we focus on the equations for the concentration of each species in its unbound state.
+These correspond to the kinetic equations for reactions not involving (de)phosphorylation.
+\begin{align}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}([S^u] +[S^p])}\label{eq:onewayW}\\
+\frac{[S^u]}{[S^u_T]} &= \frac{1}{1 + v_{WS}[W]}\label{eq:onewaySu}\\
+\frac{[S^p]}{[S^p_T]} &=  \frac{1}{1 + v_{WS}[W]}\label{eq:onewaySp}
+\end{align}
+
+\textbf{Reactions not in  Detailed Balance:}
+This is the kinetic equation for reactions involving (de)phosphorylation. 
+It is possible for either $S^u$ or $WS^u$ to undergo this process, so we have two equations
+\begin{align}
+\dv{[S^p]}{t} &=  k_{WS}^-[WS^p] - k_{WS}^+[W][S^p] + k_S^p[S^u] - k_S^u[S^p]\\
+\dv{[WS^p]}{t} &= k_{WS}^+[W][S^p] -k_{WS}^-[WS^p] + k_{WS}^p[WS^u] + k_S^p[WS^u] - k_S^u[WS^p]
+\end{align}
+where we have defined the forward and backward dissociation rates $k_{WS}^+$ and $k_{WS}^-$ such that
+\begin{align}
+v_{WS} &= \frac{k_{WS}^+}{k_{WS}^-}
+\end{align}
+%Setting these to zero, we get
+%\begin{align}
+%0 &= k_{WS}^-[WS^p] - k_{WS}^+[W][S^p] + k_S^p[S^u] - k_S^u[S^p]\\
+%0 &= k_{WS}^+[W][S^p] -k_{WS}^-[WS^p] + k_{WS}^p[WS^u] + k_S^p[WS^u] - k_S^u[WS^p]
+%\end{align}
+%
+
+Adding these equations together, we eliminate these rates, giving us
+\begin{align}
+\dv{[S^p_T]}{t} &= k_{WS}^p[WS^u] + k_S^p[S_T^u] - k_S^u[S_T^p]\\
+&= k_{WS}^p[S_T^u]p(WS^u|W) + k_S^p[S_T^u] - k_S^u[S_T^p]\\
+&= k_{WS}^p([S_T]-[S_T^p])p(WS^u|W) + k_S^p([S_T]-[S_T^p]) - k_S^u[S_T^p]
+\end{align}
+Setting this to zero, we get
+\begin{align}
+\frac{[S_T^p]}{[S_T]} &= \frac{k_{WS}^p p(WS^u|W) + k_S^p}{k_{WS}^p p(WS^u|W) + k_S^p+k_S^u}\\
+ &= \frac{1 + v_{WS}^p p(WS^u|W)}{1 + v_{WS}^p p(WS^u|W) + v_S^u}
+\end{align}
+where we have defined the reaction velocities relative to the background phosphorylation rate,
+\begin{align}
+v_{WS}^p &= \frac{k_{WS}^p}{k_S^p}\\
+v_S^u &= \frac{k_S^u}{k_S^p}
+\end{align}
+If the total concentrations $[W_T]$ and $[S_T]$ are known, this equation plus Eqs.~\eqref{eq:onewayW}-\eqref{eq:onewaySu} and the four equations for concentration comprise a system of 8 equations for the remaining 7 unknown concentrations. Since this system is over-determined, either one of the concentrations or one of Eqs.~\eqref{eq:onewayW}-\eqref{eq:onewaySu} maybe neglected.
+
+\end{document}
+
