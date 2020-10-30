@@ -51,7 +51,10 @@ but there is a dephosphoralation background rate (and a phosphoralation backgrou
 
 \textbf{Reactions:}
 \begin{gather}
-W + S^u \leftrightarrows WS^u \rightarrow WS^p \leftrightarrows W + S^p\\
+W + S^u \leftrightarrows WS^u \rightarrow WS^p \leftrightarrows W + S^p
+\end{gather}
+\textbf{Background:}
+\begin{gather}
 S^p \rightarrow S^u\\
 S^u \rightarrow S^p\\
 WS^p \rightarrow WS^u\\
@@ -157,6 +160,38 @@ v_{WS}^p &= \frac{k_{WS}^p}{k_S^p}\\
 v_S^u &= \frac{k_S^u}{k_S^p}
 \end{align}
 If the total concentrations $[W_T]$ and $[S_T]$ are known, this equation plus Eqs.~\eqref{eq:onewayW}-\eqref{eq:onewaySu} and the four equations for concentration comprise a system of 8 equations for the remaining 7 unknown concentrations. Since this system is over-determined, either one of the concentrations or one of Eqs.~\eqref{eq:onewayW}-\eqref{eq:onewaySu} maybe neglected.
+
+
+\section{Goldbeter Push-Pull Amplifier}
+
+Intermediate states missing $WS^p$ and $ES^u$
+
+\textbf{Reactions:}
+\begin{gather}
+W + S^u \leftrightarrows WS^u \rightarrow WS^p \rightarrow W + S^p\\
+E + S^p \leftrightarrows ES^p \rightarrow ES^u \rightarrow E + S^u
+\end{gather}
+No background.
+
+\section{Complete Push-Pull Amplifier}
+
+\textbf{Reactions:}
+\begin{gather}
+W + S^u \leftrightarrows WS^u \rightarrow WS^p \leftrightarrows W + S^p\\
+E + S^p \leftrightarrows ES^p \rightarrow ES^u \leftrightarrows E + S^u
+\end{gather}
+
+\textbf{Background:}
+\begin{gather}
+S^p \rightarrow S^u\\
+S^u \rightarrow S^p\\
+WS^p \rightarrow WS^u\\
+WS^u \rightarrow WS^p\\
+ES^p \rightarrow ES^u\\
+ES^u \rightarrow ES^p
+\end{gather}
+
+
 
 \end{document}
 
