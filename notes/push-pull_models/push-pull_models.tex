@@ -55,10 +55,8 @@ W + S^u \leftrightarrows WS^u \rightarrow WS^p \leftrightarrows W + S^p
 \end{gather}
 \textbf{Background Reactions:}
 \begin{gather}
-S^p \rightarrow S^u\\
-S^u \rightarrow S^p\\
-WS^p \rightarrow WS^u\\
-WS^u \rightarrow WS^p
+S^p \leftrightarrows S^u\\
+WS^p \leftrightarrows WS^u
 \end{gather}
 
 
@@ -254,7 +252,7 @@ v_{WS}^p &= \frac{k_{WS}^p}{k_{ES}^u}
 
 This model generalizes the Goldbeter model to include the intermediate states and background (de)phosphorylation.
 
-\textbf{Reactions Reactions:}
+\textbf{Reactions:}
 \begin{gather}
 W + S^u \leftrightarrows WS^u \rightarrow WS^p \leftrightarrows W + S^p\\
 E + S^p \leftrightarrows ES^p \rightarrow ES^u \leftrightarrows E + S^u
@@ -262,12 +260,9 @@ E + S^p \leftrightarrows ES^p \rightarrow ES^u \leftrightarrows E + S^u
 
 \textbf{Background:}
 \begin{gather}
-S^p \rightarrow S^u\\
-S^u \rightarrow S^p\\
-WS^p \rightarrow WS^u\\
-WS^u \rightarrow WS^p\\
-ES^p \rightarrow ES^u\\
-ES^u \rightarrow ES^p
+S^p \leftrightarrows S^u\\
+WS^p  \leftrightarrows WS^u\\
+ES^p  \leftrightarrows ES^u
 \end{gather}
 
 
@@ -347,18 +342,109 @@ p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES
 Setting this to zero, we get
 \begin{align}
 \frac{[S_T^p]}{[S_T]} &= \frac{k_{WS}^p p(WS^u|E,W) + k_S^p}{k_{WS}^p p(WS^u|E,W) + k_{ES}^u p(ES^p|E,W) + k_S^p + k_S^u}\\
- &= \frac{v_{WS}^p p(WS^u|E,W) + v_S^p}{v_{WS}^p p(WS^u|E,W) + p(ES^p|E,W) + v_S^p + v_S^u}\\
+ &= \frac{v_{WS}^p p(WS^u|E,W) + v_S^p}{v_{WS}^p p(WS^u|E,W) + v_{ES}^u p(ES^p|E,W) + v_S^p + 1}\\
 \end{align}
 where we have defined the reaction velocities
 \begin{align}
-v_{WS}^p &= \frac{k_{WS}^p}{k_{ES}^u}\\
-v_S^p &= \frac{k_S^p}{k_{ES}^u}\\
-v_S^u &= \frac{k_S^u}{k_{ES}^u}
+v_{WS}^p &= \frac{k_{WS}^p}{k_S^u}\\
+v_{ES}^u &= \frac{k_{ES}^u}{k_S^u}\\
+v_S^p &= \frac{k_S^p}{k_S^u}
 \end{align}
 In order to reduce this model to the Goldbeter version, the binding energies $\Delta \epsilon_{WS}$ and $\Delta \epsilon_{ES}$ must be phosphorylation-dependent. In addition, all the background rates must be sent to zero.
 
 \section{Two-step Amplifier}
 
+\textbf{Reactions:}
+\begin{gather}
+R + W^u \leftrightarrows RW^u \rightarrow RW^p \leftrightarrows R + W^p\\
+E_W + W^p \leftrightarrows E_WW^p \rightarrow E_WW^u \leftrightarrows E_W + W^u\\
+W^p + S^u \leftrightarrows W^pS^u \rightarrow W^pS^p \leftrightarrows W^p + S^p\\
+E_S + S^p \leftrightarrows E_SS^p \rightarrow E_SS^u \leftrightarrows E_S + S^u
+\end{gather}
+
+\textbf{Background:}
+\begin{gather}
+\text{any } W^p \leftrightarrows \text{any } W^u\\
+\text{any } S^p \leftrightarrows \text{any } S^u\\
+\end{gather}
+
+\textbf{Total Concentrations:}
+\begin{itemize}
+\item Total writer: $[W_T] = [W^u_T] + [W^p_T]$
+\item Total unphosporylated writer: $[W^u_T] = [W^u] + [RW^u] + [EW^u]$
+\item Total phosporylated writer: $[W^p_T] = [W^p] + [W^pS^p] + [W^pS^u] + [RW^p] + [EW^p]$
+\item Total Writer-Eraser: $[E_{WT}] = [E_W]  + [E_WW^p] + [E_WW^u]$
+\item Total Substrate-Eraser: $[E_{ST}] = [E_S]  + [E_SS^p] + [E_SS^u]$
+\item Total substrate: $[S_T] = [S^u_T] + [S^p_T]$
+\item Total unphosporylated substrate: $[S^u_T] = [S^u] + [W^pS^u] + [W^uS^u] + [ES^u]$
+\item Total phosporylated substrate: $[S^p_T] = [S^p] +  [W^pS^p] + [W^uS^p] + [ES^p]$
+\end{itemize}
+
+
+\textbf{Binding Energies:}
+\begin{itemize}
+\item Receptor + Writer: $\Delta\epsilon_{RW}$
+\item Writer-Eraser + Writer: $\Delta\epsilon_{E_WW}$
+\item Writer + substrate: $\Delta\epsilon_{WS}$
+\item Substrate-Eraser + substrate: $\Delta\epsilon_{E_SS}$
+\end{itemize}
+
+
+\textbf{One-way Reaction Rates:}
+\begin{itemize}
+\item Phosphorylation of writer by receptor: $k_{RW}^p$
+\item Dephosphorylation of writer by eraser: $k_{E_WW}^u$
+\item Phosphorylation of substrate by writer: $k_{WS}^p$
+\item Dephosphorylation of substrate by eraser: $k_{E_SS}^u$
+\item Background phosphorylation of writer (independent of binding state): $k_W^p$
+\item Background dephosphorylation of writer (independent of binding state): $k_W^u$
+\item Background phosphorylation of substrate (independent of binding state): $k_S^p$
+\item Background dephosphorylation of substrate (independent of binding state): $k_S^u$
+\end{itemize}
+
+\textbf{Partition Functions and Probabilities:}
+\begin{itemize}
+\item Unphosphorylated writer: $Z_{W^u} = 1 + e^{-\beta\qty(\Delta\epsilon_{RW} -k_BT \log[R]) + e^{-\beta\qty(\Delta\epsilon_{E_WW} -k_BT \log[E_W])}}$
+\item Phosphorylated writer: $Z_{W^p} = 1 + e^{-\beta\qty(\Delta\epsilon_{RW} -k_BT \log[R]) + e^{-\beta\qty(\Delta\epsilon_{E_WW} -k_BT \log[E_W])}} + e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^p])} + e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}$
+\item Eraser: $Z_E = 1 + e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^p])} + e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^u])}$
+\item Unphosphorylated substrate: $Z_{S^u} = 1 + e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])} + e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}$
+\item Phosphorylated substrate: $Z_{S^p} = 1  + e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])} + e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}$
+\end{itemize}
+We define the reaction velocities
+\begin{align}
+v_{WS} &= e^{-\beta\Delta\epsilon_{WS}}\\
+v_{ES} &= e^{-\beta\Delta\epsilon_{ES}}
+\end{align}
+The associated conditional probabilities are then
+\begin{align}
+p(W^u|S^u,S^p, R, E_W, E_S) &= \frac{[W^u]}{[W^u_T]} = \frac{1}{Z_{W^u}} =  \frac{1}{1 + v_{RW}[R] + v_{E_WW}[E_W]}\\
+p(RW^u|S^u,S^p, R, E_W, E_S) &= \frac{[RW^u]}{[W^u_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{RW} -k_BT \log[R])}}{Z_{W^u}} =  \frac{v_{RW}[R]}{1 + v_{RW}[R] + v_{E_WW}[E_W]}\\
+p(E_WW^u|S^u,S^p, R, E_W, E_S) &= \frac{[E_WW^u]}{[W^u_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{E_WW} -k_BT \log[E_W])}}{Z_{W^u}} =  \frac{ v_{E_WW}[E_W]}{1 + v_{RW}[R] + v_{E_WW}[E_W]}
+\end{align}
+\comment{\textbf{Continue Here}}
+\begin{align}
+p(W^p|S^u,S^p, R, E_W, E_S) &= \frac{[W^p]}{[W^p_T]} = \frac{1}{Z_W} =  \frac{1}{1 + v_{WS}([S^p]+[S^u])}\\
+p(RW^p|S^u,S^p, R, E_W, E_S) &= \frac{[RW^p]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{RW} -k_BT \log[R])}}{Z_W} =  \frac{v_{RW}[R]}{1 + v_{RW}[R] + v_{E_WW}[E_W]}\\
+p(E_WW^p|S^u,S^p, R, E_W, E_S) &= \frac{[E_WW^p]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{E_WW} -k_BT \log[E_W])}}{Z_W} =  \frac{ v_{E_WW}[E_W]}{1 + v_{RW}[R] + v_{E_WW}[E_W]}\\
+p(W^pS^u|S^u,S^p, R, E_W, E_S) &= \frac{[W^pS^u]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{v_{WS}[S^u]}{1 + v_{WS}([S^p]+[S^u])}\\
+p(W^pS^p|S^u,S^p, R, E_W, E_S) &= \frac{[W^pS^p]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^p])}}{Z_W} =  \frac{v_{WS}[S^p]}{1 + v_{WS}([S^p]+[S^u])}
+\end{align}
+\begin{align}
+p(E|S^u,S^p, W) &= \frac{[E]}{[E_T]} = \frac{1}{Z_E} =  \frac{1}{1 + v_{ES}([S^p]+[S^u])}\\
+p(ES^u|S^u,S^p, W) &= \frac{[ES^u]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^u])}}{Z_E} =  \frac{v_{ES}[S^u]}{1 + v_{ES}([S^p]+[S^u])}\\
+p(ES^p|S^u,S^p, W) &= \frac{[ES^p]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^p])}}{Z_E} =  \frac{v_{ES}[S^p]}{1 + v_{ES}([S^p]+[S^u])}
+\end{align}
+
+\begin{align}
+p(S^u|E, W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}\\
+p(WS^u|E, W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]+ v_{ES}[E]}\\
+p(ES^u|E, W) &= \frac{[ES^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^u}} = \frac{v_{ES}[E]}{1 + v_{WS}[W]+ v_{ES}[E]}
+\end{align}
+\begin{align}
+p(S^p|E, W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}\\
+p(WS^p|E, W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^p}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]+ v_{ES}[E]}\\
+p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^p}} = \frac{v_{ES}[E]}{1 + v_{WS}[W]+ v_{ES}[E]}
+\end{align}
 
 \bibliography{molecular_circuits}
 
