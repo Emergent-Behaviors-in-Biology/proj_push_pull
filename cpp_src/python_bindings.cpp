@@ -26,6 +26,7 @@ PYBIND11_MODULE(push_pull_amp, m) {
             .def_readwrite("SpT", &PushPull::SpT)
             .def(py::init())
             .def(py::init<RXVec, RXVec, RXVec, RXVec>())
-            .def("predict", &PushPull::predict);
+            .def("predict", &PushPull::predict)
+            .def("loss", &PushPull::loss);
 
 };

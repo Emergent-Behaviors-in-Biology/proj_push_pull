@@ -57,7 +57,7 @@ class PushPull {
 //         py::print(companion_mat);
 //         py::print(companion_mat.eigenvalues());
         
-        XcVec evals = companion_mat.eigenvalues();
+        auto evals = companion_mat.eigenvalues();
                 
         if((evals.imag().array().cwiseAbs() > 1e-8).count() > 0) {
             py::print("Imaginary Roots:", evals);           
@@ -102,6 +102,24 @@ class PushPull {
         
     }
     
+    double loss(RXVec params) {
+        
+        int N = WT.size();
+        
+        double loss = 0.0;
+        for(int i = 0; i < N; i++) {
+            
+            auto res = predict(WT(i), ET(i), ST(i), params);
+            
+            double SpT_predict = res(0);
+            
+            loss += pow(SpT(i)/ST(i) - SpT_predict/ST(i), 2.0);
+        }
+        
+        loss /= N;
+        
+        return loss;
+    }
     
 };
 
