@@ -156,12 +156,29 @@ where we have defined the reaction velocities relative to the background dephosp
 v_{WS}^p &= \frac{k_{WS}^p}{k_S^u}\\
 v_S^p &= \frac{k_S^p}{k_S^u}
 \end{align}
-If the total concentrations $[W_T]$ and $[S_T]$ are known, this equation plus Eqs.~\eqref{eq:onewayW}-\eqref{eq:onewaySu} and the four equations for concentration comprise a system of 8 equations for the remaining 7 unknown concentrations. Since this system is over-determined, either one of the concentrations or one of Eqs.~\eqref{eq:onewayW}-\eqref{eq:onewaySu} maybe neglected.
+
+\textbf{Numerical Strategy:}
+
+We assume that  $[W_T]$ and $[S_T]$ are known. 
+Add together Eqs.~\eqref{eq:onewaySu}and\eqref{eq:onewaySp} and defining $[S_f] = [S^p]+[S^u]$, 
+we find a pair of equations that can be solved for $[W]$ and $[S_f]$,
+\begin{align}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}[S_f]}\\
+\frac{[S^f]}{[S_T]} &= \frac{1}{1 + v_{WS}[W]}
+\end{align}
+Combining these equations, we find a quadratic equation in terms of $S_f$,
+\begin{align}
+0 &= v_{WS}[S_f]^2 +  \qty(1+v_{WS}([W_T]-[S_T]))[S_f] - [S_T]
+\end{align}
+Generally, we find that this has one positive solution for $[S_f]$. 
+Using this solution, we solve for $[W]$ and then use the kinetic equation so solve for $[S_T^p]$. The rest of the concentrations are then straightforward to calculate without any further need to solve any equations.
+
+
 
 
 \section{Goldbeter Push-Pull Amplifier}
 
-In the Goldbeter model, we have a push-pull amplifier with a substrate $S$, a writer (kinase) $W$ and an eraser (phosphotase) $E$ with no background (de)phosphorylation~\cite{Goldbeter1981}. In addition, we lack the intermediate states directly after phosphorylation $WS^p$ and dephosphorylation $ES^u$. These two states are assumed to be very short-lived.
+In the Goldbeter model, we have a push-pull amplifier with a substrate $S$, a writer (kinase) $W$ and an eraser (phosphatase) $E$ with no background (de)phosphorylation~\cite{Goldbeter1981}. In addition, we lack the intermediate states directly after phosphorylation $WS^p$ and dephosphorylation $ES^u$. These two states are assumed to be very short-lived.
 
 \textbf{Reactions:}
 \begin{gather}
@@ -224,10 +241,10 @@ p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES
 
 \textbf{Reactions in Detailed Balance:}
 \begin{align}
-\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}[S^u]}\\
-\frac{[E]}{[E_T]} & = \frac{1}{1 + v_{ES}[S^p]}\\
-\frac{[S^u]}{[S^u_T]} &= \frac{1}{1 + v_{WS}[W]}\\
-\frac{[S^p]}{[S^p_T]} &=  \frac{1}{1 + v_{ES}[E]}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}[S^u]}\label{eq:gbW}\\
+\frac{[E]}{[E_T]} & = \frac{1}{1 + v_{ES}[S^p]}\label{eq:gbE}\\
+\frac{[S^u]}{[S^u_T]} &= \frac{1}{1 + v_{WS}[W]}\label{eq:gbSu}\\
+\frac{[S^p]}{[S^p_T]} &=  \frac{1}{1 + v_{ES}[E]}\label{eq:gbSp}
 \end{align}
 
 \textbf{Reactions not in  Detailed Balance:}
@@ -246,6 +263,8 @@ where we have defined the reaction velocity
 \begin{align}
 v_{WS}^p &= \frac{k_{WS}^p}{k_{ES}^u}
 \end{align}
+
+
 
 
 \section{Complete Push-Pull Amplifier}
@@ -350,7 +369,52 @@ v_{WS}^p &= \frac{k_{WS}^p}{k_S^u}\\
 v_{ES}^u &= \frac{k_{ES}^u}{k_S^u}\\
 v_S^p &= \frac{k_S^p}{k_S^u}
 \end{align}
-In order to reduce this model to the Goldbeter version, the binding energies $\Delta \epsilon_{WS}$ and $\Delta \epsilon_{ES}$ must be phosphorylation-dependent. In addition, all the background rates must be sent to zero.
+
+
+
+\textbf{Numerical Strategy:}
+
+We assume that  $[W_T]$, $[E_T]$, and $[S_T]$ are known. 
+Add together Eqs.~\eqref{eq:onewaySu} and \eqref{eq:onewaySp} and defining $[S_f] = [S^p]+[S^u]$, 
+we find three equations that can be solved for $[W]$, $[E]$, and $[S_f]$,
+\begin{align}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}[S_f]}\\
+\frac{[E]}{[E_T]} & = \frac{1}{1 + v_{ES}[S_f]}\\
+\frac{[S_f]}{[S_T]} &= \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}
+\end{align}
+Combining these equations, we find a cubic equation in terms of $S_f$,
+
+\begin{align}
+0 &= v_{WS}v_{ES}[S_f]^3 +\qty(v_{WS}+v_{ES} + v_{WS}v_{ES}([W_T]+[E_T]- [S_T])) [S_f]^2\\
+&\qquad + \qty(1+v_{WS}([W_T]-[S_T]) + v_{ES}([E_T]-[S_T]))[S_f] - [S_T]
+\end{align}
+Generally, we find that this has one positive solution for $[S_f]$. 
+Using this solution, we solve for $[W]$ and $[E]$ and then use the kinetic equation to solve for $[S_T^p]$. The rest of the concentrations are then straightforward to calculate without any further need to solve any equations.
+
+
+
+%
+%\section{Push-Pull to Goldbeter}
+%
+%Can't group $WS^p$ with $W$ because that means that $W$ or $WS^p$ can bind to $S^u$
+%
+%If $W$ in Goldbeter is actually the total of $W$ and $WS^p$, then what about $S^p$?
+%
+%\begin{align}
+%[\tilde{W}] &= [W] + [WS^p]\\
+%[\tilde{E}] &= [E] + [ES^u]\\
+%[\tilde{S}^p_T] &= [S^p_T] - [WS^p]\\
+%[\tilde{S}^u_T] &= [S^u_T] - [ES^u]
+%\end{align}
+%and set $k_S^p=k_S^u=0$
+%
+%\begin{align}
+%\tilde{k}_{WS}^p &= k_{WS}^pv_{WS}\\
+%\tilde{k}_{ES}^u &= k_{ES}^uv_{ES}
+%\end{align}
+%
+%Also have to convert $k_{WS}^p$ and $k_{ES}^p$
+
 
 \section{Two-step Amplifier}
 
@@ -361,6 +425,11 @@ E_W + W^p \leftrightarrows E_WW^p \rightarrow E_WW^u \leftrightarrows E_W + W^u\
 W^p + S^u \leftrightarrows W^pS^u \rightarrow W^pS^p \leftrightarrows W^p + S^p\\
 E_S + S^p \leftrightarrows E_SS^p \rightarrow E_SS^u \leftrightarrows E_S + S^u
 \end{gather}
+Are these viable?
+\begin{align}
+W^u + S^u \leftrightarrows W^uS^u\\
+W^u + S^p \leftrightarrows W^uS^p
+\end{align}
 
 \textbf{Background:}
 \begin{gather}
@@ -444,6 +513,13 @@ p(ES^u|E, W) &= \frac{[ES^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES
 p(S^p|E, W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}\\
 p(WS^p|E, W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^p}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]+ v_{ES}[E]}\\
 p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^p}} = \frac{v_{ES}[E]}{1 + v_{WS}[W]+ v_{ES}[E]}
+\end{align}
+
+
+textbf{Reactions not in  Detailed Balance:}
+\begin{align}
+\dv{[S^p_T]}{t} &= k_{WS}^p[WS^u] - k_{E_SS}^u[ES^p] + k_S^p[S^u_T] - k_S^u[S^p_T]\\
+\dv{[W^p_T]}{t} &= k_{RW}^p[RW^u] - k_{E_WW}^u[E_WW^p] + k_W^p[W^u_T] - k_W^u[w^p_T]
 \end{align}
 
 \bibliography{molecular_circuits}
