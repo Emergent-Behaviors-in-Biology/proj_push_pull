@@ -103,50 +103,6 @@ class PushPull {
     }
     
     
-//     (WT, ET, ST) = x
-    
-// #     (vWS, vES, vWSp, vSp, vSu) = args
-//     (vWS, vES, kWSp, kESu, kSp, kSu) = args
-    
-//     p = np.zeros(4, float)
-//     p[0] = vWS*vES
-//     p[1] = vWS + vES + vWS*vES*(WT+ET-ST)
-//     p[2] = 1 + vWS*WT + vES*ET - (vWS+vES)*ST
-//     p[3] = -ST
-    
-//     roots = np.roots(p)
-    
-//     nonzero = np.nonzero(roots>=0.0)
-//     if len(nonzero) > 1:
-//         print("Multiple valid roots:", roots)
-    
-//     Sf = roots[nonzero][0]
-    
-//     W = WT/(1+vWS*Sf)
-//     E =  ET/(1+vES*Sf)    
-    
-//     pWSu = vWS*W/(1+vWS*W+vES*E)
-//     pESp = vES*E/(1+vWS*W+vES*E)
-    
-// #     SpT = ST*(vWSp*pWSu + vSp)/ (vWSp*pWSu + vESu*pESp + vSp + 1)
-// #     SpT = ST*(vWSp*pWSu + vSp)/ (vWSp*pWSu + pESp + vSp + vSu)
-//     SpT = ST*(kWSp*pWSu + kSp)/ (kWSp*pWSu + kESu*pESp + kSp + kSu)
-
-//     SuT = ST - SpT
-    
-//     Sp = SpT/(1+vWS*W+vES*E)
-//     Su = SuT/(1+vWS*W+vES*E)
-    
-//     WSu = pWSu*SuT
-//     WSp = WT - W - WSu
-    
-//     ESp = pESp*SpT
-//     ESu = ET -E - ESp
-        
-//     return np.array([SpT, SuT, W, E, Sp, Su, WSp, WSu, ESp, ESu])
-    
-    
-    
 };
 
 
