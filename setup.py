@@ -24,7 +24,8 @@ __version__ = "0.0.1"
 #   Sort input source files if you glob sources to ensure bit-for-bit
 #   reproducible builds (https://github.com/pybind/python_example/pull/53)
 
-include_dirs=[]
+include_dirs=["eigen-3.3.8"]
+# include_dirs = []
 
 ext_modules = [
     Pybind11Extension("push_pull_amp",
@@ -40,7 +41,7 @@ setup(
     version=__version__,
     author="Jason W. Rocks and Pankaj Mehta",
     author_email="jrocks@bu.edu",
-    url="https://github.com/Emergent-Behaviors-in-Biology/proj_molecular_circuits.gite",
+    url="https://github.com/Emergent-Behaviors-in-Biology/proj_push_pull.git",
     description="Push-pull amplifier fitting functions.",
     long_description="Program for efficient computation of loss functions for fitting push-pull amplifier models to experimental data.",
     ext_modules=ext_modules,

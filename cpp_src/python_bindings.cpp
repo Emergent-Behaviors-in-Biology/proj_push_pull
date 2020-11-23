@@ -6,6 +6,8 @@ namespace py = pybind11;
 #include <pybind11/eigen.h>
 
 #include "eigen_macros.hpp"
+
+#include "push.hpp"
 #include "push_pull.hpp"
 
 
@@ -18,6 +20,22 @@ PYBIND11_MODULE(push_pull_amp, m) {
     
 //     m.def("add", &add);
     
+    
+    py::class_<Push>(m, "Push")
+        .def_readwrite("WT", &Push::WT)
+        .def_readwrite("ST", &Push::ST)
+        .def_readwrite("SpT", &Push::SpT)
+        .def(py::init())
+        .def("set_data", &Push::set_data)
+        .def("set_noise_params", &Push::set_noise_params)
+        .def("predict", &Push::predict)
+        .def("predict_all", (XVec (Push::*)(RXVec)) &Push::predict_all)
+        .def("predict_all", (XVec (Push::*)(RXVec, RXVec, RXVec, RXVec)) &Push::predict_all)
+        .def("loss", &Push::loss)
+        .def("predict_grad", &Push::predict_grad)
+        .def("predict_grad_all", (std::tuple<XVec, XMat> (Push::*)(RXVec)) &Push::predict_grad_all)
+        .def("predict_grad_all", (std::tuple<XVec, XMat> (Push::*)(RXVec, RXVec, RXVec, RXVec)) &Push::predict_grad_all)
+        .def("loss_grad", &Push::loss_grad);
 
     py::class_<PushPull>(m, "PushPull")
         .def_readwrite("WT", &PushPull::WT)

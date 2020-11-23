@@ -44,11 +44,6 @@ class PushPull {
         
         double vWS = params(0);
         double vES = params(1);
-//         double kWSp = params(2);
-//         double kESu = params(3);
-//         double kSp = params(4);
-//         double kSu = params(5);
-        
         double vWSp = params(2);
         double vSp = params(3);
         double vSu = params(4);
@@ -155,91 +150,91 @@ class PushPull {
 };
 
 
-class NoiseModel {
+// class NoiseModel {
     
-    public:
+//     public:
     
-    int nbins_anti;
-    int nbins_gfp;
+//     int nbins_anti;
+//     int nbins_gfp;
 
-    double min_anti;
-    double max_anti;
+//     double min_anti;
+//     double max_anti;
     
-    double min_gfp;
-    double max_gfp;
+//     double min_gfp;
+//     double max_gfp;
 
-    XMat prob_anti_given_gfp;
-    XVec d_gfp;
+//     XMat prob_anti_given_gfp;
+//     XVec d_gfp;
         
     
-    NoiseModel(RXVec anti, RXVec gfp, int nbins_anti, int nbins_gfp) : nbins_anti(nbins_anti), nbins_gfp(nbins_gfp) {
+//     NoiseModel(RXVec anti, RXVec gfp, int nbins_anti, int nbins_gfp) : nbins_anti(nbins_anti), nbins_gfp(nbins_gfp) {
             
-        min_anti = anti.minCoeff();
-        max_anti = anti.maxCoeff();
+//         min_anti = anti.minCoeff();
+//         max_anti = anti.maxCoeff();
         
-        min_gfp = gfp.minCoeff();
-        max_gfp = gfp.maxCoeff();
+//         min_gfp = gfp.minCoeff();
+//         max_gfp = gfp.maxCoeff();
                 
-        // Calculate differential for each bin along gfp axis
-        d_gfp = XVec::Zero(nbins_gfp);
-        for(int i = 0; i < nbins_gfp; i++) {
+//         // Calculate differential for each bin along gfp axis
+//         d_gfp = XVec::Zero(nbins_gfp);
+//         for(int i = 0; i < nbins_gfp; i++) {
             
-            double low = log(min_gfp) + (log(max_gfp) - log(min_gfp)) * i/nbins_gfp;
-            double high = log(min_gfp) + (log(max_gfp) - log(min_gfp)) * (i+1)/nbins_gfp;
+//             double low = log(min_gfp) + (log(max_gfp) - log(min_gfp)) * i/nbins_gfp;
+//             double high = log(min_gfp) + (log(max_gfp) - log(min_gfp)) * (i+1)/nbins_gfp;
             
-            d_gfp(i) = exp(high) - exp(low);
+//             d_gfp(i) = exp(high) - exp(low);
             
-        }
+//         }
           
-        // Calculate conditional probability of antibody given gfp
-        prob_anti_given_gfp = XMat::Zero(nbins_gfp, nbins_anti);
+//         // Calculate conditional probability of antibody given gfp
+//         prob_anti_given_gfp = XMat::Zero(nbins_gfp, nbins_anti);
         
-        // First create histogram of counts
-        for(int i = 0; i < anti.size(); i++) {
-            int bin_anti = get_bin_anti(anti(i));
-            int bin_gfp = get_bin_gfp(gfp(i));
+//         // First create histogram of counts
+//         for(int i = 0; i < anti.size(); i++) {
+//             int bin_anti = get_bin_anti(anti(i));
+//             int bin_gfp = get_bin_gfp(gfp(i));
                         
-            prob_anti_given_gfp(bin_gfp, bin_anti) += 1.0;
+//             prob_anti_given_gfp(bin_gfp, bin_anti) += 1.0;
             
-        }
+//         }
          
-        // Normalize each column so that they integrate to one (prob_anti_given_gfp.tranpose() * d_gfp = [1, 1, 1, 1, ...] )
-        for(int i = 0;  i < nbins_anti; i++) {
-            double sum = prob_anti_given_gfp.col(i).sum();
-            if (sum > 0.0) {
-                prob_anti_given_gfp.col(i) = prob_anti_given_gfp.col(i) / sum;
-                prob_anti_given_gfp.col(i) = prob_anti_given_gfp.array().col(i) / d_gfp.array();
-            }
+//         // Normalize each column so that they integrate to one (prob_anti_given_gfp.tranpose() * d_gfp = [1, 1, 1, 1, ...] )
+//         for(int i = 0;  i < nbins_anti; i++) {
+//             double sum = prob_anti_given_gfp.col(i).sum();
+//             if (sum > 0.0) {
+//                 prob_anti_given_gfp.col(i) = prob_anti_given_gfp.col(i) / sum;
+//                 prob_anti_given_gfp.col(i) = prob_anti_given_gfp.array().col(i) / d_gfp.array();
+//             }
             
-        }
+//         }
                 
-    }
+//     }
     
-    int get_bin_anti(double a) {
+//     int get_bin_anti(double a) {
         
-        // need to check lowe and upper bounds first
+//         // need to check lowe and upper bounds first
         
-        return int(fmin((log(a)-log(min_anti)) / (log(max_anti)-log(min_anti)) * nbins_anti, nbins_anti-1.0)); 
-    }
+//         return int(fmin((log(a)-log(min_anti)) / (log(max_anti)-log(min_anti)) * nbins_anti, nbins_anti-1.0)); 
+//     }
     
-    int get_bin_gfp(double g) {
-        return int(fmin((log(g)-log(min_gfp)) / (log(max_gfp)-log(min_gfp)) * nbins_gfp, nbins_gfp-1.0)); 
-    }
+//     int get_bin_gfp(double g) {
+//         return int(fmin((log(g)-log(min_gfp)) / (log(max_gfp)-log(min_gfp)) * nbins_gfp, nbins_gfp-1.0)); 
+//     }
     
-    double get_val_anti(int i) {
-        // Geometric mean of bin edges
-        return exp((log(max_anti)-log(min_anti)) * (i+0.5) / nbins_anti);
-    }
+//     double get_val_anti(int i) {
+//         // Geometric mean of bin edges
+//         return exp((log(max_anti)-log(min_anti)) * (i+0.5) / nbins_anti);
+//     }
     
-    double get_val_gfp(int i) {
-        // Geometric mean of bin edges
-        return exp((log(max_gfp)-log(min_gfp)) * (i+0.5) / nbins_gfp);
-    }
-    
-    
+//     double get_val_gfp(int i) {
+//         // Geometric mean of bin edges
+//         return exp((log(max_gfp)-log(min_gfp)) * (i+0.5) / nbins_gfp);
+//     }
     
     
-};
+    
+    
+// };
 
 // class NoisyPushPull: public PushPull {
     

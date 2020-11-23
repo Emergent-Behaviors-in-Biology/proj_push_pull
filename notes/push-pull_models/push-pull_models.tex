@@ -174,7 +174,40 @@ Generally, we find that this has one positive solution for $[S_f]$.
 Using this solution, we solve for $[W]$ and then use the kinetic equation so solve for $[S_T^p]$. The rest of the concentrations are then straightforward to calculate without any further need to solve any equations.
 
 
+\subsection{Gradient}
 
+\begin{align}
+0 &= \pdv{}{v_{WS}}\qty(v_{WS}[S_f]^2 +  \qty(1+v_{WS}([W_T]-[S_T]))[S_f] - [S_T])\\
+&= [S_f]^2 +   ([W_T]-[S_T])[S_f] + \qty[2v_{WS}[S_f] +   1+v_{WS}([W_T]-[S_T])]\pdv{[S_f]}{v_{WS}}\\
+\pdv{[S_f]}{v_{WS}} &= -\frac{[S_f]\qty([S_f] +   [W_T]-[S_T])}{ \qty[2v_{WS}[S_f] +   1+v_{WS}([W_T]-[S_T])]}
+\end{align}
+
+\begin{align}
+\pdv{[W]}{v_{WS}} &= -[W_T]\frac{[S_f]}{(1+v_{WS}[S_f])^2}-[W_T]\frac{v_{WS}}{(1+v_{WS}[S_f])^2}\pdv{[S_f]}{v_{WS}}\\
+&= -[W_T]\frac{1}{(1+v_{WS}[S_f])^2}\qty([S_f] + v_{WS}\pdv{[S_f]}{v_{WS}})
+\end{align}
+
+\begin{align}
+\pdv{p(WS^u|W)}{v_{WS}} &= \frac{[W]}{1+v_{WS}[W]} - \frac{v_{WS}[W]^2}{(1+v_{WS}[W])^2} + \qty[\frac{v_{WS}}{1+v_{WS}[W]} - \frac{v_{WS}^2[W]}{(1+v_{WS}[W])^2}]\pdv{[W]}{v_{WS}}\\
+&= \frac{[W]}{(1+v_{WS}[W])^2} + \frac{v_{WS}}{(1+v_{WS}[W])^2}\pdv{[W]}{v_{WS}}\\
+&= \frac{1}{(1+v_{WS}[W])^2}\qty([W] + v_{WS}\pdv{[W]}{v_{WS}})
+\end{align}
+
+\begin{align}
+\pdv{[S^p_T]}{v_{WS}} &=  [S_T]\qty[\frac{v_{WS}^p}{v_{WS}^p p(WS^u|W) + v_S^p+1} -  \frac{v_{WS}^p\qty(v_{WS}^p p(WS^u|W) + v_S^p)}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}]\pdv{p(WS^u|W)}{v_{WS}}\\
+&= [S_T] \frac{v_{WS}^p}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}\pdv{p(WS^u|W)}{v_{WS}}
+\end{align}
+
+\begin{align}
+\pdv{[S^p_T]}{v_{WS}^p} &=  [S_T]\frac{ p(WS^u|W)}{v_{WS}^p p(WS^u|W) + v_S^p+1} -  [S_T]\frac{p(WS^u|W)\qty(v_{WS}^p p(WS^u|W) + v_S^p)}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}\\
+&= [S_T]\frac{p(WS^u|W)}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}
+\end{align}
+
+
+\begin{align}
+\pdv{[S^p_T]}{v_S^p} &=  [S_T]\frac{ 1}{v_{WS}^p p(WS^u|W) + v_S^p+1} - [S_T] \frac{v_{WS}^p p(WS^u|W) + v_S^p}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}\\
+&= [S_T]\frac{1}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}
+\end{align}
 
 \section{Goldbeter Push-Pull Amplifier}
 
