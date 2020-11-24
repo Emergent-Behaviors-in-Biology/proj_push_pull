@@ -1,0 +1,73 @@
+\pdfoutput=1
+% ***********************************************************
+% ******************* PHYSICS HEADER ************************
+% ***********************************************************
+% Version 2
+%\documentclass[11pt,twocolumn]{article}
+\documentclass[aps,onecolumn,superscriptaddress,notitlepage]{revtex4-1}
+
+
+\usepackage{amsmath} % AMS Math Package
+\usepackage{amsthm} % Theorem Formatting
+\usepackage{amssymb}	% Math symbols such as \mathbb
+\usepackage{physics}
+\usepackage[pdftex]{graphicx}
+\usepackage{hyperref} %clickable references.
+\hypersetup{
+    colorlinks,
+    citecolor=blue,
+    filecolor=black,
+    linkcolor=red,
+    urlcolor=blue
+}
+\usepackage{xcolor}
+\usepackage{url}
+
+\newcommand{\comment}[1]{{\color{blue}#1}}
+\newcommand{\edit}[1]{{\color{violet}#1}}
+\newcommand{\del}[1]{{\color{red}\st{#1}}}
+
+
+
+% ***********************************************************
+% ********************** END HEADER *************************
+% ***********************************************************
+
+\begin{document}
+
+\title{Maximum Likelihood Estimation with Push-Pull Noise Models}
+\author{Jason W. Rocks and Pankaj Mehta}
+\author{Pankaj Mehta}
+\maketitle
+
+In this set of notes, we describe the maximum likelihood estimation techniques used to fit our push-pull amplifier models to experimental data.
+ 
+\begin{align}
+P(\log(GFP)) &= \frac{1}{\sqrt{2\pi\sigma_{\mathrm{GFP}}^2 }}\exp\qty(-\frac{(\log(GFP)-\mu_{GRP})^2}{2\sigma_{\mathrm{GFP}}^2})
+\end{align}
+
+\begin{align}
+P(\log(anti)) &= \frac{1}{\sqrt{2\pi\sigma_{\mathrm{anti}}^2 }}\exp\qty(-\frac{(\log(anti)-\mu_{anti})^2}{2\sigma_{\mathrm{anti}}^2})
+\end{align}
+
+
+\begin{gather}
+P(\log(anti) \qand \log(GFP)) = \frac{1}{\sqrt{2\pi \qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)}}\\
+\times\exp\qty(\frac{\sigma_{\mathrm{GFP}}^2(\log(anti)-\mu_{anti})^2 + \sigma_{\mathrm{anti}}^2 (\log(GFP)-\mu_{GFP})^2 - 2\sigma_{\mathrm{anti}, \mathrm{GFP}}(\log(anti)-\mu_{anti})(\log(GFP)-\mu_{GFP})}{2\qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)})
+\end{gather}
+
+\begin{align}
+P(\log(anti)| \log(GFP)) &= \frac{P(\log(anti) \qand \log(GFP)) }{P(\log(GFP))}\\
+&= \sqrt{\frac{\sigma_{\mathrm{GFP}}^2}{\qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)}}  \exp\qty(-\frac{\qty(\sigma_{\mathrm{GFP}}^2(\log(anti)-\mu_{anti}) - \sigma_{\mathrm{anti}, \mathrm{GFP}} (\log(GFP)-\mu_{GFP}))^2}{2\sigma_{\mathrm{GFP}}^2\qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)})\\
+&= \frac{1}{\sqrt{\Sigma^2}}\exp\qty(-\frac{\qty(\log(anti)-A\log(GFP)-B)^2}{2\Sigma^2})
+\end{align}
+
+\begin{align}
+\mathcal{L} &= -\frac{1}{N}\sum_i\log\qty(P(\log(anti_i)| \log(GFP_i)))\\
+ &=  \frac{1}{2\Sigma^2N}\sum_i\qty(\log(anti_i)-A\log(GFP_i)-B)^2 +\frac{1}{2}\log(\Sigma^2)
+\end{align}
+
+
+
+\end{document}
+
