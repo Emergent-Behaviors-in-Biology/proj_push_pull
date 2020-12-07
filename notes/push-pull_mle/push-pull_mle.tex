@@ -27,7 +27,17 @@
 \newcommand{\edit}[1]{{\color{violet}#1}}
 \newcommand{\del}[1]{{\color{red}\st{#1}}}
 
-
+\newcommand{\sigmaGFP}{\sigma_{\mathrm{GFP}}}
+\newcommand{\sigmaanti}{\sigma_{\mathrm{anti}}}
+\newcommand{\muGFP}{\mu_{\mathrm{GFP}}}
+\newcommand{\muanti}{\mu_{\mathrm{anti}}}
+\newcommand{\GFP}{[\mathrm{GFP}]}
+\newcommand{\anti}{[\mathrm{anti}]}
+\newcommand{\lGFP}{\log([\mathrm{GFP}])}
+\newcommand{\lanti}{\log([\mathrm{anti}])}
+\newcommand{\E}{\mathbf{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
 
 % ***********************************************************
 % ********************** END HEADER *************************
@@ -36,23 +46,135 @@
 \begin{document}
 
 \title{Maximum Likelihood Estimation with Push-Pull Noise Models}
-\author{Jason W. Rocks and Pankaj Mehta}
+\author{Jason W. Rocks}
 \author{Pankaj Mehta}
 \maketitle
 
-In this set of notes, we describe the maximum likelihood estimation techniques used to fit our push-pull amplifier models to experimental data.
- 
+\section{Introduction}
+In this set of notes, we describe the maximum likelihood estimation proceudre used to fit our push-pull amplifier models to experimental data.
+
+\section{Phosphorylated Substrate Noise Model}
+
+First, we set up the noise model for the phosphorylated substrate.
+Unlike other the other species present the experiments,
+we cannot use GFP to empirically construct a noise model,
+so we must fit the noise model itself.
+The end result of this model will be the distribution of concentrations in antibody units conditioned on some underlying ``true'', but unknown concentration in units of GFP.
+
+First, we assume the GFP and antibody measurements each follow log-normal distributions. 
+We make this assumption based on biophysical arguments and the observed empirical forms of the noise models we have obtained for the other species.  
+We define the means and variances as
 \begin{align}
-P(\log(GFP)) &= \frac{1}{\sqrt{2\pi\sigma_{\mathrm{GFP}}^2 }}\exp\qty(-\frac{(\log(GFP)-\mu_{GRP})^2}{2\sigma_{\mathrm{GFP}}^2})
+\E[\lGFP] &= \muGFP & \Var[\lGFP] &= \sigmaGFP\\ 
+\E[\lanti] &= \muanti & \Var[\lGFP]&= \sigmaanti
+\end{align}
+so that the distributions are then given by
+\begin{align}
+P(\lGFP) &= \frac{1}{\sqrt{2\pi\sigmaGFP^2 }}\exp\qty(-\frac{(\lGFP-\muGFP)^2}{2\sigmaGFP^2})\\
+P(\lanti) &= \frac{1}{\sqrt{2\pi\sigmaanti^2 }}\exp\qty(-\frac{(\lanti-\muanti)^2}{2\sigmaanti^2}).
 \end{align}
 
+Next, we define the Pearson correlations coefficient between the two measurements,
 \begin{align}
-P(\log(anti)) &= \frac{1}{\sqrt{2\pi\sigma_{\mathrm{anti}}^2 }}\exp\qty(-\frac{(\log(anti)-\mu_{anti})^2}{2\sigma_{\mathrm{anti}}^2})
+\rho &= \frac{\Cov[\lGFP, \lanti]}{\sigmaGFP\sigmaanti},
 \end{align}
+allowing us to define the covariance matrix between the two,
+\begin{align}
+\mathbf{K} &= \mqty(\sigmaanti^2 & \rho \sigmaGFP\sigmaanti\\
+\rho \sigmaGFP\sigmaanti &  \sigmaGFP^2).
+\end{align}
+We also define the vectors
+\begin{align}
+\vec{c} &= \mqty(\lanti \\ \lGFP)\\
+\vec{\mu} &= \mqty(\muanti \\\muGFP).
+\end{align}
+
+Now we define the joint probability of the two measurements (the probability of a particular measurement in units of antibody coinciding with a particular measurement in units of GFP),
+\begin{align}
+P(\lanti, \lGFP) &= \frac{1}{\sqrt{(2\pi)^2}\det \mathbf{K}}\exp\qty(-\frac{1}{2}(\vec{c}-\vec{\mu})^T \mathbf{K}^{-1}(\vec{c}-\vec{\mu}))
+\end{align}
+
+Our goal is now to calculate the probability of a particular antibody measurement given a particular GFP measurement,
+\begin{align}
+P(\lanti | \lGFP) &= \frac{P(\lanti, \lGFP)}{P(\lGFP)}
+\end{align}
+Plugging in all the quantities and simplifying we obtain the formula
+\begin{align}
+P(\lanti | \lGFP) &= \frac{1}{\sqrt{\sigmaanti^2(1-\rho)}}\exp\qty(-\frac{\qty[(\lanti-\muanti) - \rho \frac{\sigmaanti}{\sigmaGFP}(\lGFP-\muGFP)]^2}{2 \sigmaanti^2(1-\rho)})\\
+&= \frac{1}{\sqrt{\Sigma^2}}\exp\qty(-\frac{\qty[\lanti -A\lGFP - B]^2}{2 \Sigma^2})
+\end{align}
+where we have defined the noise parameters,
+\begin{align}
+\Sigma^2 &= \sigmaanti^2(1-\rho)\\
+A &=  \rho \frac{\sigmaanti}{\sigmaGFP}\\
+B &= \muanti - \rho \frac{\sigmaanti}{\sigmaGFP}\muGFP.
+\end{align}
+
+
+\section{Maximum Likelihood Estimation}
+Next, we construct our MLE loss function.
+First, we define vectors of concentrations for each species (total writer $[W_T]$, total eraser $[E_T]$, total substrate $[S_T]$, total phosphorylated substrate $[S_T^p]$, etc.) in both antibody and GFP units,
+\begin{align}
+[\vec{X}]_{\mathrm{anti}} &= \mqty([W_T]_{\mathrm{anti}}\\
+[E_T]_{\mathrm{anti}}\\
+[S_T]_{\mathrm{anti}}\\
+[S^p_T]_{\mathrm{anti}}\\
+\vdots)\\
+[\vec{X}]_{\mathrm{GFP}} &= \mqty([W_T]_{\mathrm{GFP}}\\
+[E_T]_{\mathrm{GFP}}\\
+[S_T]_{\mathrm{GFP}}\\
+[S^p_T]_{\mathrm{GFP}}\\
+\vdots)
+\end{align}
+We define $S$ as the total number of species.
+
+For each species we define a separate noise model $P\qty[\log([X_j]_{\mathrm{anti}}) | \log([X_j]_{\mathrm{GFP}})])$.
+In addition, we define our thermodynamic model in the following form:
+\begin{align}
+F([\vec{X}]_{\mathrm{GFP}};\Theta) &= 0
+\end{align} 
+where we have define $\Theta$ as our fit parameters.
+A valid set of GFP values for each species will always satisfy this relation.
+
+
+Now we can define the probability of a particular data point (in antibody units) given a set of fit parameters for the model as the following integral.
+\begin{align}
+P([\vec{X}]_{\mathrm{anti}} | \Theta ) &= \qty(\prod_{j=1}^S \int d\log([X_j]_{\mathrm{GFP}}) P\qty[\log([X_j]_{\mathrm{anti}}) | \log([X_j]_{\mathrm{GFP}})])\delta\qty[F([\vec{X}]_{\mathrm{GFP}};\Theta)].
+\end{align}
+Note that we have incorporated the thermodynamic model as a delta function, so that only values of GFP are used that satisfy the model.
+
+Here we make an approximation that will greatly simplify our fitting algorithm. 
+Rather than integrating over the noise model for each species which can be very numerically costly, we will instead resample the concentrations of the species with empirical noise models from their joint probability distribution.
+In essence, we will convert species with empirical noise models from their antibody values to possible GFP values.
+By resampling many times, we obtain a new dataset that is much larger than the original where each of the original data points is copied many times, but with different possible GFP values. The only species that we will continue to express in units of antibody will be the phosphorylated substrate $[S_p^T]$.
+The result is a simplified probability,
+\begin{align}
+P([\vec{X}]_{\mathrm{anti}} | \Theta ) &\approx   \int d\log([S_T^p]_{\mathrm{GFP}}) P\qty[\log([S_T^p]_{\mathrm{anti}}) | \log([S_T^p]_{\mathrm{GFP}})]\delta\qty[F([\vec{X}]_{\mathrm{GFP}};\Theta)]
+\end{align}
+
+Next, we express the thermodynamic model in the form
+\begin{align}
+F([\vec{X}]_{\mathrm{GFP}};\Theta) &= [S_T^p]_{\mathrm{GFP}} - S([\vec{X}]_{\mathrm{GFP}};\Theta)
+\end{align}
+where $S$ is the amount of phosphorylated substrated predicted by the model.
+Incorporating this we get
+\begin{align}
+P([\vec{X}]_{\mathrm{anti}} | \Theta ) &\approx   \int d\log([S_T^p]_{\mathrm{GFP}}) P\qty[\log([S_T^p]_{\mathrm{anti}}) | \log([S_T^p]_{\mathrm{GFP}})]\delta\qty[[S_T^p]_{\mathrm{GFP}} - S([\vec{X}]_{\mathrm{GFP}};\Theta)]\\
+&=   P\qty[\log([S_T^p]_{\mathrm{anti}}) | \log(S([\vec{X}]_{\mathrm{GFP}};\Theta))]
+\end{align} 
+Finally, we take the log and sum over all the resampled data point. Substituting our noise model, we obtain the loss function
+\begin{align}
+\mathcal{L(\Theta)} &= -\frac{1}{N_{\mathrm{res}}}\sum_{i=1}^{N_{\mathrm{res}}}\log P\qty[\log([S_T^p]_{\mathrm{anti}}) | \log(S([\vec{X}]_{\mathrm{GFP}};\Theta))]\\
+&= \frac{1}{2\Sigma^2N_{\mathrm{res}}}\sum_{i=1}^{N_{\mathrm{res}}}\qty[\log([S_T^p]_{\mathrm{anti}, i}) - A \log(S([\vec{X}]_{\mathrm{GFP}, i};\Theta)) - B]^2 + \frac{1}{2}\log\qty(\Sigma^2).
+\end{align}
+We will need to fit both the fit parameters for the thermodynamic model $\Theta$ as well as the parameters for the noise model $\Sigma^2$, $A$, and $B$.
+
+
+\clearpage
 
 
 \begin{gather}
-P(\log(anti) \qand \log(GFP)) = \frac{1}{\sqrt{2\pi \qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)}}\\
+P(\lanti, \lGFP) = \frac{1}{\sqrt{2\pi \qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)}}\\
 \times\exp\qty(\frac{\sigma_{\mathrm{GFP}}^2(\log(anti)-\mu_{anti})^2 + \sigma_{\mathrm{anti}}^2 (\log(GFP)-\mu_{GFP})^2 - 2\sigma_{\mathrm{anti}, \mathrm{GFP}}(\log(anti)-\mu_{anti})(\log(GFP)-\mu_{GFP})}{2\qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)})
 \end{gather}
 
