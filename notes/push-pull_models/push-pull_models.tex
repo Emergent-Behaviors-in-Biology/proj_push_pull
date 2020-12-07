@@ -96,21 +96,21 @@ We assume the unbound state of each species is zero energy (although this choice
 \end{itemize}
 We define the reaction velocity
 \begin{align}
-v_{WS} &= e^{-\beta\Delta\epsilon_{WS}}
+\alpha_{WS} &= e^{\beta\Delta\epsilon_{WS}}
 \end{align}
 The associated conditional probabilities are then
 \begin{align}
-p(W|S^u,S^p) &= \frac{[W]}{[W_T]} = \frac{1}{Z_W} =  \frac{1}{1 + v_{WS}([S^u] +[S^p])}\\
-p(WS^u|S^u,S^p) &= \frac{[WS^u]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{v_{WS}[S^u]}{1 + v_{WS}([S^u] +[S^p])}\\
-p(WS^p|S^u,S^p) &= \frac{[WS^p]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^p])}}{Z_W} =  \frac{v_{WS}[S^p]}{1 + v_{WS}([S^u] +[S^p])}
+p(W|S^u,S^p) &= \frac{[W]}{[W_T]} = \frac{1}{Z_W} =  \frac{1}{1 + \frac{[S^u] +[S^p]}{\alpha_{WS}}}\\
+p(WS^u|S^u,S^p) &= \frac{[WS^u]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{\frac{[S^u]}{\alpha_{WS}}}{1 + \frac{[S^u] +[S^p]}{\alpha_{WS}}}\\
+p(WS^p|S^u,S^p) &= \frac{[WS^p]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^p])}}{Z_W} =  \frac{\frac{[S^p]}{\alpha_{WS}}}{1 + \frac{[S^u] +[S^p]}{\alpha_{WS}}}
 \end{align}
 \begin{align}
-p(S^u|W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + v_{WS}[W]}\\
-p(WS^u|W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]}
+p(S^u|W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + \frac{[W]}{\alpha_{WS}}}\\
+p(WS^u|W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{\frac{[W]}{\alpha_{WS}}}{1 + \frac{[W]}{\alpha_{WS}}}
 \end{align}
 \begin{align}
-p(S^p|W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + v_{WS}[W]}\\
-p(WS^p|W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^p}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]}
+p(S^p|W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + \frac{[W]}{\alpha_{WS}}}\\
+p(WS^p|W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^p}} = \frac{\frac{[W]}{\alpha_{WS}}}{1 + \frac{[W]}{\alpha_{WS}}}
 \end{align}
 
 
@@ -118,9 +118,9 @@ p(WS^p|W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -
 From the probabilities, we focus on the equations for the concentration of each species in its unbound state.
 These correspond to the kinetic equations for reactions not involving (de)phosphorylation.
 \begin{align}
-\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}([S^u] +[S^p])}\label{eq:onewayW}\\
-\frac{[S^u]}{[S^u_T]} &= \frac{1}{1 + v_{WS}[W]}\label{eq:onewaySu}\\
-\frac{[S^p]}{[S^p_T]} &=  \frac{1}{1 + v_{WS}[W]}\label{eq:onewaySp}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + \frac{[S^u] +[S^p]}{\alpha_{WS}}}\label{eq:onewayW}\\
+\frac{[S^u]}{[S^u_T]} &= \frac{1}{1 + \frac{[W]}{\alpha_{WS}}}\label{eq:onewaySu}\\
+\frac{[S^p]}{[S^p_T]} &=  \frac{1}{1 + \frac{[W]}{\alpha_{WS}}}\label{eq:onewaySp}
 \end{align}
 
 \textbf{Reactions not in  Detailed Balance:}
@@ -134,7 +134,7 @@ It is possible for either $S^u$ or $WS^u$ to undergo this process, so we have tw
 \end{align}
 where we have defined the forward and backward dissociation rates $k_{WS}^+$ and $k_{WS}^-$ such that
 \begin{align}
-v_{WS} &= \frac{k_{WS}^+}{k_{WS}^-}
+\frac{1}{\alpha_{WS}} &= \frac{k_{WS}^+}{k_{WS}^-}
 \end{align}
 Instead of writing these four equations, we can instead write the kinetic equations so that they only describe reactions that are not in detailed balance and do not depend on $k_{WS}^+$ and $k_{WS}^-$. To see what these equations are, we can simple write down the reaction rates for the total phosphorylated and unphosphorylated substrate.
 These will just be related by a negative sign since they sum to a constant, so we can write
@@ -149,7 +149,7 @@ We note that this equation can also be obtained by summing together the first tw
 Setting this equation to zero, we get
 \begin{align}
 \frac{[S_T^p]}{[S_T]} &= \frac{k_{WS}^p p(WS^u|W) + k_S^p}{k_{WS}^p p(WS^u|W) + k_S^p+k_S^u}\\
-& = \frac{v_{WS}^p p(WS^u|W) + v_S^p}{v_{WS}^p p(WS^u|W) + v_S^p+1}
+& = \frac{\alpha_{WS}^p p(WS^u|W) + v_S^p}{\alpha_{WS}^p p(WS^u|W) + v_S^p+1}
 \end{align}
 where we have defined the reaction velocities relative to the background dephosphorylation rate,
 \begin{align}
@@ -163,50 +163,57 @@ We assume that  $[W_T]$ and $[S_T]$ are known.
 Add together Eqs.~\eqref{eq:onewaySu}and\eqref{eq:onewaySp} and defining $[S_f] = [S^p]+[S^u]$, 
 we find a pair of equations that can be solved for $[W]$ and $[S_f]$,
 \begin{align}
-\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}[S_f]}\\
-\frac{[S^f]}{[S_T]} &= \frac{1}{1 + v_{WS}[W]}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + \frac{[S_f]}{\alpha_{WS}}}\\
+\frac{[S^f]}{[S_T]} &= \frac{1}{1 + \frac{[W]}{\alpha_{WS}}}
 \end{align}
 Combining these equations, we find a quadratic equation in terms of $S_f$,
 \begin{align}
-0 &= v_{WS}[S_f]^2 +  \qty(1+v_{WS}([W_T]-[S_T]))[S_f] - [S_T]
+0 &= \qty(\frac{[S_f]}{\alpha_{WS}})^2 +  \qty(1+\frac{[W_T]-[S_T]}{\alpha_{WS}})\frac{[S_f]}{\alpha_{WS}} - \frac{[S_T]}{\alpha_{WS}}
 \end{align}
 Generally, we find that this has one positive solution for $[S_f]$. 
 Using this solution, we solve for $[W]$ and then use the kinetic equation so solve for $[S_T^p]$. The rest of the concentrations are then straightforward to calculate without any further need to solve any equations.
 
 
 \subsection{Gradient}
-
 \begin{align}
-0 &= \pdv{}{v_{WS}}\qty(v_{WS}[S_f]^2 +  \qty(1+v_{WS}([W_T]-[S_T]))[S_f] - [S_T])\\
-&= [S_f]^2 +   ([W_T]-[S_T])[S_f] + \qty[2v_{WS}[S_f] +   1+v_{WS}([W_T]-[S_T])]\pdv{[S_f]}{v_{WS}}\\
-\pdv{[S_f]}{v_{WS}} &= -\frac{[S_f]\qty([S_f] +   [W_T]-[S_T])}{ \qty[2v_{WS}[S_f] +   1+v_{WS}([W_T]-[S_T])]}
+0 &= \pdv{}{\alpha_{WS}}\qty[\qty(\frac{[S_f]}{\alpha_{WS}})^2 +  \qty(1+\frac{[W_T]-[S_T]}{\alpha_{WS}})\frac{[S_f]}{\alpha_{WS}} - \frac{[S_T]}{\alpha_{WS}}]\\
+&= -\frac{1}{\alpha_{WS}^2}\qty[\qty( [W_T]-[S_T])\frac{[S_f]}{\alpha_{WS}} - [S_T]] + \qty[2 \frac{[S_f]}{\alpha_{WS}} +  1+\frac{[W_T]-[S_T]}{\alpha_{WS}}]\qty(\frac{1}{\alpha_{WS}}\pdv{[S_f]}{\alpha_{WS}} - \frac{[S_f]}{\alpha_{WS}^2})\\
+&= -\frac{1}{\alpha_{WS}}\qty[2 \qty(\frac{[S_f]}{\alpha_{WS}})^2 +  \qty(1+2\frac{[W_T]-[S_T]}{\alpha_{WS}})\frac{[S_f]}{\alpha_{WS}}- \frac{[S_T]}{\alpha_{WS}}] + \qty[2 \frac{[S_f]}{\alpha_{WS}} +  1+\frac{[W_T]-[S_T]}{\alpha_{WS}}] \frac{1}{\alpha_{WS}}\pdv{[S_f]}{\alpha_{WS}}\\
+\pdv{[S_f]}{\alpha_{WS}} &= \frac{2 \qty(\frac{[S_f]}{\alpha_{WS}})^2 +  \qty(1+2\frac{[W_T]-[S_T]}{\alpha_{WS}})\frac{[S_f]}{\alpha_{WS}}- \frac{[S_T]}{\alpha_{WS}}}{2 \frac{[S_f]}{\alpha_{WS}} +  1+\frac{[W_T]-[S_T]}{\alpha_{WS}}}\\
+&= 
 \end{align}
 
 \begin{align}
-\pdv{[W]}{v_{WS}} &= -[W_T]\frac{[S_f]}{(1+v_{WS}[S_f])^2}-[W_T]\frac{v_{WS}}{(1+v_{WS}[S_f])^2}\pdv{[S_f]}{v_{WS}}\\
-&= -[W_T]\frac{1}{(1+v_{WS}[S_f])^2}\qty([S_f] + v_{WS}\pdv{[S_f]}{v_{WS}})
+0 &= \pdv{}{\alpha_{WS}}\qty(\alpha_{WS}[S_f]^2 +  \qty(1+\alpha_{WS}([W_T]-[S_T]))[S_f] - [S_T])\\
+&= [S_f]^2 +   ([W_T]-[S_T])[S_f] + \qty[2\alpha_{WS}[S_f] +   1+\alpha_{WS}([W_T]-[S_T])]\pdv{[S_f]}{\alpha_{WS}}\\
+\pdv{[S_f]}{\alpha_{WS}} &= -\frac{[S_f]\qty([S_f] +   [W_T]-[S_T])}{ \qty[2\alpha_{WS}[S_f] +   1+\alpha_{WS}([W_T]-[S_T])]}
 \end{align}
 
 \begin{align}
-\pdv{p(WS^u|W)}{v_{WS}} &= \frac{[W]}{1+v_{WS}[W]} - \frac{v_{WS}[W]^2}{(1+v_{WS}[W])^2} + \qty[\frac{v_{WS}}{1+v_{WS}[W]} - \frac{v_{WS}^2[W]}{(1+v_{WS}[W])^2}]\pdv{[W]}{v_{WS}}\\
-&= \frac{[W]}{(1+v_{WS}[W])^2} + \frac{v_{WS}}{(1+v_{WS}[W])^2}\pdv{[W]}{v_{WS}}\\
-&= \frac{1}{(1+v_{WS}[W])^2}\qty([W] + v_{WS}\pdv{[W]}{v_{WS}})
+\pdv{[W]}{\alpha_{WS}} &= -[W_T]\frac{[S_f]}{(1+\alpha_{WS}[S_f])^2}-[W_T]\frac{\alpha_{WS}}{(1+\alpha_{WS}[S_f])^2}\pdv{[S_f]}{\alpha_{WS}}\\
+&= -[W_T]\frac{1}{(1+\alpha_{WS}[S_f])^2}\qty([S_f] + \alpha_{WS}\pdv{[S_f]}{\alpha_{WS}})
 \end{align}
 
 \begin{align}
-\pdv{[S^p_T]}{v_{WS}} &=  [S_T]\qty[\frac{v_{WS}^p}{v_{WS}^p p(WS^u|W) + v_S^p+1} -  \frac{v_{WS}^p\qty(v_{WS}^p p(WS^u|W) + v_S^p)}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}]\pdv{p(WS^u|W)}{v_{WS}}\\
-&= [S_T] \frac{v_{WS}^p}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}\pdv{p(WS^u|W)}{v_{WS}}
+\pdv{p(WS^u|W)}{\alpha_{WS}} &= \frac{[W]}{1+\alpha_{WS}[W]} - \frac{\alpha_{WS}[W]^2}{(1+\alpha_{WS}[W])^2} + \qty[\frac{\alpha_{WS}}{1+\alpha_{WS}[W]} - \frac{\alpha_{WS}^2[W]}{(1+\alpha_{WS}[W])^2}]\pdv{[W]}{\alpha_{WS}}\\
+&= \frac{[W]}{(1+\alpha_{WS}[W])^2} + \frac{\alpha_{WS}}{(1+\alpha_{WS}[W])^2}\pdv{[W]}{\alpha_{WS}}\\
+&= \frac{1}{(1+\alpha_{WS}[W])^2}\qty([W] + \alpha_{WS}\pdv{[W]}{\alpha_{WS}})
 \end{align}
 
 \begin{align}
-\pdv{[S^p_T]}{v_{WS}^p} &=  [S_T]\frac{ p(WS^u|W)}{v_{WS}^p p(WS^u|W) + v_S^p+1} -  [S_T]\frac{p(WS^u|W)\qty(v_{WS}^p p(WS^u|W) + v_S^p)}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}\\
-&= [S_T]\frac{p(WS^u|W)}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}
+\pdv{[S^p_T]}{\alpha_{WS}} &=  [S_T]\qty[\frac{\alpha_{WS}^p}{\alpha_{WS}^p p(WS^u|W) + v_S^p+1} -  \frac{\alpha_{WS}^p\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p)}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}]\pdv{p(WS^u|W)}{\alpha_{WS}}\\
+&= [S_T] \frac{\alpha_{WS}^p}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}\pdv{p(WS^u|W)}{\alpha_{WS}}
+\end{align}
+
+\begin{align}
+\pdv{[S^p_T]}{\alpha_{WS}^p} &=  [S_T]\frac{ p(WS^u|W)}{\alpha_{WS}^p p(WS^u|W) + v_S^p+1} -  [S_T]\frac{p(WS^u|W)\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p)}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}\\
+&= [S_T]\frac{p(WS^u|W)}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}
 \end{align}
 
 
 \begin{align}
-\pdv{[S^p_T]}{v_S^p} &=  [S_T]\frac{ 1}{v_{WS}^p p(WS^u|W) + v_S^p+1} - [S_T] \frac{v_{WS}^p p(WS^u|W) + v_S^p}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}\\
-&= [S_T]\frac{1}{\qty(v_{WS}^p p(WS^u|W) + v_S^p+1)^2}
+\pdv{[S^p_T]}{v_S^p} &=  [S_T]\frac{ 1}{\alpha_{WS}^p p(WS^u|W) + v_S^p+1} - [S_T] \frac{\alpha_{WS}^p p(WS^u|W) + v_S^p}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}\\
+&= [S_T]\frac{1}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}
 \end{align}
 
 \section{Goldbeter Push-Pull Amplifier}
@@ -250,34 +257,34 @@ E + S^p \leftrightarrows ES^p  \rightarrow E + S^u
 \end{itemize}
 We define the reaction velocities
 \begin{align}
-v_{WS} &= e^{-\beta\Delta\epsilon_{WS}}\\
-v_{ES} &= e^{-\beta\Delta\epsilon_{ES}}
+\alpha_{WS} &= e^{-\beta\Delta\epsilon_{WS}}\\
+\alpha_{ES} &= e^{-\beta\Delta\epsilon_{ES}}
 \end{align}
 The associated conditional probabilities are then
 \begin{align}
-p(W|S^u,S^p, E) &= \frac{[W]}{[W_T]} = \frac{1}{Z_W} =  \frac{1}{1 + v_{WS}[S^u]}\\
-p(WS^u|S^u,S^p, E) &= \frac{[WS^u]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{v_{WS}[S^u]}{1 + v_{WS}[S^u]}
+p(W|S^u,S^p, E) &= \frac{[W]}{[W_T]} = \frac{1}{Z_W} =  \frac{1}{1 + \alpha_{WS}[S^u]}\\
+p(WS^u|S^u,S^p, E) &= \frac{[WS^u]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{\alpha_{WS}[S^u]}{1 + \alpha_{WS}[S^u]}
 \end{align}
 \begin{align}
-p(E|S^u,S^p, W) &= \frac{[E]}{[E_T]} = \frac{1}{Z_E} =  \frac{1}{1 + v_{ES}[S^p]}\\
-p(ES^p|S^u,S^p, W) &= \frac{[ES^p]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^p])}}{Z_E} =  \frac{v_{ES}[S^p]}{1 + v_{ES}[S^p]}
+p(E|S^u,S^p, W) &= \frac{[E]}{[E_T]} = \frac{1}{Z_E} =  \frac{1}{1 + \alpha_{ES}[S^p]}\\
+p(ES^p|S^u,S^p, W) &= \frac{[ES^p]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^p])}}{Z_E} =  \frac{\alpha_{ES}[S^p]}{1 + \alpha_{ES}[S^p]}
 \end{align}
 
 \begin{align}
-p(S^u|E, W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + v_{WS}[W]}\\
-p(WS^u|E, W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]}
+p(S^u|E, W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + \alpha_{WS}[W]}\\
+p(WS^u|E, W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{\alpha_{WS}[W]}{1 + \alpha_{WS}[W]}
 \end{align}
 \begin{align}
-p(S^p|E, W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + v_{ES}[E]}\\
-p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^p}} = \frac{v_{ES}[E]}{1 + v_{ES}[E]}
+p(S^p|E, W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + \alpha_{ES}[E]}\\
+p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^p}} = \frac{\alpha_{ES}[E]}{1 + \alpha_{ES}[E]}
 \end{align}
 
 \textbf{Reactions in Detailed Balance:}
 \begin{align}
-\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}[S^u]}\label{eq:gbW}\\
-\frac{[E]}{[E_T]} & = \frac{1}{1 + v_{ES}[S^p]}\label{eq:gbE}\\
-\frac{[S^u]}{[S^u_T]} &= \frac{1}{1 + v_{WS}[W]}\label{eq:gbSu}\\
-\frac{[S^p]}{[S^p_T]} &=  \frac{1}{1 + v_{ES}[E]}\label{eq:gbSp}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + \alpha_{WS}[S^u]}\label{eq:gbW}\\
+\frac{[E]}{[E_T]} & = \frac{1}{1 + \alpha_{ES}[S^p]}\label{eq:gbE}\\
+\frac{[S^u]}{[S^u_T]} &= \frac{1}{1 + \alpha_{WS}[W]}\label{eq:gbSu}\\
+\frac{[S^p]}{[S^p_T]} &=  \frac{1}{1 + \alpha_{ES}[E]}\label{eq:gbSp}
 \end{align}
 
 \textbf{Reactions not in  Detailed Balance:}
@@ -290,11 +297,11 @@ We only focus on the equations for the total amounts of phosphorylated and unpho
 Setting this to zero, we get
 \begin{align}
 \frac{[S_T^p]}{[S_T]} &= \frac{k_{WS}^p p(WS^u|E,W)}{k_{WS}^p p(WS^u|E,W) + k_{ES}^u p(ES^p|E,W)}\\
- &= \frac{v_{WS}^p p(WS^u|E,W)}{v_{WS}^p p(WS^u|E,W) + p(ES^p|E,W)}\\
+ &= \frac{\alpha_{WS}^p p(WS^u|E,W)}{\alpha_{WS}^p p(WS^u|E,W) + p(ES^p|E,W)}\\
 \end{align}
 where we have defined the reaction velocity
 \begin{align}
-v_{WS}^p &= \frac{k_{WS}^p}{k_{ES}^u}
+\alpha_{WS}^p &= \frac{k_{WS}^p}{k_{ES}^u}
 \end{align}
 
 
@@ -351,38 +358,38 @@ ES^p  \leftrightarrows ES^u
 \end{itemize}
 We define the reaction velocities
 \begin{align}
-v_{WS} &= e^{-\beta\Delta\epsilon_{WS}}\\
-v_{ES} &= e^{-\beta\Delta\epsilon_{ES}}
+\alpha_{WS} &= e^{-\beta\Delta\epsilon_{WS}}\\
+\alpha_{ES} &= e^{-\beta\Delta\epsilon_{ES}}
 \end{align}
 The associated conditional probabilities are then
 \begin{align}
-p(W|S^u,S^p, E) &= \frac{[W]}{[W_T]} = \frac{1}{Z_W} =  \frac{1}{1 + v_{WS}([S^p]+[S^u])}\\
-p(WS^u|S^u,S^p, E) &= \frac{[WS^u]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{v_{WS}[S^u]}{1 + v_{WS}([S^p]+[S^u])}\\
-p(WS^p|S^u,S^p, E) &= \frac{[WS^p]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^p])}}{Z_W} =  \frac{v_{WS}[S^p]}{1 + v_{WS}([S^p]+[S^u])}
+p(W|S^u,S^p, E) &= \frac{[W]}{[W_T]} = \frac{1}{Z_W} =  \frac{1}{1 + \alpha_{WS}([S^p]+[S^u])}\\
+p(WS^u|S^u,S^p, E) &= \frac{[WS^u]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{\alpha_{WS}[S^u]}{1 + \alpha_{WS}([S^p]+[S^u])}\\
+p(WS^p|S^u,S^p, E) &= \frac{[WS^p]}{[W_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^p])}}{Z_W} =  \frac{\alpha_{WS}[S^p]}{1 + \alpha_{WS}([S^p]+[S^u])}
 \end{align}
 \begin{align}
-p(E|S^u,S^p, W) &= \frac{[E]}{[E_T]} = \frac{1}{Z_E} =  \frac{1}{1 + v_{ES}([S^p]+[S^u])}\\
-p(ES^u|S^u,S^p, W) &= \frac{[ES^u]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^u])}}{Z_E} =  \frac{v_{ES}[S^u]}{1 + v_{ES}([S^p]+[S^u])}\\
-p(ES^p|S^u,S^p, W) &= \frac{[ES^p]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^p])}}{Z_E} =  \frac{v_{ES}[S^p]}{1 + v_{ES}([S^p]+[S^u])}
+p(E|S^u,S^p, W) &= \frac{[E]}{[E_T]} = \frac{1}{Z_E} =  \frac{1}{1 + \alpha_{ES}([S^p]+[S^u])}\\
+p(ES^u|S^u,S^p, W) &= \frac{[ES^u]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^u])}}{Z_E} =  \frac{\alpha_{ES}[S^u]}{1 + \alpha_{ES}([S^p]+[S^u])}\\
+p(ES^p|S^u,S^p, W) &= \frac{[ES^p]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^p])}}{Z_E} =  \frac{\alpha_{ES}[S^p]}{1 + \alpha_{ES}([S^p]+[S^u])}
 \end{align}
 
 \begin{align}
-p(S^u|E, W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}\\
-p(WS^u|E, W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]+ v_{ES}[E]}\\
-p(ES^u|E, W) &= \frac{[ES^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^u}} = \frac{v_{ES}[E]}{1 + v_{WS}[W]+ v_{ES}[E]}
+p(S^u|E, W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}\\
+p(WS^u|E, W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{\alpha_{WS}[W]}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}\\
+p(ES^u|E, W) &= \frac{[ES^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^u}} = \frac{\alpha_{ES}[E]}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}
 \end{align}
 \begin{align}
-p(S^p|E, W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}\\
-p(WS^p|E, W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^p}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]+ v_{ES}[E]}\\
-p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^p}} = \frac{v_{ES}[E]}{1 + v_{WS}[W]+ v_{ES}[E]}
+p(S^p|E, W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}\\
+p(WS^p|E, W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^p}} = \frac{\alpha_{WS}[W]}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}\\
+p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^p}} = \frac{\alpha_{ES}[E]}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}
 \end{align}
 
 \textbf{Reactions in Detailed Balance:}
 \begin{align}
-\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}([S^p]+[S^u])}\\
-\frac{[E]}{[E_T]} & = \frac{1}{1 + v_{ES}([S^p]+[S^u])}\\
-\frac{[S^u]}{[S^u_T]} &= \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}\\
-\frac{[S^p]}{[S^p_T]} &=  \frac{1}{1+ v_{WS}[W] + v_{ES}[E]}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + \alpha_{WS}([S^p]+[S^u])}\\
+\frac{[E]}{[E_T]} & = \frac{1}{1 + \alpha_{ES}([S^p]+[S^u])}\\
+\frac{[S^u]}{[S^u_T]} &= \frac{1}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}\\
+\frac{[S^p]}{[S^p_T]} &=  \frac{1}{1+ \alpha_{WS}[W] + \alpha_{ES}[E]}
 \end{align}
 
 \textbf{Reactions not in  Detailed Balance:}
@@ -394,12 +401,12 @@ p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES
 Setting this to zero, we get
 \begin{align}
 \frac{[S_T^p]}{[S_T]} &= \frac{k_{WS}^p p(WS^u|E,W) + k_S^p}{k_{WS}^p p(WS^u|E,W) + k_{ES}^u p(ES^p|E,W) + k_S^p + k_S^u}\\
- &= \frac{v_{WS}^p p(WS^u|E,W) + v_S^p}{v_{WS}^p p(WS^u|E,W) + v_{ES}^u p(ES^p|E,W) + v_S^p + 1}\\
+ &= \frac{\alpha_{WS}^p p(WS^u|E,W) + v_S^p}{\alpha_{WS}^p p(WS^u|E,W) + \alpha_{ES}^u p(ES^p|E,W) + v_S^p + 1}\\
 \end{align}
 where we have defined the reaction velocities
 \begin{align}
-v_{WS}^p &= \frac{k_{WS}^p}{k_S^u}\\
-v_{ES}^u &= \frac{k_{ES}^u}{k_S^u}\\
+\alpha_{WS}^p &= \frac{k_{WS}^p}{k_S^u}\\
+\alpha_{ES}^u &= \frac{k_{ES}^u}{k_S^u}\\
 v_S^p &= \frac{k_S^p}{k_S^u}
 \end{align}
 
@@ -411,15 +418,15 @@ We assume that  $[W_T]$, $[E_T]$, and $[S_T]$ are known.
 Add together Eqs.~\eqref{eq:onewaySu} and \eqref{eq:onewaySp} and defining $[S_f] = [S^p]+[S^u]$, 
 we find three equations that can be solved for $[W]$, $[E]$, and $[S_f]$,
 \begin{align}
-\frac{[W]}{[W_T]} & = \frac{1}{1 + v_{WS}[S_f]}\\
-\frac{[E]}{[E_T]} & = \frac{1}{1 + v_{ES}[S_f]}\\
-\frac{[S_f]}{[S_T]} &= \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + \alpha_{WS}[S_f]}\\
+\frac{[E]}{[E_T]} & = \frac{1}{1 + \alpha_{ES}[S_f]}\\
+\frac{[S_f]}{[S_T]} &= \frac{1}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}
 \end{align}
 Combining these equations, we find a cubic equation in terms of $S_f$,
 
 \begin{align}
-0 &= v_{WS}v_{ES}[S_f]^3 +\qty(v_{WS}+v_{ES} + v_{WS}v_{ES}([W_T]+[E_T]- [S_T])) [S_f]^2\\
-&\qquad + \qty(1+v_{WS}([W_T]-[S_T]) + v_{ES}([E_T]-[S_T]))[S_f] - [S_T]
+0 &= \alpha_{WS}\alpha_{ES}[S_f]^3 +\qty(\alpha_{WS}+\alpha_{ES} + \alpha_{WS}\alpha_{ES}([W_T]+[E_T]- [S_T])) [S_f]^2\\
+&\qquad + \qty(1+\alpha_{WS}([W_T]-[S_T]) + \alpha_{ES}([E_T]-[S_T]))[S_f] - [S_T]
 \end{align}
 Generally, we find that this has one positive solution for $[S_f]$. 
 Using this solution, we solve for $[W]$ and $[E]$ and then use the kinetic equation to solve for $[S_T^p]$. The rest of the concentrations are then straightforward to calculate without any further need to solve any equations.
@@ -442,8 +449,8 @@ Using this solution, we solve for $[W]$ and $[E]$ and then use the kinetic equat
 %and set $k_S^p=k_S^u=0$
 %
 %\begin{align}
-%\tilde{k}_{WS}^p &= k_{WS}^pv_{WS}\\
-%\tilde{k}_{ES}^u &= k_{ES}^uv_{ES}
+%\tilde{k}_{WS}^p &= k_{WS}^p\alpha_{WS}\\
+%\tilde{k}_{ES}^u &= k_{ES}^u\alpha_{ES}
 %\end{align}
 %
 %Also have to convert $k_{WS}^p$ and $k_{ES}^p$
@@ -514,8 +521,8 @@ W^u + S^p \leftrightarrows W^uS^p
 \end{itemize}
 We define the reaction velocities
 \begin{align}
-v_{WS} &= e^{-\beta\Delta\epsilon_{WS}}\\
-v_{ES} &= e^{-\beta\Delta\epsilon_{ES}}
+\alpha_{WS} &= e^{-\beta\Delta\epsilon_{WS}}\\
+\alpha_{ES} &= e^{-\beta\Delta\epsilon_{ES}}
 \end{align}
 The associated conditional probabilities are then
 \begin{align}
@@ -525,27 +532,27 @@ p(E_WW^u|S^u,S^p, R, E_W, E_S) &= \frac{[E_WW^u]}{[W^u_T]}  = \frac{e^{-\beta\qt
 \end{align}
 \comment{\textbf{Continue Here}}
 \begin{align}
-p(W^p|S^u,S^p, R, E_W, E_S) &= \frac{[W^p]}{[W^p_T]} = \frac{1}{Z_W} =  \frac{1}{1 + v_{WS}([S^p]+[S^u])}\\
+p(W^p|S^u,S^p, R, E_W, E_S) &= \frac{[W^p]}{[W^p_T]} = \frac{1}{Z_W} =  \frac{1}{1 + \alpha_{WS}([S^p]+[S^u])}\\
 p(RW^p|S^u,S^p, R, E_W, E_S) &= \frac{[RW^p]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{RW} -k_BT \log[R])}}{Z_W} =  \frac{v_{RW}[R]}{1 + v_{RW}[R] + v_{E_WW}[E_W]}\\
 p(E_WW^p|S^u,S^p, R, E_W, E_S) &= \frac{[E_WW^p]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{E_WW} -k_BT \log[E_W])}}{Z_W} =  \frac{ v_{E_WW}[E_W]}{1 + v_{RW}[R] + v_{E_WW}[E_W]}\\
-p(W^pS^u|S^u,S^p, R, E_W, E_S) &= \frac{[W^pS^u]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{v_{WS}[S^u]}{1 + v_{WS}([S^p]+[S^u])}\\
-p(W^pS^p|S^u,S^p, R, E_W, E_S) &= \frac{[W^pS^p]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^p])}}{Z_W} =  \frac{v_{WS}[S^p]}{1 + v_{WS}([S^p]+[S^u])}
+p(W^pS^u|S^u,S^p, R, E_W, E_S) &= \frac{[W^pS^u]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^u])}}{Z_W} =  \frac{\alpha_{WS}[S^u]}{1 + \alpha_{WS}([S^p]+[S^u])}\\
+p(W^pS^p|S^u,S^p, R, E_W, E_S) &= \frac{[W^pS^p]}{[W^p_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[S^p])}}{Z_W} =  \frac{\alpha_{WS}[S^p]}{1 + \alpha_{WS}([S^p]+[S^u])}
 \end{align}
 \begin{align}
-p(E|S^u,S^p, W) &= \frac{[E]}{[E_T]} = \frac{1}{Z_E} =  \frac{1}{1 + v_{ES}([S^p]+[S^u])}\\
-p(ES^u|S^u,S^p, W) &= \frac{[ES^u]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^u])}}{Z_E} =  \frac{v_{ES}[S^u]}{1 + v_{ES}([S^p]+[S^u])}\\
-p(ES^p|S^u,S^p, W) &= \frac{[ES^p]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^p])}}{Z_E} =  \frac{v_{ES}[S^p]}{1 + v_{ES}([S^p]+[S^u])}
+p(E|S^u,S^p, W) &= \frac{[E]}{[E_T]} = \frac{1}{Z_E} =  \frac{1}{1 + \alpha_{ES}([S^p]+[S^u])}\\
+p(ES^u|S^u,S^p, W) &= \frac{[ES^u]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^u])}}{Z_E} =  \frac{\alpha_{ES}[S^u]}{1 + \alpha_{ES}([S^p]+[S^u])}\\
+p(ES^p|S^u,S^p, W) &= \frac{[ES^p]}{[E_T]}  = \frac{e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[S^p])}}{Z_E} =  \frac{\alpha_{ES}[S^p]}{1 + \alpha_{ES}([S^p]+[S^u])}
 \end{align}
 
 \begin{align}
-p(S^u|E, W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}\\
-p(WS^u|E, W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]+ v_{ES}[E]}\\
-p(ES^u|E, W) &= \frac{[ES^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^u}} = \frac{v_{ES}[E]}{1 + v_{WS}[W]+ v_{ES}[E]}
+p(S^u|E, W) &= \frac{[S^u]}{[S^u_T]} = \frac{1}{Z_{S^u}} = \frac{1}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}\\
+p(WS^u|E, W) &= \frac{[WS^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^u}} = \frac{\alpha_{WS}[W]}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}\\
+p(ES^u|E, W) &= \frac{[ES^u]}{[S^u_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^u}} = \frac{\alpha_{ES}[E]}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}
 \end{align}
 \begin{align}
-p(S^p|E, W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + v_{WS}[W]+ v_{ES}[E]}\\
-p(WS^p|E, W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^p}} = \frac{v_{WS}[W]}{1 + v_{WS}[W]+ v_{ES}[E]}\\
-p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^p}} = \frac{v_{ES}[E]}{1 + v_{WS}[W]+ v_{ES}[E]}
+p(S^p|E, W) &= \frac{[S^p]}{[S^p_T]} = \frac{1}{Z_{S^p}} = \frac{1}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}\\
+p(WS^p|E, W) &= \frac{[WS^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{WS} -k_BT \log[W])}}{Z_{S^p}} = \frac{\alpha_{WS}[W]}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}\\
+p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES} -k_BT \log[E])}}{Z_{S^p}} = \frac{\alpha_{ES}[E]}{1 + \alpha_{WS}[W]+ \alpha_{ES}[E]}
 \end{align}
 
 

@@ -170,26 +170,5 @@ Finally, we take the log and sum over all the resampled data point. Substituting
 We will need to fit both the fit parameters for the thermodynamic model $\Theta$ as well as the parameters for the noise model $\Sigma^2$, $A$, and $B$.
 
 
-\clearpage
-
-
-\begin{gather}
-P(\lanti, \lGFP) = \frac{1}{\sqrt{2\pi \qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)}}\\
-\times\exp\qty(\frac{\sigma_{\mathrm{GFP}}^2(\log(anti)-\mu_{anti})^2 + \sigma_{\mathrm{anti}}^2 (\log(GFP)-\mu_{GFP})^2 - 2\sigma_{\mathrm{anti}, \mathrm{GFP}}(\log(anti)-\mu_{anti})(\log(GFP)-\mu_{GFP})}{2\qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)})
-\end{gather}
-
-\begin{align}
-P(\log(anti)| \log(GFP)) &= \frac{P(\log(anti) \qand \log(GFP)) }{P(\log(GFP))}\\
-&= \sqrt{\frac{\sigma_{\mathrm{GFP}}^2}{\qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)}}  \exp\qty(-\frac{\qty(\sigma_{\mathrm{GFP}}^2(\log(anti)-\mu_{anti}) - \sigma_{\mathrm{anti}, \mathrm{GFP}} (\log(GFP)-\mu_{GFP}))^2}{2\sigma_{\mathrm{GFP}}^2\qty(\sigma_{\mathrm{anti}}^2\sigma_{\mathrm{GFP}}^2 - \sigma_{\mathrm{anti}, \mathrm{GFP}}^2)})\\
-&= \frac{1}{\sqrt{\Sigma^2}}\exp\qty(-\frac{\qty(\log(anti)-A\log(GFP)-B)^2}{2\Sigma^2})
-\end{align}
-
-\begin{align}
-\mathcal{L} &= -\frac{1}{N}\sum_i\log\qty(P(\log(anti_i)| \log(GFP_i)))\\
- &=  \frac{1}{2\Sigma^2N}\sum_i\qty(\log(anti_i)-A\log(GFP_i)-B)^2 +\frac{1}{2}\log(\Sigma^2)
-\end{align}
-
-
-
 \end{document}
 

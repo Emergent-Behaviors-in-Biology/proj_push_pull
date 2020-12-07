@@ -1,0 +1,141 @@
+\pdfoutput=1
+% ***********************************************************
+% ******************* PHYSICS HEADER ************************
+% ***********************************************************
+% Version 2
+%\documentclass[11pt,twocolumn]{article}
+\documentclass[aps,onecolumn,superscriptaddress,notitlepage]{revtex4-1}
+
+
+\usepackage{amsmath} % AMS Math Package
+\usepackage{amsthm} % Theorem Formatting
+\usepackage{amssymb}	% Math symbols such as \mathbb
+\usepackage{physics}
+\usepackage[pdftex]{graphicx}
+\usepackage{hyperref} %clickable references.
+\hypersetup{
+    colorlinks,
+    citecolor=blue,
+    filecolor=black,
+    linkcolor=red,
+    urlcolor=blue
+}
+\usepackage{xcolor}
+\usepackage{url}
+
+\newcommand{\comment}[1]{{\color{blue}#1}}
+\newcommand{\edit}[1]{{\color{violet}#1}}
+\newcommand{\del}[1]{{\color{red}\st{#1}}}
+
+\newcommand{\sigmaGFP}{\sigma_{\mathrm{GFP}}}
+\newcommand{\sigmaanti}{\sigma_{\mathrm{anti}}}
+\newcommand{\muGFP}{\mu_{\mathrm{GFP}}}
+\newcommand{\muanti}{\mu_{\mathrm{anti}}}
+\newcommand{\GFP}{[\mathrm{GFP}]}
+\newcommand{\anti}{[\mathrm{anti}]}
+\newcommand{\lGFP}{\log([\mathrm{GFP}])}
+\newcommand{\lanti}{\log([\mathrm{anti}])}
+\newcommand{\E}{\mathbf{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+% ***********************************************************
+% ********************** END HEADER *************************
+% ***********************************************************
+
+\begin{document}
+
+\title{Cheat Sheet for Push-Pull Models}
+\maketitle
+
+\section{Noise Model}
+
+We assume the antibody and associated theoretical GFP measurements for the phosphorylated substrate each follow log-normal distributions. 
+We define the means and variances as
+\begin{align}
+\E[\lanti] &= \muanti & \Var[\lGFP]&= \sigmaanti\\
+\E[\lGFP] &= \muGFP & \Var[\lGFP] &= \sigmaGFP
+\end{align}
+so that the distributions are then given by
+\begin{align}
+P(\lanti) &= \frac{1}{\sqrt{2\pi\sigmaanti^2 }}\exp\qty(-\frac{(\lanti-\muanti)^2}{2\sigmaanti^2})\\
+P(\lGFP) &= \frac{1}{\sqrt{2\pi\sigmaGFP^2 }}\exp\qty(-\frac{(\lGFP-\muGFP)^2}{2\sigmaGFP^2})
+\end{align}
+
+We define the Pearson correlations coefficient between the two measurements,
+\begin{align}
+\rho &= \frac{\Cov[\lGFP, \lanti]}{\sigmaGFP\sigmaanti},
+\end{align}
+
+The noise model for the phosphorylated substrate takes then takes the form of a conditional probability,
+\begin{align}
+P(\lanti | \lGFP) &= \frac{1}{\sqrt{\Sigma^2}}\exp\qty(-\frac{\qty[\lanti -A\lGFP - B]^2}{2 \Sigma^2})
+\end{align}
+
+\textbf{Fit Parameters:}
+Above we used the the following definitions for the unknown noise parameters
+\begin{itemize}
+\item Conditional antibody variance:  $\Sigma^2 = \sigmaanti^2(1-\rho)$
+\item GFP to antibody unit conversion ratio: $A =  \rho \frac{\sigmaanti}{\sigmaGFP}$
+\item GFP to antobody unit constant offset: $B = \muanti - \rho \frac{\sigmaanti}{\sigmaGFP}\muGFP$
+\end{itemize}
+
+
+\section{Push Model}
+
+\textbf{Fit Parameters:} $\alpha_{WS}$, $v_{WS}^p$, $v_{bg}^p$
+
+
+\textbf{Concentrations:}
+\begin{itemize}
+\item Total writer: $[W_T] = [W] + [WS^u] + [WS^p]$
+\item Total substrate: $[S_T] = [S^u_T] + [S^p_T]$
+\item Total unphosporylated substrate: $[S^u_T] = [S^u] + [WS^u]$
+\item Total phosporylated substrate: $[S^p_T] = [S^p] + [WS^p]$
+\item Total unbound substrate: $[S_f] = [S^p] + [S^u]$
+\end{itemize}
+
+\textbf{Binding Energies:}
+\begin{itemize}
+\item Writer + substrate: $\Delta\epsilon_{WS}$
+\end{itemize}
+
+\textbf{Reaction Rates:}
+\begin{itemize}
+\item Phosphorylation of substrate by writer: $k_{WS}^p$
+\item Background phosphorylation of substrate (independent of binding state): $k_{bg}^p$
+\item Background dephosphorylation of substrate (independent of binding state): $k_{bg}^u$
+\end{itemize}
+
+\textbf{Fit Parameters}
+\begin{itemize}
+\item Phosphorylation velocity: $v_{WS}^p = k_{WS}^p/k_{bg}^u$
+\item Background phosphorylation velocity  $v_{bg}^p = k_{WS}^p/k_{bg}^u$
+\item Writer binding affinity: $\alpha_{WS} = [WS]_0e^{\beta \Delta\epsilon_{WS}}$
+\end{itemize}
+where $[WS]_0$ is a reference concentration typically defined as the concentration at half saturation.
+
+\textbf{Model Equations}
+The model then satisfies the following quadratic equation for the free substrate
+\begin{align}
+0 &= \qty(\frac{[S_f]}{\alpha_{WS}})^2 +  \qty(1+\frac{[W_T]-[S_T]}{\alpha_{WS}})\frac{[S_f]}{\alpha_{WS}} - \frac{[S_T]}{\alpha_{WS}}
+\end{align}
+After solving for $[S_f]$, the fraction of free writer is
+\begin{align}
+\frac{[W]}{[W_T]} & = \frac{1}{1 + \frac{[S_f]}{\alpha_{WS}}}
+\end{align}
+which can then be used to calculate the amount of phosphorylated substrate
+\begin{align}
+\frac{[S_T^p]}{[S_T]} &= \frac{v_{WS}^p p(WS^u|W) + v_S^p}{v_{WS}^p p(WS^u|W) + v_S^p+1}
+\end{align}
+where 
+\begin{align}
+p(WS^u|W) &= \frac{\frac{[W]}{\alpha_{WS}}}{1 + \frac{[W]}{\alpha_{WS}}}.
+\end{align}
+
+
+\section{Push-Pull Model}
+
+
+\end{document}
+
