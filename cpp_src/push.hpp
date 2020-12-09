@@ -17,19 +17,8 @@ class Push {
     XVec WT;
     // Total substrate concentration
     XVec ST;
-    // Total posphorylated substrate centration
+    // Total posphorylated substrate concentration
     XVec SpT;    
-    
-    // Noise parameters
-//     double mu_GFP;
-//     double sigma2_GFP;
-//     double mu_anti;
-//     double sigma2_anti;
-//     double sigma_GFP_anti;
-    
-    double sigma2;
-    double a;
-    double b;
     
     
     Push() {}
@@ -41,30 +30,17 @@ class Push {
         
     }
     
-    void set_noise_params(RXVec params) {
-//         mu_GFP = params(0);
-//         sigma2_GFP = params(1);
-//         mu_anti = params(2);
-//         sigma2_anti = params(3);
-//         sigma_GFP_anti = params(4);
-        sigma2 = params(0);
-        a = params(1);
-        b = params(2);
-        
-        
-    }
-    
     
     XVec predict(double WT, double ST, RXVec params) {
         
-        double vWS = params(0);
+        double alphaWS = params(0);
         double vWSp = params(1);
         double vSp = params(2);
                                 
         DVec(3) poly_coeffs = DVec(3)::Zero();
-        poly_coeffs(0) = -ST; // x^0
-        poly_coeffs(1) = 1 + vWS*(WT-ST); // x^1
-        poly_coeffs(2) = vWS; // x^2
+        poly_coeffs(0) = -ST/alphaWS; // x^0
+        poly_coeffs(1) = 1.0 + (WT-ST)/alphaWS; // x^1
+        poly_coeffs(2) = 1.0; // x^2
       
         DMat(2) companion_mat = DMat(2)::Zero();
         companion_mat(0, 1) = -poly_coeffs(0) / poly_coeffs(2);
@@ -87,18 +63,18 @@ class Push {
             py::print("Params:", params);
         }
         
-        double Sf = evals.real().maxCoeff();
+        double Sf = evals.real().maxCoeff() * alphaWS;
                 
-        double W = WT/(1+vWS*Sf);
+        double W = WT/(1+Sf/alphaWS);
 
-        double pWSu = vWS*W/(1+vWS*W);
+        double pWSu = W/alphaWS/(1+W/alphaWS);
 
         double SpT = ST*(vWSp*pWSu + vSp)/ (vWSp*pWSu + vSp + 1);
 
         double SuT = ST - SpT;
 
-        double Sp = SpT/(1+vWS*W);
-        double Su = SuT/(1+vWS*W);
+        double Sp = SpT/(1+W/alphaWS);
+        double Su = SuT/(1+W/alphaWS);
 
         double WSu = pWSu*SuT;
         double WSp = WT - W - WSu;
@@ -116,7 +92,7 @@ class Push {
         
     }
   
-    XVec predict_all(RXVec WT, RXVec ST, RXVec SpT, RXVec params) {
+    XVec predict_all(RXVec WT, RXVec ST, RXVec params) {
         
         int N = WT.size();
         
@@ -137,7 +113,7 @@ class Push {
     
     XVec predict_all(RXVec params) {
         
-        return predict_all(WT, ST, SpT, params);
+        return predict_all(WT, ST, params);
         
     }
     

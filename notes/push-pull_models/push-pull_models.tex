@@ -40,6 +40,47 @@
 \author{Pankaj Mehta}
 \maketitle
 
+\section{Background Model}
+
+
+In this model, we only have a substrate $S^u$ and
+phosphorylation and dephosphorylation occur as background reactions.
+
+\textbf{Background Reactions:}
+\begin{gather}
+S^p \leftrightarrows S^u
+\end{gather}
+
+
+\textbf{Total Concentrations:}
+We define total concentrations for each species and also separately for unphosporylated and phosporylated states.
+\begin{itemize}
+\item Total substrate: $[S_T] = [S^u] + [S^p]$
+\end{itemize}
+If we know the 
+
+\textbf{One-way Reaction Rates:}
+These are the reaction rates that cannot be described by binding energies.
+\begin{itemize}
+\item Background phosphorylation of substrate: $k_{bg}^p$
+\item Background dephosphorylation of substrate: $k_{bg}^u$
+\end{itemize}
+
+\textbf{Reactions not in  Detailed Balance:}
+The kinetic equation for the phosphorylated substrate is
+\begin{align}
+\dv{[S^p_T]}{t} &=k_{bg}^p[S_T^u] - k_{bg}^u[S_T^p]
+\end{align}
+Setting this equation to zero, we get
+\begin{align}
+\frac{[S_T^p]}{[S_T]} &= \frac{k_{bg}^p}{k_{bg}^p+k_{bg}^u}\\
+& = \frac{v_{bg}^p}{v_{bg}^p+1}
+\end{align}
+where we have defined the reaction velocities relative to the background dephosphorylation rate,
+\begin{align}
+v_{bg}^p &= \frac{k_{bg}^p}{k_{bg}^u}
+\end{align}
+
 
 \section{One-way Push Model}
 
@@ -80,8 +121,8 @@ We assume the binding energies are the same for the unphosporylated and phospory
 These are the reaction rates that cannot be described by binding energies.
 \begin{itemize}
 \item Phosphorylation of substrate by writer: $k_{WS}^p$
-\item Background phosphorylation of substrate (independent of binding state): $k_S^p$
-\item Background dephosphorylation of substrate (independent of binding state): $k_S^u$
+\item Background phosphorylation of substrate (independent of binding state): $k_{bg}^p$
+\item Background dephosphorylation of substrate (independent of binding state): $k_{bg}^u$
 \end{itemize}
 
 \textbf{Partition Functions and Probabilities:}
@@ -127,10 +168,10 @@ These correspond to the kinetic equations for reactions not involving (de)phosph
 This is the kinetic equation for reactions involving (de)phosphorylation. 
 It is possible for either $S^u$ or $WS^u$ to undergo this process, so we have two equations
 \begin{align}
-\dv{[S^p]}{t} &=  k_{WS}^-[WS^p] - k_{WS}^+[W][S^p] + k_S^p[S^u] - k_S^u[S^p]\\
-\dv{[WS^p]}{t} &= k_{WS}^+[W][S^p] -k_{WS}^-[WS^p] + k_{WS}^p[WS^u] + k_S^p[WS^u] - k_S^u[WS^p]\\
-\dv{[S^u]}{t} &=  k_{WS}^-[WS^u] - k_{WS}^+[W][S^u] + k_S^u[S^p] - k_S^p[S^u]\\
-\dv{[WS^u]}{t} &= k_{WS}^+[W][S^u] -k_{WS}^-[WS^u] - k_{WS}^p[WS^u] + k_S^u[WS^p] - k_S^p[WS^u]
+\dv{[S^p]}{t} &=  k_{WS}^-[WS^p] - k_{WS}^+[W][S^p] + k_{bg}^p[S^u] - k_{bg}^u[S^p]\\
+\dv{[WS^p]}{t} &= k_{WS}^+[W][S^p] -k_{WS}^-[WS^p] + k_{WS}^p[WS^u] + k_{bg}^p[WS^u] - k_{bg}^u[WS^p]\\
+\dv{[S^u]}{t} &=  k_{WS}^-[WS^u] - k_{WS}^+[W][S^u] + k_{bg}^u[S^p] - k_{bg}^p[S^u]\\
+\dv{[WS^u]}{t} &= k_{WS}^+[W][S^u] -k_{WS}^-[WS^u] - k_{WS}^p[WS^u] + k_{bg}^u[WS^p] - k_{bg}^p[WS^u]
 \end{align}
 where we have defined the forward and backward dissociation rates $k_{WS}^+$ and $k_{WS}^-$ such that
 \begin{align}
@@ -139,22 +180,22 @@ where we have defined the forward and backward dissociation rates $k_{WS}^+$ and
 Instead of writing these four equations, we can instead write the kinetic equations so that they only describe reactions that are not in detailed balance and do not depend on $k_{WS}^+$ and $k_{WS}^-$. To see what these equations are, we can simple write down the reaction rates for the total phosphorylated and unphosphorylated substrate.
 These will just be related by a negative sign since they sum to a constant, so we can write
 \begin{align}
-\dv{[S^p_T]}{t} &= k_{WS}^p[WS^u] + k_S^p[S_T^u] - k_S^u[S_T^p]\\
-&= k_{WS}^p[S_T^u]p(WS^u|W) + k_S^p[S_T^u] - k_S^u[S_T^p]\\
-&= k_{WS}^p([S_T]-[S_T^p])p(WS^u|W) + k_S^p([S_T]-[S_T^p]) - k_S^u[S_T^p]
+\dv{[S^p_T]}{t} &= k_{WS}^p[WS^u] + k_{bg}^p[S_T^u] - k_{bg}^u[S_T^p]\\
+&= k_{WS}^p[S_T^u]p(WS^u|W) + k_{bg}^p[S_T^u] - k_{bg}^u[S_T^p]\\
+&= k_{WS}^p([S_T]-[S_T^p])p(WS^u|W) + k_{bg}^p([S_T]-[S_T^p]) - k_{bg}^u[S_T^p]
 \end{align}
 We note that this equation can also be obtained by summing together the first two kinetic equations. Similarly, the equation for $[S^u_T]$ can be obtained by summing the last two kinetic equations.
 
 
 Setting this equation to zero, we get
 \begin{align}
-\frac{[S_T^p]}{[S_T]} &= \frac{k_{WS}^p p(WS^u|W) + k_S^p}{k_{WS}^p p(WS^u|W) + k_S^p+k_S^u}\\
-& = \frac{\alpha_{WS}^p p(WS^u|W) + v_S^p}{\alpha_{WS}^p p(WS^u|W) + v_S^p+1}
+\frac{[S_T^p]}{[S_T]} &= \frac{k_{WS}^p p(WS^u|W) + k_{bg}^p}{k_{WS}^p p(WS^u|W) + k_{bg}^p+k_{bg}^u}\\
+& = \frac{v_{WS}^p p(WS^u|W) + v_{bg}^p}{v_{WS}^p p(WS^u|W) + v_{bg}^p+1}
 \end{align}
 where we have defined the reaction velocities relative to the background dephosphorylation rate,
 \begin{align}
-v_{WS}^p &= \frac{k_{WS}^p}{k_S^u}\\
-v_S^p &= \frac{k_S^p}{k_S^u}
+v_{WS}^p &= \frac{k_{WS}^p}{k_{bg}^u}\\
+v_{bg}^p &= \frac{k_{bg}^p}{k_{bg}^u}
 \end{align}
 
 \textbf{Numerical Strategy:}
@@ -180,14 +221,10 @@ Using this solution, we solve for $[W]$ and then use the kinetic equation so sol
 &= -\frac{1}{\alpha_{WS}^2}\qty[\qty( [W_T]-[S_T])\frac{[S_f]}{\alpha_{WS}} - [S_T]] + \qty[2 \frac{[S_f]}{\alpha_{WS}} +  1+\frac{[W_T]-[S_T]}{\alpha_{WS}}]\qty(\frac{1}{\alpha_{WS}}\pdv{[S_f]}{\alpha_{WS}} - \frac{[S_f]}{\alpha_{WS}^2})\\
 &= -\frac{1}{\alpha_{WS}}\qty[2 \qty(\frac{[S_f]}{\alpha_{WS}})^2 +  \qty(1+2\frac{[W_T]-[S_T]}{\alpha_{WS}})\frac{[S_f]}{\alpha_{WS}}- \frac{[S_T]}{\alpha_{WS}}] + \qty[2 \frac{[S_f]}{\alpha_{WS}} +  1+\frac{[W_T]-[S_T]}{\alpha_{WS}}] \frac{1}{\alpha_{WS}}\pdv{[S_f]}{\alpha_{WS}}\\
 \pdv{[S_f]}{\alpha_{WS}} &= \frac{2 \qty(\frac{[S_f]}{\alpha_{WS}})^2 +  \qty(1+2\frac{[W_T]-[S_T]}{\alpha_{WS}})\frac{[S_f]}{\alpha_{WS}}- \frac{[S_T]}{\alpha_{WS}}}{2 \frac{[S_f]}{\alpha_{WS}} +  1+\frac{[W_T]-[S_T]}{\alpha_{WS}}}\\
-&= 
+&= \frac{ \frac{[S_f]}{\alpha_{WS}}\qty(\frac{[S_f]}{\alpha_{WS}}+ \frac{[W_T]-[S_T]}{\alpha_{WS}})}{2 \frac{[S_f]}{\alpha_{WS}} +  1+\frac{[W_T]-[S_T]}{\alpha_{WS}}}
 \end{align}
 
-\begin{align}
-0 &= \pdv{}{\alpha_{WS}}\qty(\alpha_{WS}[S_f]^2 +  \qty(1+\alpha_{WS}([W_T]-[S_T]))[S_f] - [S_T])\\
-&= [S_f]^2 +   ([W_T]-[S_T])[S_f] + \qty[2\alpha_{WS}[S_f] +   1+\alpha_{WS}([W_T]-[S_T])]\pdv{[S_f]}{\alpha_{WS}}\\
-\pdv{[S_f]}{\alpha_{WS}} &= -\frac{[S_f]\qty([S_f] +   [W_T]-[S_T])}{ \qty[2\alpha_{WS}[S_f] +   1+\alpha_{WS}([W_T]-[S_T])]}
-\end{align}
+\comment{\textbf{Notes need revision starting from here}}
 
 \begin{align}
 \pdv{[W]}{\alpha_{WS}} &= -[W_T]\frac{[S_f]}{(1+\alpha_{WS}[S_f])^2}-[W_T]\frac{\alpha_{WS}}{(1+\alpha_{WS}[S_f])^2}\pdv{[S_f]}{\alpha_{WS}}\\
@@ -201,19 +238,19 @@ Using this solution, we solve for $[W]$ and then use the kinetic equation so sol
 \end{align}
 
 \begin{align}
-\pdv{[S^p_T]}{\alpha_{WS}} &=  [S_T]\qty[\frac{\alpha_{WS}^p}{\alpha_{WS}^p p(WS^u|W) + v_S^p+1} -  \frac{\alpha_{WS}^p\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p)}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}]\pdv{p(WS^u|W)}{\alpha_{WS}}\\
-&= [S_T] \frac{\alpha_{WS}^p}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}\pdv{p(WS^u|W)}{\alpha_{WS}}
+\pdv{[S^p_T]}{\alpha_{WS}} &=  [S_T]\qty[\frac{\alpha_{WS}^p}{\alpha_{WS}^p p(WS^u|W) + v_{bg}^p+1} -  \frac{\alpha_{WS}^p\qty(\alpha_{WS}^p p(WS^u|W) + v_{bg}^p)}{\qty(\alpha_{WS}^p p(WS^u|W) + v_{bg}^p+1)^2}]\pdv{p(WS^u|W)}{\alpha_{WS}}\\
+&= [S_T] \frac{\alpha_{WS}^p}{\qty(\alpha_{WS}^p p(WS^u|W) + v_{bg}^p+1)^2}\pdv{p(WS^u|W)}{\alpha_{WS}}
 \end{align}
 
 \begin{align}
-\pdv{[S^p_T]}{\alpha_{WS}^p} &=  [S_T]\frac{ p(WS^u|W)}{\alpha_{WS}^p p(WS^u|W) + v_S^p+1} -  [S_T]\frac{p(WS^u|W)\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p)}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}\\
-&= [S_T]\frac{p(WS^u|W)}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}
+\pdv{[S^p_T]}{\alpha_{WS}^p} &=  [S_T]\frac{ p(WS^u|W)}{\alpha_{WS}^p p(WS^u|W) + v_{bg}^p+1} -  [S_T]\frac{p(WS^u|W)\qty(\alpha_{WS}^p p(WS^u|W) + v_{bg}^p)}{\qty(\alpha_{WS}^p p(WS^u|W) + v_{bg}^p+1)^2}\\
+&= [S_T]\frac{p(WS^u|W)}{\qty(\alpha_{WS}^p p(WS^u|W) + v_{bg}^p+1)^2}
 \end{align}
 
 
 \begin{align}
-\pdv{[S^p_T]}{v_S^p} &=  [S_T]\frac{ 1}{\alpha_{WS}^p p(WS^u|W) + v_S^p+1} - [S_T] \frac{\alpha_{WS}^p p(WS^u|W) + v_S^p}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}\\
-&= [S_T]\frac{1}{\qty(\alpha_{WS}^p p(WS^u|W) + v_S^p+1)^2}
+\pdv{[S^p_T]}{v_{bg}^p} &=  [S_T]\frac{ 1}{\alpha_{WS}^p p(WS^u|W) + v_{bg}^p+1} - [S_T] \frac{\alpha_{WS}^p p(WS^u|W) + v_{bg}^p}{\qty(\alpha_{WS}^p p(WS^u|W) + v_{bg}^p+1)^2}\\
+&= [S_T]\frac{1}{\qty(\alpha_{WS}^p p(WS^u|W) + v_{bg}^p+1)^2}
 \end{align}
 
 \section{Goldbeter Push-Pull Amplifier}
@@ -345,8 +382,8 @@ ES^p  \leftrightarrows ES^u
 \begin{itemize}
 \item Phosphorylation of substrate by writer: $k_{WS}^p$
 \item Dephosphorylation of substrate by eraser: $k_{ES}^u$
-\item Background phosphorylation of substrate (independent of binding state): $k_S^p$
-\item Background dephosphorylation of substrate (independent of binding state): $k_S^u$
+\item Background phosphorylation of substrate (independent of binding state): $k_{bg}^p$
+\item Background dephosphorylation of substrate (independent of binding state): $k_{bg}^u$
 \end{itemize}
 
 \textbf{Partition Functions and Probabilities:}
@@ -394,20 +431,20 @@ p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES
 
 \textbf{Reactions not in  Detailed Balance:}
 \begin{align}
-\dv{[S^p_T]}{t} &= k_{WS}^p[WS^u] - k_{ES}^u[ES^p] + k_S^p[S^u_T] - k_S^u[S^p_T] \\
-&= k_{WS}^p[S^u_T]p(WS^u|E, W) - k_{ES}^u[S^p_T]p(ES^p|E, W) + k_S^p[S^u_T] - k_S^u[S^p_T]\\
-&= k_{WS}^p([S_T]-[S^p_T])p(WS^u|E, W) - k_{ES}^u[S^p_T]p(ES^p|E, W) + k_S^p([S_T]-[S^p_T]) - k_S^u[S^p_T]
+\dv{[S^p_T]}{t} &= k_{WS}^p[WS^u] - k_{ES}^u[ES^p] + k_{bg}^p[S^u_T] - k_{bg}^u[S^p_T] \\
+&= k_{WS}^p[S^u_T]p(WS^u|E, W) - k_{ES}^u[S^p_T]p(ES^p|E, W) + k_{bg}^p[S^u_T] - k_{bg}^u[S^p_T]\\
+&= k_{WS}^p([S_T]-[S^p_T])p(WS^u|E, W) - k_{ES}^u[S^p_T]p(ES^p|E, W) + k_{bg}^p([S_T]-[S^p_T]) - k_{bg}^u[S^p_T]
 \end{align}
 Setting this to zero, we get
 \begin{align}
-\frac{[S_T^p]}{[S_T]} &= \frac{k_{WS}^p p(WS^u|E,W) + k_S^p}{k_{WS}^p p(WS^u|E,W) + k_{ES}^u p(ES^p|E,W) + k_S^p + k_S^u}\\
- &= \frac{\alpha_{WS}^p p(WS^u|E,W) + v_S^p}{\alpha_{WS}^p p(WS^u|E,W) + \alpha_{ES}^u p(ES^p|E,W) + v_S^p + 1}\\
+\frac{[S_T^p]}{[S_T]} &= \frac{k_{WS}^p p(WS^u|E,W) + k_{bg}^p}{k_{WS}^p p(WS^u|E,W) + k_{ES}^u p(ES^p|E,W) + k_{bg}^p + k_{bg}^u}\\
+ &= \frac{\alpha_{WS}^p p(WS^u|E,W) + v_{bg}^p}{\alpha_{WS}^p p(WS^u|E,W) + \alpha_{ES}^u p(ES^p|E,W) + v_{bg}^p + 1}\\
 \end{align}
 where we have defined the reaction velocities
 \begin{align}
-\alpha_{WS}^p &= \frac{k_{WS}^p}{k_S^u}\\
-\alpha_{ES}^u &= \frac{k_{ES}^u}{k_S^u}\\
-v_S^p &= \frac{k_S^p}{k_S^u}
+\alpha_{WS}^p &= \frac{k_{WS}^p}{k_{bg}^u}\\
+\alpha_{ES}^u &= \frac{k_{ES}^u}{k_{bg}^u}\\
+v_{bg}^p &= \frac{k_{bg}^p}{k_{bg}^u}
 \end{align}
 
 
@@ -446,7 +483,7 @@ Using this solution, we solve for $[W]$ and $[E]$ and then use the kinetic equat
 %[\tilde{S}^p_T] &= [S^p_T] - [WS^p]\\
 %[\tilde{S}^u_T] &= [S^u_T] - [ES^u]
 %\end{align}
-%and set $k_S^p=k_S^u=0$
+%and set $k_{bg}^p=k_{bg}^u=0$
 %
 %\begin{align}
 %\tilde{k}_{WS}^p &= k_{WS}^p\alpha_{WS}\\
@@ -507,8 +544,8 @@ W^u + S^p \leftrightarrows W^uS^p
 \item Dephosphorylation of substrate by eraser: $k_{E_SS}^u$
 \item Background phosphorylation of writer (independent of binding state): $k_W^p$
 \item Background dephosphorylation of writer (independent of binding state): $k_W^u$
-\item Background phosphorylation of substrate (independent of binding state): $k_S^p$
-\item Background dephosphorylation of substrate (independent of binding state): $k_S^u$
+\item Background phosphorylation of substrate (independent of binding state): $k_{bg}^p$
+\item Background dephosphorylation of substrate (independent of binding state): $k_{bg}^u$
 \end{itemize}
 
 \textbf{Partition Functions and Probabilities:}
@@ -558,7 +595,7 @@ p(ES^p|E, W) &= \frac{[ES^p]}{[S^p_T]} = \frac{ e^{-\beta\qty(\Delta\epsilon_{ES
 
 textbf{Reactions not in  Detailed Balance:}
 \begin{align}
-\dv{[S^p_T]}{t} &= k_{WS}^p[WS^u] - k_{E_SS}^u[ES^p] + k_S^p[S^u_T] - k_S^u[S^p_T]\\
+\dv{[S^p_T]}{t} &= k_{WS}^p[WS^u] - k_{E_SS}^u[ES^p] + k_{bg}^p[S^u_T] - k_{bg}^u[S^p_T]\\
 \dv{[W^p_T]}{t} &= k_{RW}^p[RW^u] - k_{E_WW}^u[E_WW^p] + k_W^p[W^u_T] - k_W^u[w^p_T]
 \end{align}
 

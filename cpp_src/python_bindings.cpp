@@ -7,6 +7,7 @@ namespace py = pybind11;
 
 #include "eigen_macros.hpp"
 
+#include "background.hpp"
 #include "push.hpp"
 #include "push_pull.hpp"
 
@@ -20,6 +21,15 @@ PYBIND11_MODULE(push_pull_amp, m) {
     
 //     m.def("add", &add);
     
+    py::class_<Background>(m, "Background")
+        .def_readwrite("ST", &Background::ST)
+        .def_readwrite("SpT", &Background::SpT)
+        .def(py::init())
+        .def("set_data", &Background::set_data)
+        .def("predict", &Background::predict)
+        .def("predict_all", (XVec (Background::*)(RXVec)) &Background::predict_all)
+        .def("predict_all", (XVec (Background::*)(RXVec, RXVec)) &Background::predict_all)
+        .def("loss", &Background::loss);
     
     py::class_<Push>(m, "Push")
         .def_readwrite("WT", &Push::WT)
@@ -27,10 +37,9 @@ PYBIND11_MODULE(push_pull_amp, m) {
         .def_readwrite("SpT", &Push::SpT)
         .def(py::init())
         .def("set_data", &Push::set_data)
-        .def("set_noise_params", &Push::set_noise_params)
         .def("predict", &Push::predict)
         .def("predict_all", (XVec (Push::*)(RXVec)) &Push::predict_all)
-        .def("predict_all", (XVec (Push::*)(RXVec, RXVec, RXVec, RXVec)) &Push::predict_all)
+        .def("predict_all", (XVec (Push::*)(RXVec, RXVec, RXVec)) &Push::predict_all)
         .def("loss", &Push::loss)
         .def("predict_grad", &Push::predict_grad)
         .def("predict_grad_all", (std::tuple<XVec, XMat> (Push::*)(RXVec)) &Push::predict_grad_all)

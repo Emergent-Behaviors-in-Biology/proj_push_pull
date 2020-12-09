@@ -53,8 +53,8 @@
 We assume the antibody and associated theoretical GFP measurements for the phosphorylated substrate each follow log-normal distributions. 
 We define the means and variances as
 \begin{align}
-\E[\lanti] &= \muanti & \Var[\lGFP]&= \sigmaanti\\
-\E[\lGFP] &= \muGFP & \Var[\lGFP] &= \sigmaGFP
+\E[\lanti] &= \muanti & \Var[\lGFP]&= \sigmaanti^2\\
+\E[\lGFP] &= \muGFP & \Var[\lGFP] &= \sigmaGFP^2
 \end{align}
 so that the distributions are then given by
 \begin{align}
@@ -62,7 +62,7 @@ P(\lanti) &= \frac{1}{\sqrt{2\pi\sigmaanti^2 }}\exp\qty(-\frac{(\lanti-\muanti)^
 P(\lGFP) &= \frac{1}{\sqrt{2\pi\sigmaGFP^2 }}\exp\qty(-\frac{(\lGFP-\muGFP)^2}{2\sigmaGFP^2})
 \end{align}
 
-We define the Pearson correlations coefficient between the two measurements,
+We define the Pearson correlation coefficient between the two measurements,
 \begin{align}
 \rho &= \frac{\Cov[\lGFP, \lanti]}{\sigmaGFP\sigmaanti},
 \end{align}
@@ -126,7 +126,7 @@ After solving for $[S_f]$, the fraction of free writer is
 \end{align}
 which can then be used to calculate the amount of phosphorylated substrate
 \begin{align}
-\frac{[S_T^p]}{[S_T]} &= \frac{v_{WS}^p p(WS^u|W) + v_S^p}{v_{WS}^p p(WS^u|W) + v_S^p+1}
+\frac{[S_T^p]}{[S_T]} &= \frac{v_{WS}^p p(WS^u|W) + v_{bg}^p}{v_{WS}^p p(WS^u|W) + v_{bg}^p+1}
 \end{align}
 where 
 \begin{align}

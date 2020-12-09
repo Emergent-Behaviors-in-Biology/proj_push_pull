@@ -65,8 +65,8 @@ First, we assume the GFP and antibody measurements each follow log-normal distri
 We make this assumption based on biophysical arguments and the observed empirical forms of the noise models we have obtained for the other species.  
 We define the means and variances as
 \begin{align}
-\E[\lGFP] &= \muGFP & \Var[\lGFP] &= \sigmaGFP\\ 
-\E[\lanti] &= \muanti & \Var[\lGFP]&= \sigmaanti
+\E[\lGFP] &= \muGFP & \Var[\lGFP] &= \sigmaGFP^2\\ 
+\E[\lanti] &= \muanti & \Var[\lGFP]&= \sigmaanti^2
 \end{align}
 so that the distributions are then given by
 \begin{align}
@@ -74,7 +74,7 @@ P(\lGFP) &= \frac{1}{\sqrt{2\pi\sigmaGFP^2 }}\exp\qty(-\frac{(\lGFP-\muGFP)^2}{2
 P(\lanti) &= \frac{1}{\sqrt{2\pi\sigmaanti^2 }}\exp\qty(-\frac{(\lanti-\muanti)^2}{2\sigmaanti^2}).
 \end{align}
 
-Next, we define the Pearson correlations coefficient between the two measurements,
+Next, we define the Pearson correlation coefficient between the two measurements,
 \begin{align}
 \rho &= \frac{\Cov[\lGFP, \lanti]}{\sigmaGFP\sigmaanti},
 \end{align}
@@ -91,7 +91,7 @@ We also define the vectors
 
 Now we define the joint probability of the two measurements (the probability of a particular measurement in units of antibody coinciding with a particular measurement in units of GFP),
 \begin{align}
-P(\lanti, \lGFP) &= \frac{1}{\sqrt{(2\pi)^2}\det \mathbf{K}}\exp\qty(-\frac{1}{2}(\vec{c}-\vec{\mu})^T \mathbf{K}^{-1}(\vec{c}-\vec{\mu}))
+P(\lanti, \lGFP) &= \frac{1}{\sqrt{(2\pi)^2 \det \mathbf{K}}}\exp\qty(-\frac{1}{2}(\vec{c}-\vec{\mu})^T \mathbf{K}^{-1}(\vec{c}-\vec{\mu}))
 \end{align}
 
 Our goal is now to calculate the probability of a particular antibody measurement given a particular GFP measurement,
