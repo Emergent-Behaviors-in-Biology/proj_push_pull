@@ -18,7 +18,9 @@ class Push {
     // Total substrate concentration
     XVec ST;
     // Total posphorylated substrate concentration
-    XVec SpT;    
+    XVec SpT;
+    
+    int N_data;
     
     
     Push() {}
@@ -27,6 +29,7 @@ class Push {
         this->WT = WT;
         this->ST = ST;
         this->SpT = SpT;
+        N_data = WT.size();
         
     }
     
@@ -93,12 +96,10 @@ class Push {
     }
   
     XVec predict_all(RXVec WT, RXVec ST, RXVec params) {
+                
+        XVec SpT_predict = XVec::Zero(N_data);
         
-        int N = WT.size();
-        
-        XVec SpT_predict = XVec::Zero(N);
-        
-        for(int i = 0; i < N; i++) {
+        for(int i = 0; i < N_data; i++) {
             
             auto res = predict(WT(i), ST(i), params);
             
@@ -118,9 +119,7 @@ class Push {
     }
     
     double loss(RXVec params, RXVec noise_params) {
-        
-        int N = WT.size();
-        
+                
         auto SpT_predict = predict_all(params);
         
         double Sigma2 = noise_params(0);
@@ -128,7 +127,7 @@ class Push {
         double B = noise_params(2);
          
                                 
-        return (SpT.array().log10() - A*SpT_predict.array().log10() - B).matrix().squaredNorm() / (2*Sigma2*N) + log(Sigma2)/2.0;
+        return (SpT.array().log10() - A*SpT_predict.array().log10() - B).matrix().squaredNorm() / (2*Sigma2*N_data) + log(Sigma2)/2.0;
     }
     
     
