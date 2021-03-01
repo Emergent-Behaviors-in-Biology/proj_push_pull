@@ -39,6 +39,8 @@
 \newcommand{\Var}{\mathrm{Var}}
 \newcommand{\Cov}{\mathrm{Cov}}
 
+\newcommand{\vbX}{\vec{\mathbf{X}}}
+
 % ***********************************************************
 % ********************** END HEADER *************************
 % ***********************************************************
@@ -53,7 +55,75 @@
 \section{Introduction}
 In this set of notes, we describe the maximum likelihood estimation proceudre used to fit our push-pull amplifier models to experimental data.
 
-\section{Phosphorylated Substrate Noise Model}
+
+
+\section{Maximum Likelihood Estimation}
+Next, we construct our MLE loss function.
+First, we define vectors of concentrations for each species (total writer $[W_T]$, total eraser $[E_T]$, total substrate $[S_T]$, total phosphorylated substrate $[S_T^p]$, etc.) in both antibody and GFP units,
+\begin{align}
+[\vbX]_{\mathrm{anti}} &= \mqty([W_T]_{\mathrm{anti}}\\
+[E_T]_{\mathrm{anti}}\\
+[S_T]_{\mathrm{anti}}\\
+[S^p_T]_{\mathrm{anti}}\\
+\vdots)\\
+[\vbX]_{\mathrm{GFP}} &= \mqty([W_T]_{\mathrm{GFP}}\\
+[E_T]_{\mathrm{GFP}}\\
+[S_T]_{\mathrm{GFP}}\\
+[S^p_T]_{\mathrm{GFP}}\\
+\vdots)
+\end{align}
+We define $S$ as the total number of species.
+For each species we define a separate noise model $P\qty( [X_j]_{\mathrm{anti}} | [X_j]_{\mathrm{GFP}})$.
+In addition, we define our thermodynamic model in the following form:
+\begin{align}
+F([\vbX]_{\mathrm{GFP}};\Theta) &= 0
+\end{align} 
+where we have define $\Theta$ as our fit parameters.
+A valid set of GFP values for each species will always satisfy this relation.
+
+Now we can define the probability of a particular data point (in antibody units) given a set of fit parameters for the model as the following integral.
+\begin{align}
+P([\vbX]_{\mathrm{anti}} | \Theta ) &= \qty(\prod_{j=1}^S \int d[X_j]_{\mathrm{GFP}} P\qty([X_j]_{\mathrm{anti}} |  [X_j]_{\mathrm{GFP}}))\delta\qty[F([\vbX]_{\mathrm{GFP}};\Theta)].
+\end{align}
+Note that we have incorporated the thermodynamic model as a delta function, so that only values of GFP are used that satisfy the model.
+
+Here we make an approximation that will greatly simplify our fitting algorithm. 
+Rather than integrating over the noise model for each species which can be very numerically costly, we will instead resample the concentrations of the species with empirical noise models from their joint probability distribution.
+In essence, we will convert species with empirical noise models from their antibody values to possible GFP values.
+By resampling many times, we obtain a new dataset that is much larger than the original where each of the original data points is copied many times, but with different possible GFP values. The only species that we will continue to express in units of antibody will be the phosphorylated substrate $[S_p^T]$.
+The result is a simplified probability,
+\begin{align}
+P([\vbX]_{\mathrm{anti}} | \Theta ) &\approx   \int d [S_T^p]_{\mathrm{GFP}} P\qty( [S_T^p]_{\mathrm{anti}} |  [S_T^p]_{\mathrm{GFP}})\delta\qty[F([\vbX]_{\mathrm{GFP}};\Theta)]
+\end{align}
+
+Next, we express the thermodynamic model in the form
+\begin{align}
+F([\vbX]_{\mathrm{GFP}};\Theta) &= [S_T^p]_{\mathrm{GFP}} - S([\vbX]_{\mathrm{GFP}};\Theta)
+\end{align}
+where $S$ is the amount of phosphorylated substrated predicted by the model.
+Incorporating this we get
+\begin{align}
+P([\vbX]_{\mathrm{anti}} | \Theta ) &\approx   \int d[S_T^p]_{\mathrm{GFP}} P\qty([S_T^p]_{\mathrm{anti}} |  [S_T^p]_{\mathrm{GFP}})\delta\qty[[S_T^p]_{\mathrm{GFP}} - S([\vbX]_{\mathrm{GFP}};\Theta)]\\
+&=   P\qty[ [S_T^p]_{\mathrm{anti}} |  S([\vbX]_{\mathrm{GFP}};\Theta)]
+\end{align} 
+Finally, we take the log and sum over all the resampled data point.
+\begin{align}
+\mathcal{L}(\Theta) &= -\frac{1}{N_{\mathrm{res}}}\sum_{i=1}^{N_{\mathrm{res}}}\log P\qty[ [S_T^p]_{\mathrm{anti}} |  S([\vbX]_{\mathrm{GFP}};\Theta)]
+\end{align}
+
+\section{Empty Cells}
+
+\begin{align}
+P([\vbX]_{\mathrm{anti}} | \Theta ) &\approx   \int d [S_T^p]_{\mathrm{GFP}} P\qty( [S_T^p]_{\mathrm{anti}} |  [S_T^p]_{\mathrm{GFP}})\\
+&\qquad \times\qty[(1-\rho)\delta\qty[[S_T^p]_{\mathrm{GFP}} - S([\vbX]_{\mathrm{GFP}};\Theta)]+\rho\delta\qty[[S_T^p]_{\mathrm{GFP}} - S_{\mathrm{empty}}([\vbX]_{\mathrm{GFP}};\Theta)]]\\
+&=  (1-\rho) P\qty[ [S_T^p]_{\mathrm{anti}} |  S([\vbX]_{\mathrm{GFP}};\Theta)] +  \rho P\qty[ [S_T^p]_{\mathrm{anti}} |  S_{\mathrm{empty}}([\vbX]_{\mathrm{GFP}};\Theta)]
+\end{align} 
+
+\begin{align}
+\mathcal{L}(\Theta) &= -\frac{1}{N_{\mathrm{res}}}\sum_{i=1}^{N_{\mathrm{res}}}\log \qty{(1-\rho) P\qty[ [S_T^p]_{\mathrm{anti}} |  S([\vbX]_{\mathrm{GFP}};\Theta)] +  \rho P\qty[ [S_T^p]_{\mathrm{anti}} |  S_{\mathrm{empty}}([\vbX]_{\mathrm{GFP}};\Theta)]}
+\end{align}
+
+\section{Phosphorylated Substrate Lognormal Distrubution Noise Model}
 
 First, we set up the noise model for the phosphorylated substrate.
 Unlike other the other species present the experiments,
@@ -110,62 +180,10 @@ A &=  \rho \frac{\sigmaanti}{\sigmaGFP}\\
 B &= \muanti - \rho \frac{\sigmaanti}{\sigmaGFP}\muGFP.
 \end{align}
 
-
-\section{Maximum Likelihood Estimation}
-Next, we construct our MLE loss function.
-First, we define vectors of concentrations for each species (total writer $[W_T]$, total eraser $[E_T]$, total substrate $[S_T]$, total phosphorylated substrate $[S_T^p]$, etc.) in both antibody and GFP units,
+ Substituting our noise model into the loss function above, we obtain the loss function
 \begin{align}
-[\vec{X}]_{\mathrm{anti}} &= \mqty([W_T]_{\mathrm{anti}}\\
-[E_T]_{\mathrm{anti}}\\
-[S_T]_{\mathrm{anti}}\\
-[S^p_T]_{\mathrm{anti}}\\
-\vdots)\\
-[\vec{X}]_{\mathrm{GFP}} &= \mqty([W_T]_{\mathrm{GFP}}\\
-[E_T]_{\mathrm{GFP}}\\
-[S_T]_{\mathrm{GFP}}\\
-[S^p_T]_{\mathrm{GFP}}\\
-\vdots)
-\end{align}
-We define $S$ as the total number of species.
-
-For each species we define a separate noise model $P\qty[\log([X_j]_{\mathrm{anti}}) | \log([X_j]_{\mathrm{GFP}})])$.
-In addition, we define our thermodynamic model in the following form:
-\begin{align}
-F([\vec{X}]_{\mathrm{GFP}};\Theta) &= 0
-\end{align} 
-where we have define $\Theta$ as our fit parameters.
-A valid set of GFP values for each species will always satisfy this relation.
-
-
-Now we can define the probability of a particular data point (in antibody units) given a set of fit parameters for the model as the following integral.
-\begin{align}
-P([\vec{X}]_{\mathrm{anti}} | \Theta ) &= \qty(\prod_{j=1}^S \int d\log([X_j]_{\mathrm{GFP}}) P\qty[\log([X_j]_{\mathrm{anti}}) | \log([X_j]_{\mathrm{GFP}})])\delta\qty[F([\vec{X}]_{\mathrm{GFP}};\Theta)].
-\end{align}
-Note that we have incorporated the thermodynamic model as a delta function, so that only values of GFP are used that satisfy the model.
-
-Here we make an approximation that will greatly simplify our fitting algorithm. 
-Rather than integrating over the noise model for each species which can be very numerically costly, we will instead resample the concentrations of the species with empirical noise models from their joint probability distribution.
-In essence, we will convert species with empirical noise models from their antibody values to possible GFP values.
-By resampling many times, we obtain a new dataset that is much larger than the original where each of the original data points is copied many times, but with different possible GFP values. The only species that we will continue to express in units of antibody will be the phosphorylated substrate $[S_p^T]$.
-The result is a simplified probability,
-\begin{align}
-P([\vec{X}]_{\mathrm{anti}} | \Theta ) &\approx   \int d\log([S_T^p]_{\mathrm{GFP}}) P\qty[\log([S_T^p]_{\mathrm{anti}}) | \log([S_T^p]_{\mathrm{GFP}})]\delta\qty[F([\vec{X}]_{\mathrm{GFP}};\Theta)]
-\end{align}
-
-Next, we express the thermodynamic model in the form
-\begin{align}
-F([\vec{X}]_{\mathrm{GFP}};\Theta) &= [S_T^p]_{\mathrm{GFP}} - S([\vec{X}]_{\mathrm{GFP}};\Theta)
-\end{align}
-where $S$ is the amount of phosphorylated substrated predicted by the model.
-Incorporating this we get
-\begin{align}
-P([\vec{X}]_{\mathrm{anti}} | \Theta ) &\approx   \int d\log([S_T^p]_{\mathrm{GFP}}) P\qty[\log([S_T^p]_{\mathrm{anti}}) | \log([S_T^p]_{\mathrm{GFP}})]\delta\qty[[S_T^p]_{\mathrm{GFP}} - S([\vec{X}]_{\mathrm{GFP}};\Theta)]\\
-&=   P\qty[\log([S_T^p]_{\mathrm{anti}}) | \log(S([\vec{X}]_{\mathrm{GFP}};\Theta))]
-\end{align} 
-Finally, we take the log and sum over all the resampled data point. Substituting our noise model, we obtain the loss function
-\begin{align}
-\mathcal{L(\Theta)} &= -\frac{1}{N_{\mathrm{res}}}\sum_{i=1}^{N_{\mathrm{res}}}\log P\qty[\log([S_T^p]_{\mathrm{anti}}) | \log(S([\vec{X}]_{\mathrm{GFP}};\Theta))]\\
-&= \frac{1}{2\Sigma^2N_{\mathrm{res}}}\sum_{i=1}^{N_{\mathrm{res}}}\qty[\log([S_T^p]_{\mathrm{anti}, i}) - A \log(S([\vec{X}]_{\mathrm{GFP}, i};\Theta)) - B]^2 + \frac{1}{2}\log\qty(\Sigma^2).
+\mathcal{L}(\Theta) &= -\frac{1}{N_{\mathrm{res}}}\sum_{i=1}^{N_{\mathrm{res}}}\log P\qty[\log([S_T^p]_{\mathrm{anti}}) | \log(S([\vbX]_{\mathrm{GFP}};\Theta))]\\
+&= \frac{1}{2\Sigma^2N_{\mathrm{res}}}\sum_{i=1}^{N_{\mathrm{res}}}\qty[\log([S_T^p]_{\mathrm{anti}, i}) - A \log(S([\vbX]_{\mathrm{GFP}, i};\Theta)) - B]^2 + \frac{1}{2}\log\qty(\Sigma^2).
 \end{align}
 We will need to fit both the fit parameters for the thermodynamic model $\Theta$ as well as the parameters for the noise model $\Sigma^2$, $A$, and $B$.
 

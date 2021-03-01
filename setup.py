@@ -28,7 +28,7 @@ include_dirs=["eigen-3.3.8"]
 # include_dirs = []
 
 ext_modules = [
-    Pybind11Extension("push_pull_amp",
+    Pybind11Extension("push_pull",
         ["cpp_src/python_bindings.cpp"],
         include_dirs=include_dirs,
         # Example: passing in the version to the compiled code
@@ -37,7 +37,7 @@ ext_modules = [
 ]
 
 setup(
-    name="push_pull_amp",
+    name="push_pull",
     version=__version__,
     author="Jason W. Rocks and Pankaj Mehta",
     author_email="jrocks@bu.edu",
