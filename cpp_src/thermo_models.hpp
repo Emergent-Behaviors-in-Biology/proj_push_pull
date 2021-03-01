@@ -26,20 +26,16 @@ class ThermoModel {
     }
     
     // Calculate loss
-    double loss_log(RXVec target, RXMat data, RXVec params) {
+    double loss(RXVec target, RXMat data, RXVec params, bool use_log=false) {
         
         XVec prediction = predict_all(data, params);
         
-        return 0.5 * (target.array().log() - prediction.array().log()).matrix().squaredNorm();
-           
-    };
-    
-    double loss(RXVec target, RXMat data, RXVec params) {
-        
-        XVec prediction = predict_all(data, params);
-        
-        return 0.5 * (target - prediction).squaredNorm();
-           
+        if(use_log) {
+            return 0.5 * (target.array().log() - prediction.array().log()).matrix().squaredNorm();
+        } else {
+            return 0.5 * (target - prediction).squaredNorm();
+        }
+                   
     };
     
     

@@ -17,8 +17,7 @@ PYBIND11_MODULE(push_pull, m) {
     
     py::class_<ThermoModel>(m, "ThermoModel")
         .def("predict_all", &ThermoModel::predict_all)
-        .def("loss", &ThermoModel::loss)
-        .def("loss_log", &ThermoModel::loss_log)
+        .def("loss", &ThermoModel::loss, py::arg("target"), py::arg("data"), py::arg("params"), py::arg("use_log")=false)
         .def("loss_mixture", &ThermoModel::loss_mixture);
     
     py::class_<PushAmp, ThermoModel>(m, "PushAmp")
