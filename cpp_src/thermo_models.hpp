@@ -11,15 +11,15 @@ class ThermoModel {
     public:
     
     // predict phosphorylated substrate for one data point
-    virtual double predict(RXVec data, RXVec params) = 0;
+    virtual XVec predict(RXVec data, RXVec params) = 0;
     
     // predict for multiple data points
-    XVec predict_all(RXMat data, RXVec params) {
+    XMat predict_all(RXMat data, RXVec params) {
         
-        XVec prediction = XVec::Zero(data.rows());
+        XMat prediction = XMat::Zero(data.rows(), 7);
         for(int i = 0; i < data.rows(); i++) {
             XVec d = data.row(i);
-            prediction(i) = predict(d, params);
+            prediction.row(i) = predict(d, params);
         }
         
         return prediction;
@@ -74,7 +74,7 @@ class PushAmp: public ThermoModel {
     public:
     
     
-    double predict(RXVec data, RXVec params) {
+    XVec predict(RXVec data, RXVec params) {
        
         double WT = data(0);
         double ST = data(1);
@@ -118,26 +118,26 @@ class PushAmp: public ThermoModel {
 
         double SpT = ST*(vWSp*pWSu + vSp)/ (vWSp*pWSu + vSp + 1);
 
-        return SpT;
+//         return SpT;
         
-//         double SuT = ST - SpT;
+        double SuT = ST - SpT;
 
-//         double Sp = SpT/(1+W/alphaWS);
-//         double Su = SuT/(1+W/alphaWS);
+        double Sp = SpT/(1+W/alphaWS);
+        double Su = SuT/(1+W/alphaWS);
 
-//         double WSu = pWSu*SuT;
-//         double WSp = WT - W - WSu;
+        double WSu = pWSu*SuT;
+        double WSp = WT - W - WSu;
                 
-//         XVec result = XVec::Zero(7);
-//         result(0) = SpT;
-//         result(1) = SuT;
-//         result(2) = W;
-//         result(3) = Sp;
-//         result(4) = Su;
-//         result(5) = WSp;
-//         result(6) = WSu;
+        XVec result = XVec::Zero(7);
+        result(0) = SpT;
+        result(1) = SuT;
+        result(2) = W;
+        result(3) = Sp;
+        result(4) = Su;
+        result(5) = WSp;
+        result(6) = WSu;
         
-//         return result;
+        return result;
          
     }
    
@@ -151,7 +151,7 @@ class Background: public ThermoModel {
     public:
     
     
-    double predict(RXVec data, RXVec params) {
+    XVec predict(RXVec data, RXVec params) {
        
         
         double ST = data(0);
@@ -160,15 +160,15 @@ class Background: public ThermoModel {
 
         double SpT = ST*vbgp / (1.0 + vbgp);
 
-        return SpT;
+//         return SpT;
         
-//         double SuT = ST - SpT;
+        double SuT = ST - SpT;
         
-//         XVec result = XVec::Zero(2);
-//         result(0) = SpT;
-//         result(1) = SuT;
+        XVec result = XVec::Zero(2);
+        result(0) = SpT;
+        result(1) = SuT;
         
-//         return result;
+        return result;
         
         
          
