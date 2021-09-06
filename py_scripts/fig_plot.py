@@ -7,6 +7,26 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
+"""
+Description:
+
+Creates a 2d histogram, but then plots the average value of a separate quantity in each bin.
+
+Arguments:
+
+df: Dataframe containing data that you wish to plot.
+fig: matplotlib figure
+ax: set of axes within fig where the plot should be placed
+xlabel: column of df that should be plotted along the x-axis
+ylabel: column of df that should be plotted along the y-axis
+zlabel: column of df that that will be used to color each bin
+vmin: lower bound for coloring each pixel
+vmax: upper bound for coloring each pixel
+logscale: whether to apply log scaling pixel coloring
+xlim: limits of x-axis
+ylim: limits of y-axis
+"""
+
 def plot_2d_avg(df, fig, ax, xlabel, ylabel, zlabel, vmin=1e0, vmax=1e2, logscale=True, xlim=(1e1, 1e5), ylim=(1e1, 1e5)):
     
     hist, xedges = np.histogram(np.log10(df[xlabel]), bins='auto')
@@ -59,7 +79,26 @@ def plot_2d_avg(df, fig, ax, xlabel, ylabel, zlabel, vmin=1e0, vmax=1e2, logscal
     cbar.set_label(zlabel)
     
     
-    
+"""
+Description:
+
+Sorts data into groups according to amount of substrate and then plots the data belonging to each group as a separate curve.
+
+Arguments:
+
+df: Dataframe containing data that you wish to plot.
+fig: matplotlib figure
+ax: set of axes within fig where the plot should be placed
+WT_label: column of df containing writer concentration
+ST-label: column of df containing substrate concentration
+SpT_label: column of df containing phosphorylated substrate concentration
+fmt: matplotlib format used for each curve
+normalizex: whether to normalized writer by total amount of substrate
+normalizex: whether to normalized phosphorylated substrate by total amount of substrate
+xlim: limits of x-axis
+ylim: limits of y-axis
+"""
+
 def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--', normalizex=False, normalizey=False, xlim=(1e2, 1e5), ylim=(1e2, 1e4)):
     
     
