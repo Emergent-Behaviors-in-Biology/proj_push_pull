@@ -29,27 +29,32 @@ ylim: limits of y-axis
 
 def plot_2d_avg(df, fig, ax, xlabel, ylabel, zlabel, vmin=1e0, vmax=1e2, logscale=True, xlim=(1e1, 1e5), ylim=(1e1, 1e5)):
     
+    
+    # creates 2d histogram in log space
     hist, xedges = np.histogram(np.log10(df[xlabel]), bins='auto')
     hist, yedges = np.histogram(np.log10(df[ylabel]), bins='auto')
+    # converts bin edges back to linear scale
     xedges = 10**xedges
     yedges = 10**yedges
 
+    # sort data into bins found by histogram
     df['xbin'] = pd.cut(df[xlabel], xedges, labels=False)
     df['ybin'] = pd.cut(df[ylabel], yedges, labels=False)
 
-
+    # calculate mean of zlabel values in each bin
     hist_corr = df.groupby(['xbin', 'ybin'])[zlabel].mean().to_frame("mean")
 
+    # add nan values to bins that do not have any data points
     hist_corr =  hist_corr.reindex(pd.MultiIndex.from_product([np.arange(len(xedges)-1), np.arange(len(yedges)-1)], 
                                                 names=['xbin', 'ybin']), fill_value=np.nan)
 
+    # pivot the data into a 2d grid
     hist_corr = hist_corr.reset_index().pivot(index='xbin', columns='ybin', values='mean').values
 
+    # mask bins with no data
     hist_corr = ma.masked_invalid(hist_corr)
 
-#     if vmax is None:
-#         vmax = df[zlabel].quantile(0.95)
-        
+    # create matplotlib colorbar properties
     if logscale:
         norm = mpl.colors.LogNorm(vmin=vmin, vmax=vmax)
     else:
@@ -57,6 +62,7 @@ def plot_2d_avg(df, fig, ax, xlabel, ylabel, zlabel, vmin=1e0, vmax=1e2, logscal
     
     cmap=plt.cm.viridis
 
+    # plot image
     X, Y = np.meshgrid(xedges, yedges)
     im = ax.pcolormesh(X, Y, hist_corr.T, cmap=cmap, norm=norm, rasterized=True)
 
@@ -72,8 +78,10 @@ def plot_2d_avg(df, fig, ax, xlabel, ylabel, zlabel, vmin=1e0, vmax=1e2, logscal
     ax.set_xlim(*xlim)
     ax.set_ylim(*ylim)
 
+    # ensure aspect ratio is square
     ax.set_aspect(1 / ax.get_data_ratio())
 
+    # place colorbar
     cbar = fig.colorbar(im, ax=ax, orientation='horizontal', aspect=15)
     cbar.ax.tick_params(which='major', direction='out', length=3.0, width=1.0)
     cbar.set_label(zlabel)
@@ -102,26 +110,24 @@ ylim: limits of y-axis
 def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--', normalizex=False, normalizey=False, xlim=(1e2, 1e5), ylim=(1e2, 1e4)):
     
     
+    # sort data into bins according to ST_label
     bins, ST_edges = pd.qcut(df[ST_label], 10, labels=False, retbins=True)
     
     df['ST_bin'] = bins
-            
+      
+    # calculate average value of ST in each bin
     ST_avg = df.groupby(['ST_bin'])[ST_label].mean()
       
-        
+    # create smap to color each curve according to ST
     norm = mpl.colors.LogNorm(vmin=min(ST_avg.min(), 1e2), vmax=max(ST_avg.max(), 1e4))
     cmap=plt.cm.cividis
-    
     smap = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
-        
+     
+    # iterate through each bin and plot activtion curve
     for ibin, STgroup in df.groupby(['ST_bin']):
-        
-        if ibin == 0:
-            continue
-        
+
         if normalizex:
-            STgroup['x'] = STgroup[WT_label]  / ST_avg[ibin]
-            
+            STgroup['x'] = STgroup[WT_label]  / ST_avg[ibin]  
         else:
             STgroup['x'] = STgroup[WT_label]
             
@@ -131,24 +137,21 @@ def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--'
             STgroup['y'] = STgroup[SpT_label]
         
         
+        # sort data within bin into new bins along x axis
         bins, edges = pd.qcut(STgroup['x'], 10, 
                                     labels=False, retbins=True)
-        
         STgroup['xbin'] = bins
         
+        # calculate mean value of points in each bin
         x = STgroup.groupby('xbin')['x'].mean() 
         y = STgroup.groupby('xbin')['y'].mean() 
-#         Sp_frac_err_up = STgroup.groupby('ratio_bin')['SpT_ST_ratio'].quantile(0.75)-Sp_frac
-#         Sp_frac_err_low = Sp_frac-STgroup.groupby('ratio_bin')['SpT_ST_ratio'].quantile(0.25)
         yerr =  STgroup.groupby('xbin')['y'].sem()
 
+        # plot activation curve
         ax.errorbar(x, y, yerr=yerr, 
                     fmt='.-', label=r"$S_T={0:.2f}$".format(ST_avg[ibin]), 
                     color=smap.to_rgba(ST_avg[ibin]), ms=6.0, lw=1.5)
 
-#         ax.plot(WT_ST_ratio, Sp_frac, fmt, label=r"$S_T={0:.2f}$".format(ST_avg[ibin]), 
-#                     color=smap.to_rgba(ST_avg[ibin]), ms=6.0)
-        
     
     
     ax.set_xlim(*xlim)
@@ -168,13 +171,9 @@ def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--'
     
     ax.set_xscale('log')
     
-#     ax.set_ylim(0, df[Sp_frac_label].quantile(0.95) / ST_avg[ibin])
-
-        
     
-#     
-#     ax.set_ylim(1e2, 1e5)
-    
+    # plot colorbar
+    # make fake image first
     im = ax.pcolormesh(np.array([[0, 1]]), cmap=cmap, norm=norm)
     im.set_visible(False)
     cbar = fig.colorbar(im, ax=ax, orientation='horizontal', aspect=15)
