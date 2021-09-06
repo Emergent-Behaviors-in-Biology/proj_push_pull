@@ -122,7 +122,7 @@ def fit_push(df_info, df, empty_phospho_noise):
             if kinase not in kinases:
                 kinases[kinase] = param_index
                 param_labels.append(kinase + ": " + r"$\log_{10}(v_{WS}^p)$")
-                x0.append(0.0)
+                x0.append(-1.0)
                 bounds.append((None, None))
                 param_index += 1
 
@@ -132,7 +132,7 @@ def fit_push(df_info, df, empty_phospho_noise):
             if zipper not in zippers:
                 zippers[zipper] = param_index
                 param_labels.append(zipper + ": " + r"$\log_{10}(\alpha_{WS})$")
-                x0.append(4.0)
+                x0.append(3.0)
                 bounds.append((None, None))
                 param_index += 1
 

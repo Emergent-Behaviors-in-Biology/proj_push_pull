@@ -192,11 +192,14 @@ class Anti2GFPNoise:
 #         print(self.GFP_median)
     
     def anti_to_bin(self, anti):
-        
+                
         anti_bins = np.digitize(anti, self.anti_bin_edges, right=False)-1
-        anti_bins[anti_bins==-1] = 0
-        anti_bins[anti_bins==self.nbins] = self.nbins-1
+
+        anti_bins[anti_bins==-1] = -1
+        # this same as len(self.anti_bin_edges) - 1
+        anti_bins[anti_bins==self.nbins] = -1
         
+                
         return anti_bins
     
         
@@ -205,12 +208,18 @@ class Anti2GFPNoise:
         anti_bins = self.anti_to_bin(anti)
         
         unique_bins = np.unique(anti_bins)
-        
+                
         GFP_bins= np.full_like(anti_bins, -1)
         GFP = np.full_like(anti_bins, -1.0, dtype=float)
         
         for b in unique_bins:
+            
             idx = anti_bins==b
+            
+            if b == -1:
+                GFP[idx] = np.nan
+                continue
+            
             
             GFP_bins[idx] = rand.randint(0, self.nbins, size=np.sum(idx))
             GFP[idx] = self.GFP_median[b, GFP_bins[idx]]

@@ -25,22 +25,45 @@ print("Seed:", seed)
 rand.seed(seed)
 
 
+label = "210620"
 
 
-# list of of datasets to load
-# dataset, zipper variant, kinase variant, model
+# # # list of of datasets to load
+# # # dataset, zipper variant, kinase variant, model
+# s_list = [
+#     ['E+E', 'E+E', 'wt', 'push'],
+#     ['I+E', 'I+E', 'wt', 'push'],
+#     ['RR+A', 'RR+A', 'wt', 'push'],
+#     ['S+A', 'S+A', 'wt', 'push'],
+#     ['S+E', 'S+E', 'wt', 'push'],
+#     ['wt', 'generic', 'wt', 'push'],
+#     ['KD', 'generic', 'KD', 'push'],
+#     ['R460A', 'generic', 'R460A', 'push'],
+#     ['R460K', 'generic', 'R460K', 'push'],
+#     ['R460S', 'generic', 'R460S', 'push'],
+#          ]
+
+# flag_label = 'HA'
+# myc_label = 'Myc'
+
+
+
+label = '210728'
+
 s_list = [
-    ['E+E', 'E+E', 'wt', 'push'],
-    ['I+E', 'I+E', 'wt', 'push'],
-    ['RR+A', 'RR+A', 'wt', 'push'],
-    ['S+A', 'S+A', 'wt', 'push'],
-    ['S+E', 'S+E', 'wt', 'push'],
-    ['wt', 'generic', 'wt', 'push'],
-    ['KD', 'generic', 'KD', 'push'],
-    ['R460A', 'generic', 'R460A', 'push'],
-    ['R460K', 'generic', 'R460K', 'push'],
-    ['R460S', 'generic', 'R460S', 'push'],
+#     ['L_250', 'EE_L', 'wt', 'push'],
+    ['E_250', 'EE_E', 'wt', 'push'],
+    ['RR_250', 'RR', 'wt', 'push'],
+    ['S+E_250', 'S+E', 'wt', 'push'],
+    ['375', 'generic', '375', 'push'],
+    ['419', 'generic', '419', 'push'],
+    ['421_1000', 'generic', '421', 'push']
          ]
+
+flag_label = 'Flag Antibody'
+myc_label = 'Myc Antibody'
+
+
 # dataframe containing info for each data set
 df_info = pd.DataFrame(s_list, columns=['dataset', 'zipper', 'kinase', 'model'])
 df_info['seed'] = seed
@@ -51,7 +74,7 @@ display(df_info)
 
 df_list = []
 for index, row in df_info.iterrows():
-    df = pd.read_csv("../data/push_data/{}.csv".format(row['dataset'])) 
+    df = pd.read_csv("../data/{}_push/{}.csv".format(label, row['dataset'])) 
     
     df = df.drop("Unnamed: 0", axis=1, errors='ignore').sample(frac=1.0, replace=True, random_state=seed).reset_index(drop=True)
         
@@ -62,13 +85,13 @@ for index, row in df_info.iterrows():
 df_data = pd.concat(df_list).drop("Unnamed: 0", axis=1, errors='ignore')
 df_data.set_index("dataset", inplace=True, append=True)
 df_data = df_data.reorder_levels(df_data.index.names[::-1])
-df_data = df_data.rename(columns={'WT_anti': 'WT_anti_exp', 'ST_anti': 'ST_anti_exp', 'SpT_anti': 'SpT_anti_exp'})
+df_data = df_data.rename(columns={'WT_anti': 'WT_anti_exp', 'ST_anti': 'ST_anti_exp', 'SpT_anti': 'SpT_anti_exp', 'Flag : APC - Area': 'WT_anti_exp'})
 
 
 
-# # print(len(df.index))
-# # df = df[(df[df.columns[:-1]] > 0).all(axis=1)].rename(columns={'WT_anti': 'WT_anti_exp', 'ST_anti': 'ST_anti_exp', 'SpT_anti': 'SpT_anti_exp'})
-# # print(len(df.index))
+print(len(df_data.index))
+df_data = df_data[(df_data[df_data.columns[:-1]] > 0).all(axis=1)]
+print(len(df_data.index))
 
 # record fraction of phospho substrate
 df_data['Sp_frac_anti_exp'] = df_data['SpT_anti_exp'] / df_data['ST_anti_exp']
@@ -81,37 +104,37 @@ display(df_data)
 # load noise models
 
 
-writer_noise = noise.Anti2GFPNoise("../data/noise_data/Flag noise.csv", 
-                                   'HA', 'GFP', ppbin=10, verbose=False)
+writer_noise = noise.Anti2GFPNoise("../data/{}_noise/Flag noise.csv".format(label), 
+                                   flag_label, 'GFP', ppbin=10, verbose=False)
 
-empty_writer_noise = noise.Anti2GFPNoise("../data/noise_data/Empty Cell.csv", 
-                                   'HA', 'GFP', ppbin=10, verbose=False)
-
-
-    
-substrate_noise = noise.Anti2GFPNoise("../data/noise_data/Phopho_Myc noise.csv", 
-                                   'Myc', 'GFP', ppbin=10, verbose=False)
-
-empty_substrate_noise = noise.Anti2GFPNoise("../data/noise_data/Empty Cell.csv", 
-                                   'Myc', 'GFP', ppbin=10, verbose=False)
-
+empty_writer_noise = noise.Anti2GFPNoise("../data/{}_noise/Empty Cell.csv".format(label), 
+                                   flag_label, 'GFP', ppbin=10, verbose=False)
 
 
     
-phospho_noise = noise.Anti2GFPNoise("../data/noise_data/Phopho_Myc noise.csv", 
+substrate_noise = noise.Anti2GFPNoise("../data/{}_noise/Myc_Phospho noise.csv".format(label), 
+                                   myc_label, 'GFP', ppbin=10, verbose=False)
+
+empty_substrate_noise = noise.Anti2GFPNoise("../data/{}_noise/Empty Cell.csv".format(label), 
+                                   myc_label, 'GFP', ppbin=10, verbose=False)
+
+
+
+    
+phospho_noise = noise.Anti2GFPNoise("../data/{}_noise/Myc_Phospho noise.csv".format(label), 
                                    'Phospho', 'GFP', ppbin=10, verbose=False)
 
-empty_phospho_noise = noise.Anti2GFPNoise("../data/noise_data/Empty Cell.csv", 
+empty_phospho_noise = noise.Anti2GFPNoise("../data/{}_noise/Empty Cell.csv".format(label), 
                                    'Phospho', 'GFP', ppbin=10, verbose=False)
 
 
-combined_phospho_noise = noise.Anti2GFPNoise("../data/noise_data/Phopho_Myc noise.csv", 
+combined_phospho_noise = noise.Anti2GFPNoise("../data/{}_noise/Myc_Phospho noise.csv".format(label), 
                                    'Phospho', 'GFP', ppbin=10, verbose=False)
 combined_phospho_noise.add_cells(empty_phospho_noise)
 
 
 
-# inverse_phospho_noise = noise.GFP2AntiNoise("../data/noise_data/Phopho_Myc noise.csv", 
+# inverse_phospho_noise = noise.GFP2AntiNoise("../data/noise_data/Myc_Phospho noise.csv", 
 #                                    'GFP', 'Phospho', ppbin=10, verbose=False)
 
 # inverse_empty_phospho_noise = noise.GFP2AntiNoise("../data/noise_data/Empty Cell.csv", 
@@ -128,14 +151,20 @@ for index, row in df_info.iterrows():
     
     dataset = row['dataset']
     
+    print(dataset)
+    
     df_tmp = df_data.query("dataset==@dataset")
     
     ################################################################
     
+#     maxiter = 10000
+    maxiter = 2000
     
-    (writer_empty_frac, writer_anti_scale) = noise.calc_mixture(df_tmp['WT_anti_exp'], 
-                                                                empty_writer_noise, writer_noise, seed=seed, maxiter=10000)
+#     (writer_empty_frac, writer_anti_scale) = noise.calc_mixture(df_tmp['WT_anti_exp'], 
+#                                                                 empty_writer_noise, writer_noise, seed=seed, maxiter=maxiter)
 
+    writer_empty_frac = 0.0
+    writer_anti_scale = 0.0
     
     df_info.loc[index, 'WT_empty_frac'] = writer_empty_frac
     df_info.loc[index, 'WT_anti_scale'] = writer_anti_scale
@@ -146,14 +175,16 @@ for index, row in df_info.iterrows():
         
     df_data.loc[df_tmp.index, 'WT_prob_empty'] = noise.calc_prob_empty(df_data.loc[df_tmp.index, 'WT_anti_rescaled'], 
                                                                  writer_empty_frac, 
-                                                                 empty_writer_noise, writer_noise, maxiter=10000)
+                                                                 empty_writer_noise, writer_noise)
     
     
     ################################################################
     
-    (substrate_empty_frac, substrate_anti_scale) = noise.calc_mixture(df_tmp['ST_anti_exp'], 
-                                                                empty_substrate_noise, substrate_noise, seed=seed)
+#     (substrate_empty_frac, substrate_anti_scale) = noise.calc_mixture(df_tmp['ST_anti_exp'], 
+#                                                                 empty_substrate_noise, substrate_noise, seed=seed, maxiter=maxiter)
 
+    substrate_empty_frac = 0.0
+    substrate_anti_scale = 0.0
         
     df_info.loc[index, 'ST_empty_frac'] = substrate_empty_frac
     df_info.loc[index, 'ST_anti_scale'] = substrate_anti_scale
@@ -222,7 +253,7 @@ res, param_dict, param_labels = fit.fit_push(df_info, df_data, empty_phospho_noi
 
 
 
-with open('/projectnb/biophys/jrocks/proj_push_pull/data/push_data_{0:08d}.pkl'.format(seed), 'wb') as pkl_file:
+with open('/projectnb/biophys/jrocks/proj_push_pull/data/pushnomixturenoL_{0}_{1:08d}.pkl'.format(label, seed), 'wb') as pkl_file:
 
     data = {'df_info': df_info}
     pickle.dump(data, pkl_file)
