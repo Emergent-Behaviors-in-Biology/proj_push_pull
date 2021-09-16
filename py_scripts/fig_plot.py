@@ -6,6 +6,9 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import matplotlib.patches as mpatches
+import matplotlib.collections as mcollect
+
 
 """
 Description:
@@ -85,6 +88,106 @@ def plot_2d_avg(df, fig, ax, xlabel, ylabel, zlabel, vmin=1e0, vmax=1e2, logscal
     cbar = fig.colorbar(im, ax=ax, orientation='horizontal', aspect=15)
     cbar.ax.tick_params(which='major', direction='out', length=3.0, width=1.0)
     cbar.set_label(zlabel)
+    
+    
+"""
+Description:
+
+Creates a 2d histogram with hexagonal bins, but then plots the average value of a separate quantity in each bin.
+
+Arguments:
+
+df: Dataframe containing data that you wish to plot.
+fig: matplotlib figure
+ax: set of axes within fig where the plot should be placed
+xlabel: column of df that should be plotted along the x-axis
+ylabel: column of df that should be plotted along the y-axis
+zlabel: column of df that that will be used to color each bin
+nbins: number of bins in x direction. These bins are defined with respect to the the full x limits. Number of bins in y direction is chosen automatically.
+vmin: lower bound for coloring each pixel
+vmax: upper bound for coloring each pixel
+xlim: limits of x-axis
+ylim: limits of y-axis
+"""
+
+def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vmax=None, xlim=(1e1, 1e5), ylim=(1e1, 1e5)):
+    
+    
+    # number of points in each bin
+    hex_count = ax.hexbin(df[xlabel], df[ylabel], gridsize=nbins, 
+                          extent=(np.log10(xlim[0]), np.log10(xlim[1]), np.log10(ylim[0]), np.log10(ylim[1])), 
+                          xscale='log', yscale='log', mincnt=1)
+    hex_count.remove()
+    
+    counts = hex_count.get_array()
+    count_norm = mpl.colors.LogNorm(vmin=1.0, vmax=np.max(counts), clip=True)
+        
+    x = []
+    y = []
+    
+    patches = []
+    for i, path in enumerate(hex_count.get_paths()):
+
+        # positions of vertices for hexagon
+        verts = path.vertices
+        
+        # center of hexagon
+        center = np.mean(np.log10(path.vertices[:-1]), axis=0)
+        
+        # size of hexagon (ranges from 0.0 to 1.0)
+        scale = count_norm(counts[i])
+#         scale = 1.0
+        
+        # create new hexagon
+        patch = mpatches.Polygon(10**(scale*(np.log10(verts) - center)+center), closed=True)
+        
+        patches.append(patch)
+        
+    # calculate average value in each bin
+    hex_val = ax.hexbin(df[xlabel], df[ylabel], C=df[zlabel], gridsize=nbins, 
+                        extent=(np.log10(xlim[0]), np.log10(xlim[1]), np.log10(ylim[0]), np.log10(ylim[1])),
+                        xscale='log', yscale='log', reduce_C_function=np.mean)
+    hex_val.remove()
+    
+    values = hex_val.get_array()
+    
+    if vmin == None:
+        vmin = values.min()
+    if vmax == None:
+        vmax = values.max()
+    val_norm = mpl.colors.LogNorm(vmin=vmin, vmax=vmax)
+    cmap=plt.cm.viridis
+    
+    pc = mcollect.PatchCollection(patches, linewidths=1, norm=val_norm, cmap=cmap)
+    pc.set_array(values)
+    
+    ax.add_collection(pc)
+        
+    t = np.linspace(*xlim)
+    ax.plot(t, t, 'k--')
+
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    
+    ax.set_xlim(*xlim)
+    ax.set_ylim(*ylim)
+
+    # ensure aspect ratio is square
+    ax.set_aspect(1 / ax.get_data_ratio())
+
+    # plot colorbar
+    # make fake image first
+    im = ax.pcolormesh(np.array([[0, 1]]), cmap=cmap, norm=val_norm)
+    im.set_visible(False)
+    cbar = fig.colorbar(im, ax=ax, orientation='horizontal', aspect=15)
+    cbar.ax.tick_params(which='major', direction='out', length=3.0, width=1.0)
+    cbar.set_label(zlabel)
+    
+    
+
     
     
 """
@@ -182,6 +285,7 @@ def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--'
     
     
     
+
     
 def plot_activation_theory(df, fig, ax, WT_label, ST_label, SpT_label, normalizex=False, normalizey=False):
     
