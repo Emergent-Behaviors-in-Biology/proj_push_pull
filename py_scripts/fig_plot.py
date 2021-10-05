@@ -137,6 +137,8 @@ def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vm
         # size of hexagon (ranges from 0.0 to 1.0)
         scale = count_norm(counts[i])
 #         scale = 1.0
+        if scale < 0.3:
+            scale = 0.0
         
         # create new hexagon
         patch = mpatches.Polygon(10**(scale*(np.log10(verts) - center)+center), closed=True)
@@ -208,13 +210,20 @@ normalizex: whether to normalized writer by total amount of substrate
 normalizex: whether to normalized phosphorylated substrate by total amount of substrate
 xlim: limits of x-axis
 ylim: limits of y-axis
+nxbins: number of bins along the x-axis for each curve
+nSTbins: number of bins along ST_label
+error_bands: whether to display error bands
+use_median: whether to display median value in each bin or mean value
+error_band_range: upper and lower quantiles for each error band
 """
 
-def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--', normalizex=False, normalizey=False, xlim=(1e2, 1e5), ylim=(1e2, 1e4)):
+def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--', 
+                           normalizex=False, normalizey=False, xlim=(1e2, 1e5), ylim=(1e2, 1e4),
+                            nxbins=10, nSTbins=10, error_bands=False, use_median=False, error_band_range=(0.5, 0.95)):
     
     
     # sort data into bins according to ST_label
-    bins, ST_edges = pd.qcut(df[ST_label], 10, labels=False, retbins=True)
+    bins, ST_edges = pd.qcut(df[ST_label], nSTbins, labels=False, retbins=True)
     
     df['ST_bin'] = bins
       
@@ -241,21 +250,32 @@ def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--'
         
         
         # sort data within bin into new bins along x axis
-        bins, edges = pd.qcut(STgroup['x'], 10, 
+        bins, edges = pd.qcut(STgroup['x'], nxbins, 
                                     labels=False, retbins=True)
         STgroup['xbin'] = bins
         
-        # calculate mean value of points in each bin
-        x = STgroup.groupby('xbin')['x'].mean() 
-        y = STgroup.groupby('xbin')['y'].mean() 
-        yerr =  STgroup.groupby('xbin')['y'].sem()
+        
+        
+        # calculate statistics of each bin
+        if use_median:
+            x = STgroup.groupby('xbin')['x'].median() 
+            y = STgroup.groupby('xbin')['y'].median() 
+        else:
+            x = STgroup.groupby('xbin')['x'].mean() 
+            y = STgroup.groupby('xbin')['y'].mean() 
+            
+        ax.plot(x, y, '-', color=smap.to_rgba(ST_avg[ibin]))
 
-        # plot activation curve
-        ax.errorbar(x, y, yerr=yerr, 
-                    fmt='.-', label=r"$S_T={0:.2f}$".format(ST_avg[ibin]), 
-                    color=smap.to_rgba(ST_avg[ibin]), ms=6.0, lw=1.5)
+            
+        if error_bands:
 
-    
+            y_up = STgroup.groupby('xbin')['y'].quantile(0.95) 
+            y_low = STgroup.groupby('xbin')['y'].quantile(0.05) 
+
+            ax.fill_between(x=x, y1=y_low, y2=y_up, alpha=0.2, color=smap.to_rgba(ST_avg[ibin]))
+
+        
+
     
     ax.set_xlim(*xlim)
     ax.set_ylim(*ylim)
@@ -273,6 +293,9 @@ def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--'
         ax.set_xlabel("Writer")
     
     ax.set_xscale('log')
+    
+    # ensure aspect ratio is square
+    ax.set_aspect(1 / ax.get_data_ratio())
     
     
     # plot colorbar
