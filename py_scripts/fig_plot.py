@@ -100,21 +100,37 @@ Arguments:
 df: Dataframe containing data that you wish to plot.
 fig: matplotlib figure
 ax: set of axes within fig where the plot should be placed
-xlabel: column of df that should be plotted along the x-axis
-ylabel: column of df that should be plotted along the y-axis
+xlabel, ylabel, zlable: columns of df that should be plotted along the x-axis, y-axis
 zlabel: column of df that that will be used to color each bin
 nbins: number of bins in x direction. These bins are defined with respect to the the full x limits. Number of bins in y direction is chosen automatically.
 vmin: lower bound for coloring each pixel
 vmax: upper bound for coloring each pixel
 xlim: limits of x-axis
 ylim: limits of y-axis
+logscale: whether to color pixels using log scale
+normalize_xlabel, normalize_ylabel, normalize_zlabel: columns of df to normalize x, y, and z data by
+show_diagonal: whether to show dashed line along diagonal of plot
 """
 
-def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vmax=None, xlim=(1e1, 1e5), ylim=(1e1, 1e5)):
+def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vmax=None, xlim=(1e1, 1e5), ylim=(1e1, 1e5), logscale=False,
+                   normalize_xlabel=None, normalize_ylabel=None, normalize_zlabel=None, show_diagonal=False):
     
+    x = df[xlabel].values
+    y = df[ylabel].values
+    z = df[zlabel].values
+    
+    if normalize_xlabel is not None:
+        x = x / df[normalize_xlabel].values
+        
+    if normalize_ylabel is not None:
+        y = y / df[normalize_ylabel].values
+        
+    if normalize_zlabel is not None:
+        z = z / df[normalize_zlabel].values
+        
     
     # number of points in each bin
-    hex_count = ax.hexbin(df[xlabel], df[ylabel], gridsize=nbins, 
+    hex_count = ax.hexbin(x, y, gridsize=nbins, 
                           extent=(np.log10(xlim[0]), np.log10(xlim[1]), np.log10(ylim[0]), np.log10(ylim[1])), 
                           xscale='log', yscale='log', mincnt=1)
     hex_count.remove()
@@ -122,9 +138,6 @@ def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vm
     counts = hex_count.get_array()
     count_norm = mpl.colors.LogNorm(vmin=1.0, vmax=np.max(counts), clip=True)
         
-    x = []
-    y = []
-    
     patches = []
     for i, path in enumerate(hex_count.get_paths()):
 
@@ -146,7 +159,7 @@ def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vm
         patches.append(patch)
         
     # calculate average value in each bin
-    hex_val = ax.hexbin(df[xlabel], df[ylabel], C=df[zlabel], gridsize=nbins, 
+    hex_val = ax.hexbin(x, y, C=z, gridsize=nbins, 
                         extent=(np.log10(xlim[0]), np.log10(xlim[1]), np.log10(ylim[0]), np.log10(ylim[1])),
                         xscale='log', yscale='log', reduce_C_function=np.mean)
     hex_val.remove()
@@ -157,7 +170,11 @@ def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vm
         vmin = values.min()
     if vmax == None:
         vmax = values.max()
-    val_norm = mpl.colors.LogNorm(vmin=vmin, vmax=vmax)
+        
+    if logscale:
+        val_norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
+    else:
+        val_norm = mpl.colors.LogNorm(vmin=vmin, vmax=vmax)
     cmap=plt.cm.viridis
     
     pc = mcollect.PatchCollection(patches, linewidths=1, norm=val_norm, cmap=cmap)
@@ -165,13 +182,23 @@ def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vm
     
     ax.add_collection(pc)
         
-    t = np.linspace(*xlim)
-    ax.plot(t, t, 'k--')
+    if show_diagonal:
+        t = np.linspace(*xlim)
+        ax.plot(t, t, 'k--')
 
     ax.set_xscale('log')
     ax.set_yscale('log')
 
-    ax.set_xlabel(xlabel)
+    if normalize_xlabel is None:
+        ax.set_xlabel(xlabel)
+    else:
+        ax.set_xlabel(xlabel + "/" + normalize_xlabel)
+        
+    if normalize_ylabel is None:
+        ax.set_ylabel(ylabel)
+    else:
+        ax.set_ylabel(ylabel + "/" + normalize_ylabel)
+    
     ax.set_ylabel(ylabel)
     
     ax.set_xlim(*xlim)
@@ -186,8 +213,12 @@ def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vm
     im.set_visible(False)
     cbar = fig.colorbar(im, ax=ax, orientation='horizontal', aspect=15)
     cbar.ax.tick_params(which='major', direction='out', length=3.0, width=1.0)
-    cbar.set_label(zlabel)
     
+    if normalize_zlabel is None:
+        cbar.set_label(zlabel)
+    else:
+        cbar.set_label(zlabel + "/" + normalize_zlabel)
+        
     
 
     
@@ -202,12 +233,10 @@ Arguments:
 df: Dataframe containing data that you wish to plot.
 fig: matplotlib figure
 ax: set of axes within fig where the plot should be placed
-WT_label: column of df containing writer concentration
-ST-label: column of df containing substrate concentration
-SpT_label: column of df containing phosphorylated substrate concentration
+xlabel, ylabel: columns of df to plot on x-axis and y-axis
+zlabel: column of df that is held constant for each curve, data will be sorted into groups along this column
 fmt: matplotlib format used for each curve
-normalizex: whether to normalized writer by total amount of substrate
-normalizex: whether to normalized phosphorylated substrate by total amount of substrate
+normalize_xlabel, normalize_ylabel, normalize_zlabel: columns of df to normalize x, y, and z data by
 xlim: limits of x-axis
 ylim: limits of y-axis
 nxbins: number of bins along the x-axis for each curve
@@ -215,64 +244,70 @@ nSTbins: number of bins along ST_label
 error_bands: whether to display error bands
 use_median: whether to display median value in each bin or mean value
 error_band_range: upper and lower quantiles for each error band
+xlog_scale, ylog_scale: wether to plot x and y axes using log scale
 """
 
-def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--', 
-                           normalizex=False, normalizey=False, xlim=(1e2, 1e5), ylim=(1e2, 1e4),
-                            nxbins=10, nSTbins=10, error_bands=False, use_median=False, error_band_range=(0.5, 0.95)):
+def plot_activation_curves(df, fig, ax, xlabel, ylabel, zlabel, fmt='.--', 
+                           normalize_xlabel=None, normalize_ylabel=None, normalize_zlabel=None, xlim=(1e2, 1e5), ylim=(1e2, 1e4),
+                            nxbins=10, nSTbins=10, error_bands=False, use_median=False, error_band_range=(0.5, 0.95),
+                          xlog_scale=True, ylog_scale=True):
     
+    
+    x = df[xlabel].values
+    y = df[ylabel].values
+    z = df[zlabel].values
+    
+    if normalize_xlabel is not None:
+        x = x / df[normalize_xlabel].values
+        
+    if normalize_ylabel is not None:
+        y = y / df[normalize_ylabel].values
+        
+    if normalize_zlabel is not None:
+        z = z / df[normalize_zlabel].values
+        
+    df_tmp = pd.DataFrame({'x': x, 'y': y, 'z': z})
     
     # sort data into bins according to ST_label
-    bins, ST_edges = pd.qcut(df[ST_label], nSTbins, labels=False, retbins=True)
+    zbins, z_edges = pd.qcut(z, nSTbins, labels=False, retbins=True)
     
-    df['ST_bin'] = bins
+    df_tmp['zbin'] = zbins
       
-    # calculate average value of ST in each bin
-    ST_avg = df.groupby(['ST_bin'])[ST_label].mean()
+    # calculate average value of z in each bin
+    z_avg = df_tmp.groupby(['zbin'])['z'].mean()
       
     # create smap to color each curve according to ST
-    norm = mpl.colors.LogNorm(vmin=min(ST_avg.min(), 1e2), vmax=max(ST_avg.max(), 1e4))
+    norm = mpl.colors.LogNorm(vmin=min(z_avg.min(), 1e2), vmax=max(z_avg.max(), 1e4))
     cmap=plt.cm.cividis
     smap = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
      
-    # iterate through each bin and plot activtion curve
-    for ibin, STgroup in df.groupby(['ST_bin']):
-
-        if normalizex:
-            STgroup['x'] = STgroup[WT_label]  / ST_avg[ibin]  
-        else:
-            STgroup['x'] = STgroup[WT_label]
-            
-        if normalizey:
-            STgroup['y'] = STgroup[SpT_label]  / ST_avg[ibin]            
-        else:
-            STgroup['y'] = STgroup[SpT_label]
-        
+    # iterate through each bin and plot activation curve
+    for ibin, zgroup in df_tmp.groupby(['zbin']):
         
         # sort data within bin into new bins along x axis
-        bins, edges = pd.qcut(STgroup['x'], nxbins, 
+        xbins, edges = pd.qcut(zgroup['x'], nxbins, 
                                     labels=False, retbins=True)
-        STgroup['xbin'] = bins
+        zgroup['xbin'] = xbins
         
         
         
         # calculate statistics of each bin
         if use_median:
-            x = STgroup.groupby('xbin')['x'].median() 
-            y = STgroup.groupby('xbin')['y'].median() 
+            x = zgroup.groupby('xbin')['x'].median() 
+            y = zgroup.groupby('xbin')['y'].median() 
         else:
-            x = STgroup.groupby('xbin')['x'].mean() 
-            y = STgroup.groupby('xbin')['y'].mean() 
+            x = zgroup.groupby('xbin')['x'].mean() 
+            y = zgroup.groupby('xbin')['y'].mean() 
             
-        ax.plot(x, y, '-', color=smap.to_rgba(ST_avg[ibin]))
+        ax.plot(x, y, '-', color=smap.to_rgba(z_avg[ibin]))
 
             
         if error_bands:
 
-            y_up = STgroup.groupby('xbin')['y'].quantile(0.95) 
-            y_low = STgroup.groupby('xbin')['y'].quantile(0.05) 
+            y_up = zgroup.groupby('xbin')['y'].quantile(0.95) 
+            y_low = zgroup.groupby('xbin')['y'].quantile(0.05) 
 
-            ax.fill_between(x=x, y1=y_low, y2=y_up, alpha=0.2, color=smap.to_rgba(ST_avg[ibin]))
+            ax.fill_between(x=x, y1=y_low, y2=y_up, alpha=0.2, color=smap.to_rgba(z_avg[ibin]))
 
         
 
@@ -280,19 +315,22 @@ def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--'
     ax.set_xlim(*xlim)
     ax.set_ylim(*ylim)
     
-    if normalizey:
-        ax.set_ylabel("Fraction Phospho Substrate")
+    
+    if normalize_xlabel is None:
+        ax.set_xlabel(xlabel)
     else:
+        ax.set_xlabel(xlabel + "/" + normalize_xlabel)
+        
+    if normalize_ylabel is None:
+        ax.set_ylabel(ylabel)
+    else:
+        ax.set_ylabel(ylabel + "/" + normalize_ylabel)
+    
+    if xlog_scale:
+        ax.set_xscale('log')
+        
+    if ylog_scale:
         ax.set_yscale('log')
-        ax.set_ylabel("Phospho Substrate")
-    
-
-    if normalizex:
-        ax.set_xlabel("Writer/Substrate")
-    else:
-        ax.set_xlabel("Writer")
-    
-    ax.set_xscale('log')
     
     # ensure aspect ratio is square
     ax.set_aspect(1 / ax.get_data_ratio())
@@ -304,57 +342,181 @@ def plot_activation_curves(df, fig, ax, WT_label, ST_label, SpT_label, fmt='.--'
     im.set_visible(False)
     cbar = fig.colorbar(im, ax=ax, orientation='horizontal', aspect=15)
     cbar.ax.tick_params(which='major', direction='out', length=3.0, width=1.0)
-    cbar.set_label(ST_label)
     
+    if normalize_zlabel is None:
+        cbar.set_label(zlabel)
+    else:
+        cbar.set_label(zlabel + "/" + normalize_zlabel)
+    
+    
+    
+    
+def plot_push_dataset_summary(df_data, dataset):
+    
+    df_tmp = df_data.query("dataset==@dataset")
+    
+    fig, axes = plt.subplots(2,2, constrained_layout=True, figsize=(8, 10))
+    
+    ##########################################################
+
+    
+    ax = axes[0, 0]
+    
+    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
+
+    
+
+    ##########################################################
+    
+    
+    ax = axes[0, 1]
+    
+    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
+                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='ST_anti_exp', show_diagonal=True)
+
+    
+
+    ##########################################################
+    
+    ax = axes[1, 0]
+    
+    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+                             nSTbins=4, xlim=(1e1, 1e5), ylim=(1e1, 1e4), error_bands=True, use_median=True, error_band_range=(0.5, 0.95))
+
+
+    ##########################################################
+    
+    ax = axes[1, 1]
+
+    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+                           normalize_xlabel='ST_anti_exp', normalize_ylabel='ST_anti_exp', xlim=(1e-1, 1e2), ylim=(0, 1.5), nSTbins=4,
+                            error_bands=True, use_median=True, error_band_range=(0.5, 0.95), ylog_scale=False)
+    
+    ##########################################################
+
+    fig.suptitle(dataset)
+
+    plt.show()
+    
+    
+def plot_pushpull_dataset_summary(df_data, dataset):
+    
+    df_tmp = df_data.query("dataset==@dataset")
+    
+    fig, axes = plt.subplots(2,6, constrained_layout=True, figsize=(24, 10))
+    
+    ##########################################################
+
+    
+    ax = axes[0, 0]
+    
+    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
+
+    
+
+    ##########################################################
+    
+    
+    ax = axes[0, 1]
+    
+    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
+                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='ST_anti_exp', show_diagonal=True)
+    
+    ##########################################################
+
+    
+    ax = axes[0, 2]
+    
+    plot_2d_avg_hex(df_tmp, fig, ax, 'ET_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
+
+    
+
+    ##########################################################
+    
+    
+    ax = axes[0, 3]
+    
+    plot_2d_avg_hex(df_tmp, fig, ax, 'ET_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
+                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='ST_anti_exp', show_diagonal=True)
+    
+    
+    ##########################################################
+
+    
+    ax = axes[0, 4]
+    
+    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e-3, 1e2), ylim=(1e1, 1e5),
+                   normalize_xlabel='ET_anti_exp')
+
+    
+
+    ##########################################################
+    
+    
+    ax = axes[0, 5]
+    
+    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e-3, 1e2), ylim=(1e1, 1e5), 
+                          vmin=0, vmax=1.5, logscale=True,  normalize_xlabel='ET_anti_exp', normalize_zlabel='ST_anti_exp')
+    
+
+
+    ##########################################################
+    
+    ax = axes[1, 0]
+    
+    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+                             nSTbins=4, xlim=(1e1, 1e5), ylim=(1e1, 1e4), error_bands=True, use_median=True, error_band_range=(0.5, 0.95))
+
+
+    ##########################################################
+    
+    ax = axes[1, 1]
+
+    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+                           normalize_xlabel='ST_anti_exp', normalize_ylabel='ST_anti_exp', xlim=(1e-1, 1e2), ylim=(0, 1.5), nSTbins=4,
+                            error_bands=True, use_median=True, error_band_range=(0.5, 0.95), ylog_scale=False)
+    
+    
+    
+    ##########################################################
+    
+    ax = axes[1, 2]
+    
+    plot_activation_curves(df_tmp, fig, ax, 'ET_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+                             nSTbins=4, xlim=(1e1, 1e5), ylim=(1e1, 1e4), error_bands=True, use_median=True, error_band_range=(0.5, 0.95))
+
+
+    ##########################################################
+    
+    ax = axes[1, 3]
+
+    plot_activation_curves(df_tmp, fig, ax, 'ET_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+                           normalize_xlabel='ST_anti_exp', normalize_ylabel='ST_anti_exp', xlim=(1e-1, 1e2), ylim=(0, 1.5), nSTbins=4,
+                            error_bands=True, use_median=True, error_band_range=(0.5, 0.95), ylog_scale=False)
+    
+
+    ##########################################################
+    
+    ax = axes[1, 4]
+    
+    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', normalize_xlabel='ET_anti_exp',
+                             nSTbins=4, xlim=(1e-2, 1e2), ylim=(1e1, 1e4), error_bands=True, use_median=True, error_band_range=(0.5, 0.95))
+
+
+    ##########################################################
+    
+    ax = axes[1, 5]
+
+    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+                           normalize_xlabel='ET_anti_exp', normalize_ylabel='ST_anti_exp', xlim=(1e-2, 1e2), ylim=(0, 1.5), nSTbins=4,
+                            error_bands=True, use_median=True, error_band_range=(0.5, 0.95), ylog_scale=False)
     
     
 
-    
-def plot_activation_theory(df, fig, ax, WT_label, ST_label, SpT_label, normalizex=False, normalizey=False):
-    
-    
-    bins, ST_edges = pd.qcut(df[ST_label], 10, labels=False, retbins=True)
-    
-    df['ST_bin'] = bins
-            
-    ST_avg = df.groupby(['ST_bin'])[ST_label].mean()
-      
-        
-    norm = mpl.colors.LogNorm(vmin=min(ST_avg.min(), 1e2), vmax=max(ST_avg.max(), 1e4))
-    cmap=plt.cm.cividis
-    
-    smap = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
-        
-    for ibin, STgroup in df.groupby(['ST_bin']):
-        
-        if ibin == 0:
-            continue
-        
-        if normalizex:
-            STgroup['x'] = STgroup[WT_label]  / ST_avg[ibin]
-        else:
-            STgroup['x'] = STgroup[WT_label]
-            
-        if normalizey:
-            STgroup['y'] = STgroup[SpT_label]  / ST_avg[ibin]
-        else:
-            STgroup['y'] = STgroup[SpT_label]
-        
-        
-        bins, edges = pd.qcut(STgroup['x'], 10, 
-                                    labels=False, retbins=True)
-        
-        STgroup['xbin'] = bins
-        
-        x = STgroup.groupby('xbin')['x'].median() 
-        y = STgroup.groupby('xbin')['y'].median() 
-#         Sp_frac_err_up = STgroup.groupby('ratio_bin')['SpT_ST_ratio'].quantile(0.75)-Sp_frac
-#         Sp_frac_err_low = Sp_frac-STgroup.groupby('ratio_bin')['SpT_ST_ratio'].quantile(0.25)
-        yerr =  STgroup.groupby('xbin')['y'].sem()
+    ##########################################################
 
-        ax.plot(x, y, '--', color=smap.to_rgba(ST_avg[ibin]), ms=6.0, lw=1.0)
+    fig.suptitle(dataset)
 
-#         ax.plot(WT_ST_ratio, Sp_frac, fmt, label=r"$S_T={0:.2f}$".format(ST_avg[ibin]), 
-#                     color=smap.to_rgba(ST_avg[ibin]), ms=6.0)
-        
+    plt.show()
+    
     

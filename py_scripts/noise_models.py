@@ -149,8 +149,8 @@ class Anti2GFPNoise:
                               bins=(self.nbins, self.nbins), 
                          log_scale=(True, True), cbar=cbar, ax=ax, color=color)
         
-        for b in range(0, self.nbins, self.nbins//8):
-            ax.plot(self.GFP_median[:, b], self.anti_median, 'k-', lw=1.0)
+#         for b in range(0, self.nbins, self.nbins//8):
+#             ax.plot(self.GFP_median[:, b], self.anti_median, 'k-', lw=1.0)
 
         
         
@@ -257,8 +257,8 @@ class GFP2AntiNoise:
                               bins=(self.nbins, self.nbins), 
                          log_scale=(True, True), cbar=cbar, ax=ax, color=color)
         
-        for b in range(0, self.nbins, self.nbins//8):
-            ax.plot(self.GFP_median, self.anti_median[:, b], 'k-', lw=1.0)
+#         for b in range(0, self.nbins, self.nbins//8):
+#             ax.plot(self.GFP_median, self.anti_median[:, b], 'k-', lw=1.0)
 
         
         
