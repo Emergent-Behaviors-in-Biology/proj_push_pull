@@ -351,9 +351,9 @@ def plot_activation_curves(df, fig, ax, xlabel, ylabel, zlabel, fmt='.--',
     
     
     
-def plot_push_dataset_summary(df_data, dataset):
+def plot_push_dataset_summary(df_data, exp_name):
     
-    df_tmp = df_data.query("dataset==@dataset")
+    df_tmp = df_data.query("exp_name==@exp_name")
     
     fig, axes = plt.subplots(2,2, constrained_layout=True, figsize=(8, 10))
     
@@ -394,14 +394,14 @@ def plot_push_dataset_summary(df_data, dataset):
     
     ##########################################################
 
-    fig.suptitle(dataset)
+    fig.suptitle(exp_name)
 
     plt.show()
     
     
-def plot_pushpull_dataset_summary(df_data, dataset):
+def plot_pushpull_dataset_summary(df_data, exp_name):
     
-    df_tmp = df_data.query("dataset==@dataset")
+    df_tmp = df_data.query("exp_name==@exp_name")
     
     fig, axes = plt.subplots(2,6, constrained_layout=True, figsize=(24, 10))
     
@@ -515,7 +515,7 @@ def plot_pushpull_dataset_summary(df_data, dataset):
 
     ##########################################################
 
-    fig.suptitle(dataset)
+    fig.suptitle(exp_name)
 
     plt.show()
     

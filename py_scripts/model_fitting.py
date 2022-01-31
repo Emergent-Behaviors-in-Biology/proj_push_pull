@@ -18,10 +18,10 @@ import thermo_models as thermo
 
 
 
-def fit_push(df_data_info, df_data, empty_phospho_noise):
+def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
 
 
-    def solve(df_data_info, df_data, model_params, param_dict, x0, bounds, verbose=False):
+    def solve(df_dataset_key, df_data, model_params, param_dict, x0, bounds, verbose=False):
 
         df_copy = df_data.dropna().copy()
 
@@ -35,17 +35,17 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
 
 
 
-            for index, row in df_data_info.iterrows():
-                dataset = row['dataset']
+            for exp_name, row in df_dataset_key.iterrows():
 
-                params = 10**np.array(x)[model_params[dataset]]
+                
+                params = 10**np.array(x)[model_params[exp_name]]
 
-                df_tmp = df_copy.query("dataset==@dataset")
+                df_tmp = df_copy.query("exp_name==@exp_name")
 
                 if row['model'] == 'substrate_only':
                     
                     df_copy.loc[df_tmp.index, 'SpT_conc_predict'] = thermo.predict_substrate_only(df_tmp['ST_conc_infer'].values, *params)
-                    
+                                        
                 elif row['model'] == 'non-pplatable':
                     
                     df_copy.loc[df_tmp.index, 'SpT_conc_predict'] = thermo.predict_nonpplatable(df_tmp['ST_conc_infer'].values)
@@ -57,13 +57,18 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
                 elif row['model'] == 'pushpull':
                     df_copy.loc[df_tmp.index, 'SpT_conc_predict'] = thermo.predict_pushpull(df_tmp['WT_conc_infer'].values, df_tmp['ET_conc_infer'].values, df_tmp['ST_conc_infer'].values, *params)
 
+                    
+                
 
-                df_copy.loc[df_tmp.index, 'SpT_GFP_predict'] = df_copy.loc[df_tmp.index, 'SpT_conc_predict'] + np.median(empty_phospho_noise.get_GFP())
+                df_copy.loc[df_tmp.index, 'SpT_GFP_predict'] = df_copy.loc[df_tmp.index, 'SpT_conc_predict'] + phospho_GFP_cutoff
 
-
-                loss += np.mean((np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_predict'])-np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_infer']))**2)
-
-
+                
+                MSE = np.mean((np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_predict'])-np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_infer']))**2)
+                var = np.mean((np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_infer'])-np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_infer']).mean())**2)
+                
+                loss += MSE 
+                
+                
             # add small tether regularization to initial conditions
             loss += 1e-6*np.sum((x-np.array(x0))**2)
 
@@ -77,6 +82,7 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
         def callback(x):
             print("#############################################################")
             print("Total Loss:", func(x), "Regularization:", 1e-6*np.sum((x-np.array(x0))**2))
+            
             for p in param_dict:
                 print(p, x0[param_dict[p]], x[param_dict[p]])
                          
@@ -119,23 +125,22 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
 
 
     param_index = 1
-    for index, row in df_data_info.iterrows():
+    for exp_name, row in df_dataset_key.iterrows():
 
-        dataset = row['dataset']
         model = row['model']
         
         if model == 'substrate_only':
             # assign background phospho rate
-            model_params[dataset] = [param_dict['bg_phospho_rate']]
+            model_params[exp_name] = [param_dict['bg_phospho_rate']]
             
         elif model == 'non-pplatable':
             # no parameters
-            model_params[dataset] = []
+            model_params[exp_name] = []
 
         elif model == 'push':
 
             # assign background phospho rate
-            model_params[dataset] = [param_dict['bg_phospho_rate']]
+            model_params[exp_name] = [param_dict['bg_phospho_rate']]
 
             # assign kinase phospho rate
             kinase = row['kinase_variant']
@@ -144,7 +149,7 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
                 x0.append(-1.0)
                 bounds.append((None, None))
 
-            model_params[dataset].append(param_dict[kinase])
+            model_params[exp_name].append(param_dict[kinase])
 
             # assign kinase zipper binding affinity
             zipper = row['kinase_zipper']
@@ -153,12 +158,12 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
                 x0.append(3.0)
                 bounds.append((None, None))
 
-            model_params[dataset].append(param_dict[zipper])
+            model_params[exp_name].append(param_dict[zipper])
             
         elif model == 'pushpull':
 
             # assign background phospho rate
-            model_params[dataset] = [param_dict['bg_phospho_rate']]
+            model_params[exp_name] = [param_dict['bg_phospho_rate']]
 
             # assign kinase phospho rate
             kinase = row['kinase_variant']
@@ -167,7 +172,7 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
                 x0.append(-1.0)
                 bounds.append((None, None))
 
-            model_params[dataset].append(param_dict[kinase])
+            model_params[exp_name].append(param_dict[kinase])
 
             # assign kinase zipper binding affinity
             zipper = row['kinase_zipper']
@@ -176,7 +181,7 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
                 x0.append(3.0)
                 bounds.append((None, None))
 
-            model_params[dataset].append(param_dict[zipper])
+            model_params[exp_name].append(param_dict[zipper])
             
             # assign pptase phospho rate
             pptase = row['pptase_variant']
@@ -185,7 +190,7 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
                 x0.append(-1.0)
                 bounds.append((None, None))
 
-            model_params[dataset].append(param_dict[pptase])
+            model_params[exp_name].append(param_dict[pptase])
 
             # assign pptase zipper binding affinity
             zipper = row['pptase_zipper']
@@ -194,7 +199,7 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
                 x0.append(3.0)
                 bounds.append((None, None))
 
-            model_params[dataset].append(param_dict[zipper])
+            model_params[exp_name].append(param_dict[zipper])
 
 
     print(param_dict)
@@ -203,31 +208,30 @@ def fit_push(df_data_info, df_data, empty_phospho_noise):
     print(x0)
     print(bounds)
 
-    res = solve(df_data_info, df_data, model_params, param_dict, x0, bounds, verbose=True)
+    res = solve(df_dataset_key, df_data, model_params, param_dict, x0, bounds, verbose=True)
 
     
-    for index, row in df_data_info.iterrows():
+    for exp_name, row in df_dataset_key.iterrows():
     
-        dataset = row['dataset']
         model = row['model']
         
-        params = 10**res.x[model_params[dataset]]
+        params = 10**res.x[model_params[exp_name]]
         
         if model == 'substrate_only':
-            df_data_info.loc[index, 'bg_phospho_rate'] = params[0]
+            df_dataset_key.loc[exp_name, 'bg_phospho_rate'] = params[0]
         elif model == 'push':
-            df_data_info.loc[index, 'bg_phospho_rate'] = params[0]
-            df_data_info.loc[index, 'kinase_phospho_rate'] = params[1]
-            df_data_info.loc[index, 'kinase_binding_affinity'] = params[2]
+            df_dataset_key.loc[exp_name, 'bg_phospho_rate'] = params[0]
+            df_dataset_key.loc[exp_name, 'kinase_phospho_rate'] = params[1]
+            df_dataset_key.loc[exp_name, 'kinase_binding_affinity'] = params[2]
         elif model == 'pushpull':
-            df_data_info.loc[index, 'bg_phospho_rate'] = params[0]
-            df_data_info.loc[index, 'kinase_phospho_rate'] = params[1]
-            df_data_info.loc[index, 'kinase_binding_affinity'] = params[2]
-            df_data_info.loc[index, 'pptase_dephospho_rate'] = params[3]
-            df_data_info.loc[index, 'pptase_binding_affinity'] = params[4]
+            df_dataset_key.loc[exp_name, 'bg_phospho_rate'] = params[0]
+            df_dataset_key.loc[exp_name, 'kinase_phospho_rate'] = params[1]
+            df_dataset_key.loc[exp_name, 'kinase_binding_affinity'] = params[2]
+            df_dataset_key.loc[exp_name, 'pptase_dephospho_rate'] = params[3]
+            df_dataset_key.loc[exp_name, 'pptase_binding_affinity'] = params[4]
               
         
         
-    display(df_data_info)
+    display(df_dataset_key)
     
     return res, param_dict
