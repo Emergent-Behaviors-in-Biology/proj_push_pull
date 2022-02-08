@@ -362,7 +362,7 @@ def plot_push_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 0]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
+    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
 
     
 
@@ -371,8 +371,8 @@ def plot_push_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 1]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
-                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='ST_anti_exp', show_diagonal=True)
+    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
+                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='substrate_anti_exp', show_diagonal=True)
 
     
 
@@ -380,7 +380,7 @@ def plot_push_dataset_summary(df_data, exp_name):
     
     ax = axes[1, 0]
     
-    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+    plot_activation_curves(df_tmp, fig, ax, 'kinase_anti_exp', 'phospho_anti_exp', 'substrate_anti_exp', 
                              nSTbins=4, xlim=(1e1, 1e5), ylim=(1e1, 1e4), error_bands=True, use_median=True, error_band_range=(0.5, 0.95))
 
 
@@ -388,8 +388,8 @@ def plot_push_dataset_summary(df_data, exp_name):
     
     ax = axes[1, 1]
 
-    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
-                           normalize_xlabel='ST_anti_exp', normalize_ylabel='ST_anti_exp', xlim=(1e-1, 1e2), ylim=(0, 1.5), nSTbins=4,
+    plot_activation_curves(df_tmp, fig, ax, 'kinase_anti_exp', 'phospho_anti_exp', 'substrate_anti_exp', 
+                           normalize_xlabel='substrate_anti_exp', normalize_ylabel='substrate_anti_exp', xlim=(1e-1, 1e2), ylim=(0, 1.5), nSTbins=4,
                             error_bands=True, use_median=True, error_band_range=(0.5, 0.95), ylog_scale=False)
     
     ##########################################################
@@ -410,7 +410,7 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 0]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
+    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
 
     
 
@@ -419,15 +419,15 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 1]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
-                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='ST_anti_exp', show_diagonal=True)
+    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
+                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='substrate_anti_exp', show_diagonal=True)
     
     ##########################################################
 
     
     ax = axes[0, 2]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'ET_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
+    plot_2d_avg_hex(df_tmp, fig, ax, 'pptase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
 
     
 
@@ -436,8 +436,8 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 3]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'ET_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
-                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='ST_anti_exp', show_diagonal=True)
+    plot_2d_avg_hex(df_tmp, fig, ax, 'pptase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
+                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='substrate_anti_exp', show_diagonal=True)
     
     
     ##########################################################
@@ -445,8 +445,8 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 4]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e-3, 1e2), ylim=(1e1, 1e5),
-                   normalize_xlabel='ET_anti_exp')
+    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e-3, 1e2), ylim=(1e1, 1e5),
+                   normalize_xlabel='pptase_anti_exp')
 
     
 
@@ -455,8 +455,8 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 5]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'WT_anti_exp', 'ST_anti_exp', 'SpT_anti_exp', nbins=20, xlim=(1e-3, 1e2), ylim=(1e1, 1e5), 
-                          vmin=0, vmax=1.5, logscale=True,  normalize_xlabel='ET_anti_exp', normalize_zlabel='ST_anti_exp')
+    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e-3, 1e2), ylim=(1e1, 1e5), 
+                          vmin=0, vmax=1.5, logscale=True,  normalize_xlabel='pptase_anti_exp', normalize_zlabel='substrate_anti_exp')
     
 
 
@@ -464,7 +464,7 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[1, 0]
     
-    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+    plot_activation_curves(df_tmp, fig, ax, 'kinase_anti_exp', 'phospho_anti_exp', 'substrate_anti_exp', 
                              nSTbins=4, xlim=(1e1, 1e5), ylim=(1e1, 1e4), error_bands=True, use_median=True, error_band_range=(0.5, 0.95))
 
 
@@ -472,8 +472,8 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[1, 1]
 
-    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
-                           normalize_xlabel='ST_anti_exp', normalize_ylabel='ST_anti_exp', xlim=(1e-1, 1e2), ylim=(0, 1.5), nSTbins=4,
+    plot_activation_curves(df_tmp, fig, ax, 'kinase_anti_exp', 'phospho_anti_exp', 'substrate_anti_exp', 
+                           normalize_xlabel='substrate_anti_exp', normalize_ylabel='substrate_anti_exp', xlim=(1e-1, 1e2), ylim=(0, 1.5), nSTbins=4,
                             error_bands=True, use_median=True, error_band_range=(0.5, 0.95), ylog_scale=False)
     
     
@@ -482,7 +482,7 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[1, 2]
     
-    plot_activation_curves(df_tmp, fig, ax, 'ET_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
+    plot_activation_curves(df_tmp, fig, ax, 'pptase_anti_exp', 'phospho_anti_exp', 'substrate_anti_exp', 
                              nSTbins=4, xlim=(1e1, 1e5), ylim=(1e1, 1e4), error_bands=True, use_median=True, error_band_range=(0.5, 0.95))
 
 
@@ -490,8 +490,8 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[1, 3]
 
-    plot_activation_curves(df_tmp, fig, ax, 'ET_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
-                           normalize_xlabel='ST_anti_exp', normalize_ylabel='ST_anti_exp', xlim=(1e-1, 1e2), ylim=(0, 1.5), nSTbins=4,
+    plot_activation_curves(df_tmp, fig, ax, 'pptase_anti_exp', 'phospho_anti_exp', 'substrate_anti_exp', 
+                           normalize_xlabel='substrate_anti_exp', normalize_ylabel='substrate_anti_exp', xlim=(1e-1, 1e2), ylim=(0, 1.5), nSTbins=4,
                             error_bands=True, use_median=True, error_band_range=(0.5, 0.95), ylog_scale=False)
     
 
@@ -499,7 +499,7 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[1, 4]
     
-    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', normalize_xlabel='ET_anti_exp',
+    plot_activation_curves(df_tmp, fig, ax, 'kinase_anti_exp', 'phospho_anti_exp', 'substrate_anti_exp', normalize_xlabel='pptase_anti_exp',
                              nSTbins=4, xlim=(1e-2, 1e2), ylim=(1e1, 1e4), error_bands=True, use_median=True, error_band_range=(0.5, 0.95))
 
 
@@ -507,8 +507,8 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[1, 5]
 
-    plot_activation_curves(df_tmp, fig, ax, 'WT_anti_exp', 'SpT_anti_exp', 'ST_anti_exp', 
-                           normalize_xlabel='ET_anti_exp', normalize_ylabel='ST_anti_exp', xlim=(1e-2, 1e2), ylim=(0, 1.5), nSTbins=4,
+    plot_activation_curves(df_tmp, fig, ax, 'kinase_anti_exp', 'phospho_anti_exp', 'substrate_anti_exp', 
+                           normalize_xlabel='pptase_anti_exp', normalize_ylabel='substrate_anti_exp', xlim=(1e-2, 1e2), ylim=(0, 1.5), nSTbins=4,
                             error_bands=True, use_median=True, error_band_range=(0.5, 0.95), ylog_scale=False)
     
     

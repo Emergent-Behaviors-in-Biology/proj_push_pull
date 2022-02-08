@@ -44,27 +44,27 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
 
                 if row['model'] == 'substrate_only':
                     
-                    df_copy.loc[df_tmp.index, 'SpT_conc_predict'] = thermo.predict_substrate_only(df_tmp['ST_conc_infer'].values, *params)
+                    df_copy.loc[df_tmp.index, 'phospho_conc_predict'] = thermo.predict_substrate_only(df_tmp['substrate_conc_infer'].values, *params)
                                         
                 elif row['model'] == 'non-pplatable':
                     
-                    df_copy.loc[df_tmp.index, 'SpT_conc_predict'] = thermo.predict_nonpplatable(df_tmp['ST_conc_infer'].values)
+                    df_copy.loc[df_tmp.index, 'phospho_conc_predict'] = thermo.predict_nonpplatable(df_tmp['substrate_conc_infer'].values)
                     
                 elif row['model'] == 'push':
 
-                    df_copy.loc[df_tmp.index, 'SpT_conc_predict'] = thermo.predict_push(df_tmp['WT_conc_infer'].values, df_tmp['ST_conc_infer'].values, *params)
+                    df_copy.loc[df_tmp.index, 'phospho_conc_predict'] = thermo.predict_push(df_tmp['kinase_conc_infer'].values, df_tmp['substrate_conc_infer'].values, *params)
 
                 elif row['model'] == 'pushpull':
-                    df_copy.loc[df_tmp.index, 'SpT_conc_predict'] = thermo.predict_pushpull(df_tmp['WT_conc_infer'].values, df_tmp['ET_conc_infer'].values, df_tmp['ST_conc_infer'].values, *params)
+                    df_copy.loc[df_tmp.index, 'phospho_conc_predict'] = thermo.predict_pushpull(df_tmp['kinase_conc_infer'].values, df_tmp['pptase_conc_infer'].values, df_tmp['substrate_conc_infer'].values, *params)
 
                     
                 
 
-                df_copy.loc[df_tmp.index, 'SpT_GFP_predict'] = df_copy.loc[df_tmp.index, 'SpT_conc_predict'] + phospho_GFP_cutoff
+                df_copy.loc[df_tmp.index, 'phospho_GFP_predict'] = df_copy.loc[df_tmp.index, 'phospho_conc_predict'] + phospho_GFP_cutoff
 
                 
-                MSE = np.mean((np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_predict'])-np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_infer']))**2)
-                var = np.mean((np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_infer'])-np.log10(df_copy.loc[df_tmp.index, 'SpT_GFP_infer']).mean())**2)
+                MSE = np.mean((np.log10(df_copy.loc[df_tmp.index, 'phospho_GFP_predict'])-np.log10(df_copy.loc[df_tmp.index, 'phospho_GFP_infer']))**2)
+                var = np.mean((np.log10(df_copy.loc[df_tmp.index, 'phospho_GFP_infer'])-np.log10(df_copy.loc[df_tmp.index, 'phospho_GFP_infer']).mean())**2)
                 
                 loss += MSE 
                 
@@ -81,7 +81,7 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
 
         def callback(x):
             print("#############################################################")
-            print("Total Loss:", func(x), "Regularization:", 1e-6*np.sum((x-np.array(x0))**2))
+            print("Total Loss:", func(x), "Regularization:", 1e-4*np.sum((x-np.array(x0))**2))
             
             for p in param_dict:
                 print(p, x0[param_dict[p]], x[param_dict[p]])
@@ -94,15 +94,15 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
         callback(x0)
             
 
-    #     res = opt.minimize(func, x0, method='L-BFGS-B', 
-    #                        jac='2-point', bounds=bounds, 
-    #                        options={'iprint':101, 'eps': 1e-6, 
-    #                                 'gtol': 1e-6, 'ftol':1e-6},
-    #                       callback=callback)
-        res = opt.minimize(func, x0, method='BFGS', 
-                           jac='2-point', 
-                           options={'eps': 1e-6, 'gtol': 1e-4, 'disp': True},
+        res = opt.minimize(func, x0, method='L-BFGS-B', 
+                           jac='2-point', bounds=bounds, 
+                           options={'iprint':101, 'eps': 1e-6, 
+                                    'gtol': 1e-4, 'ftol':1e-6},
                           callback=callback)
+#         res = opt.minimize(func, x0, method='BFGS', 
+#                            jac='2-point', 
+#                            options={'eps': 1e-6, 'gtol': 1e-4, 'disp': True},
+#                           callback=callback)
 
 
         callback(res.x)
@@ -121,7 +121,7 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
     # list of initial conditions
     x0 = [-2.0]
     # list of parameter bounds
-    bounds = [(None, None)]
+    bounds = [(-8, 1)]
 
 
     param_index = 1
@@ -147,7 +147,7 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
             if kinase not in param_dict:
                 param_dict[kinase] = len(param_dict)
                 x0.append(-1.0)
-                bounds.append((None, None))
+                bounds.append((-8, 1))
 
             model_params[exp_name].append(param_dict[kinase])
 
@@ -156,7 +156,7 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
             if zipper not in param_dict:
                 param_dict[zipper] = len(param_dict)
                 x0.append(3.0)
-                bounds.append((None, None))
+                bounds.append((-8, 8))
 
             model_params[exp_name].append(param_dict[zipper])
             
@@ -170,7 +170,7 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
             if kinase not in param_dict:
                 param_dict[kinase] = len(param_dict)
                 x0.append(-1.0)
-                bounds.append((None, None))
+                bounds.append((-8, 1))
 
             model_params[exp_name].append(param_dict[kinase])
 
@@ -179,7 +179,7 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
             if zipper not in param_dict:
                 param_dict[zipper] = len(param_dict)
                 x0.append(3.0)
-                bounds.append((None, None))
+                bounds.append((-8, 8))
 
             model_params[exp_name].append(param_dict[zipper])
             
@@ -188,7 +188,7 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
             if pptase not in param_dict:
                 param_dict[pptase] = len(param_dict)
                 x0.append(-1.0)
-                bounds.append((None, None))
+                bounds.append((-8, 1))
 
             model_params[exp_name].append(param_dict[pptase])
 
@@ -197,7 +197,7 @@ def fit_push(df_dataset_key, df_data, phospho_GFP_cutoff):
             if zipper not in param_dict:
                 param_dict[zipper] = len(param_dict)
                 x0.append(3.0)
-                bounds.append((None, None))
+                bounds.append((-8, 8))
 
             model_params[exp_name].append(param_dict[zipper])
 
