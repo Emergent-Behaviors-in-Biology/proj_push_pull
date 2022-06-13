@@ -135,7 +135,7 @@ def setup_model_params(df_dataset_key, df_params=None):
         
 def predict(x, args, df_copy):
     
-    (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params, phospho_GFP_cutoff) = args
+    (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params) = args
     
     for exp_name, row in df_dataset_key.iterrows():
 
@@ -179,29 +179,41 @@ def predict(x, args, df_copy):
 def loss(x, args):
 
     
-    (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params, phospho_GFP_cutoff) = args
+    (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params) = args
     
     
     df_copy = df_data.dropna().copy()
 
     predict(x, args, df_copy)
     
-#     loss = 0.0
+    loss1 = 0.0
+    N = 0
+    for exp_name, row in df_dataset_key.iterrows():
+        df_exp = df_copy.query("exp_name==@exp_name")
+        if len(df_exp.index) > 0:
+            loss1 += np.sum((np.log10(df_exp['phospho_GFP_predict'])-np.log10(df_exp['phospho_GFP_infer']))**2)
+        N += len(df_exp.index)
+        
+    loss1 /= N
 
-#     for exp_name, row in df_dataset_key.iterrows():
-#         loss += np.mean((np.log10(df_copy.query("exp_name==@exp_name")['phospho_GFP_predict'])-np.log10(df_copy.query("exp_name==@exp_name")['phospho_GFP_infer']))**2)
-
-    loss = np.mean((np.log10(df_copy['phospho_GFP_predict'])-np.log10(df_copy['phospho_GFP_infer']))**2)
-    
+#     loss = np.mean((np.log10(df_copy['phospho_GFP_predict'])-np.log10(df_copy['phospho_GFP_infer']))**2)
+        
+    loss2 = 0.0
+    N = 0
     df_copy = df_copy.query("kinase2phospho_GFP_infer>0.0")
+    for exp_name, row in df_dataset_key.iterrows():
+        df_exp = df_copy.query("exp_name==@exp_name")
+        if len(df_exp.index) > 0:
+            loss2 += np.mean((np.log10(df_exp['kinase2phospho_GFP_predict'])-np.log10(df_exp['kinase2phospho_GFP_infer']))**2)
+        N += len(df_exp.index)
     
-    loss +=np.mean((np.log10(df_copy['kinase2phospho_GFP_predict'])-np.log10(df_copy['kinase2phospho_GFP_infer']))**2)
+    if N > 0:
+        loss2 /= N
     
-    
-    return loss
+    return loss1 + loss2
     
 
-def fit(df_dataset_key, df_data, phospho_GFP_cutoff, df_params=None):
+def fit(df_dataset_key, df_data, df_params=None):
     
     prefit_params, param_to_index, dataset_to_params, x0, bounds = setup_model_params(df_dataset_key, df_params=df_params)
     
@@ -214,7 +226,7 @@ def fit(df_dataset_key, df_data, phospho_GFP_cutoff, df_params=None):
     if len(param_to_index) == 0:
         return df_params
     
-    args = (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params, phospho_GFP_cutoff)
+    args = (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params)
     
     def callback(x):
         print("#############################################################")
@@ -246,7 +258,7 @@ def fit(df_dataset_key, df_data, phospho_GFP_cutoff, df_params=None):
     
     return df_params
 
-def calc_error(df_dataset_key, df_data, phospho_GFP_cutoff, df_params, tol=0.01):
+def calc_error(df_dataset_key, df_data, df_params, tol=0.01):
     
     prefit_params, param_to_index, dataset_to_params, x0, bounds = setup_model_params(df_dataset_key, df_params=df_params.query("val_min != 0.0 and val_max != 0.0"))
     
@@ -255,7 +267,7 @@ def calc_error(df_dataset_key, df_data, phospho_GFP_cutoff, df_params, tol=0.01)
     print(dataset_to_params)
     print(bounds)
     
-    args = (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params, phospho_GFP_cutoff)
+    args = (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params)
     
     for p in param_to_index:
         x0[param_to_index[p]] = df_params.query("name==@p").iloc[0]['val']
