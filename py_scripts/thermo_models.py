@@ -93,13 +93,23 @@ def predict_twolayerpushpull(WT, ET, S1T, S2T, vpS1bg, vuS1bg, vpS2bg, vpWS1, al
 #         if i % 1000 == 0:
 #             print(i, "/", Ncells)
             
-            
+#         @njit    
         def func(x):
-                        
-            (logfS1p, logfS1u) = x.tolist()
+            
+            logfS1p = x[0]
+            logfS1u = x[1]
             
             S1p = 10**logfS1p * S1T[i]
             S1u = 10**logfS1u * S1T[i]
+            
+#             try:
+#                 S1p = 10**logfS1p * S1T[i]
+#                 S1u = 10**logfS1u * S1T[i]
+#             except OverflowError as err:
+#                 print(err.args)
+#                 print("Overflowed:", i, logfS1p, logfS1u, S1T[i])
+#                 S1p = 10**np.clip(logfS1p, -8, 8) * S1T[i]
+#                 S1u = 10**np.clip(logfS1u, -8, 8) * S1T[i]
             
             
             W = WT[i] / (1+(S1p+S1u)/alphaWS1)
@@ -117,6 +127,7 @@ def predict_twolayerpushpull(WT, ET, S1T, S2T, vpS1bg, vuS1bg, vpS2bg, vpWS1, al
             f[0] = S1p/S1T[i] - S1pT/S1T[i]/(1 + W/alphaWS1 + E/alphaES1 + S2f/alphaS1S2)
             f[1] = S1u/S1T[i] - S1uT/S1T[i]/(1 + W/alphaWS1 + E/alphaES1)
             
+#             f = f**2
 #             print(la.norm(f))
             
 #             print(x)
@@ -124,14 +135,22 @@ def predict_twolayerpushpull(WT, ET, S1T, S2T, vpS1bg, vuS1bg, vpS2bg, vpWS1, al
             return f
         
         x0 = np.zeros(2, np.float64)
-        x0[0] = 0.5 #S1p/S1T
-        x0[1] = 0.5 #S1u/S1T
+        x0[0] = 0.1 # S1p/S1T
+        x0[1] = 0.1 # S1u/S1T
         
         x0 = np.log10(x0)
             
-        res = sp.optimize.root(func, x0=x0, method='hybr', options={'eps': 1e-6, 'xtol': 1e-6})
+#         res = sp.optimize.root(func, x0=x0, method='hybr', options={'eps': 1e-6, 'xtol': 1e-6})
           
+        bounds = (-6, 0)
+        res = sp.optimize.least_squares(func, x0=x0, bounds=bounds, jac='2-point', ftol=1e-8, xtol=1e-4, gtol=1e-8, verbose=0, method='trf')
+        
+    
+    
+#         print(i, res.cost, res.fun, res.x, res.nfev, res.njev, res.message)
+    
         if not res.success:
+            print(res)
             if (res.x > -2).any():
                 print(i, res.message)
                 print(10**res.x)

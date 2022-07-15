@@ -304,7 +304,7 @@ class GaussianConditionalNoise:
                         
         return out_vals
     
-class CompositeConditionalNoiseV2:
+class CompositeConditionalNoiseNoEmpty:
     def __init__(self, exp_noise, cutoff_percent=0.95):
                 
         self.exp_noise = exp_noise
@@ -660,22 +660,24 @@ class CompositeConditionalNoise:
     def transform(self, in_vals):
         
         out_vals = np.zeros_like(in_vals)
-                
-        is_empty = np.zeros(len(in_vals), dtype=bool)
-        
+                        
+        # joint probability of anti and empty
         prob_a_and_empty = np.zeros_like(in_vals)
-        
-        p = rand.random_sample(size=len(in_vals))
-        
+         
+        # values that are within cutoffs
         idx = (in_vals > self.low_cutoff) & (in_vals < self.high_cutoff)
         
+        # conditional probability of anti value given empty
         prob_a_given_empty = self.empty_noise.get_prob(in_vals[idx])
-        prob_a_given_nonempty = self.nonempty_noise.get_prob(in_vals[idx])        
+        # conditional probability of anti value given not empty
+        prob_a_given_nonempty = self.nonempty_noise.get_prob(in_vals[idx])   
+        # compute joint probability
         prob_a_and_empty[idx] = self.empty_prob*prob_a_given_empty / (self.empty_prob*prob_a_given_empty + (1-self.empty_prob)*prob_a_given_nonempty)
 
         out_vals[idx & (prob_a_and_empty > 0.0)] += prob_a_and_empty[idx & (prob_a_and_empty > 0.0)] * self.empty_noise.transform(in_vals[idx & (prob_a_and_empty > 0.0)])
         out_vals[idx & (prob_a_and_empty < 1.0)] += (1-prob_a_and_empty[idx & (prob_a_and_empty < 1.0)]) * self.nonempty_noise.transform(in_vals[idx & (prob_a_and_empty < 1.0)])
      
+        # set values outside of cutoffs using gaussians
         prob_a_given_empty = self.empty_gaussian_noise.get_prob(in_vals[~idx])
         prob_a_given_nonempty = self.nonempty_gaussian_noise.get_prob(in_vals[~idx])        
         prob_a_and_empty[~idx] = self.empty_prob*prob_a_given_empty / (self.empty_prob*prob_a_given_empty + (1-self.empty_prob)*prob_a_given_nonempty)
@@ -685,7 +687,22 @@ class CompositeConditionalNoise:
                      
         return out_vals
     
-    
+    def get_prob_empty(self, in_vals):
+            
+        prob_a_and_empty = np.zeros_like(in_vals)
+                
+        idx = (in_vals > self.low_cutoff) & (in_vals < self.high_cutoff)
+        
+        prob_a_given_empty = self.empty_noise.get_prob(in_vals[idx])
+        prob_a_given_nonempty = self.nonempty_noise.get_prob(in_vals[idx])        
+        prob_a_and_empty[idx] = self.empty_prob*prob_a_given_empty / (self.empty_prob*prob_a_given_empty + (1-self.empty_prob)*prob_a_given_nonempty)
+
+     
+        prob_a_given_empty = self.empty_gaussian_noise.get_prob(in_vals[~idx])
+        prob_a_given_nonempty = self.nonempty_gaussian_noise.get_prob(in_vals[~idx])        
+        prob_a_and_empty[~idx] = self.empty_prob*prob_a_given_empty / (self.empty_prob*prob_a_given_empty + (1-self.empty_prob)*prob_a_given_nonempty)
+         
+        return prob_a_and_empty
 
     
     

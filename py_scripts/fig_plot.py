@@ -172,11 +172,11 @@ def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vm
         vmax = values.max()
         
     if logscale:
-        val_norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
-    else:
         val_norm = mpl.colors.LogNorm(vmin=vmin, vmax=vmax)
+    else:
+        val_norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
     cmap=plt.cm.viridis_r
-    cmap=plt.cm.Blues
+#     cmap=plt.cm.Blues
     
     ax.set_facecolor('#f7fbff')
     

@@ -3,7 +3,7 @@
 # Set SCC project
 #$ -P biophys
 
-#$ -l buyin
+##$ -l buyin
 
 # Specify job name
 #$ -N push_pull
@@ -11,18 +11,18 @@
 #$ -j y
 
 # Set walltime
-#$ -l h_rt=48:00:00
+#$ -l h_rt=168:00:00
 
 # Request 1 CPU
 #$ -pe omp 1
 
 # Job Array
-#$ -t 20-100
+#$ -t 1
 
 
-# module load anaconda3/5.2.0
+module load miniconda/4.7.5
 
-# source activate default
+source activate default
 
 # export MKL_NUM_THREADS=1
 
@@ -30,4 +30,4 @@ which python
 
 SEED=$(($SGE_TASK_ID-1))   
 
-time python run_fit_push.py $SEED
+time python run_fit_push.py
