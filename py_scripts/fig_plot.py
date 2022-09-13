@@ -113,7 +113,7 @@ show_diagonal: whether to show dashed line along diagonal of plot
 """
 
 def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vmax=None, xlim=(1e1, 1e5), ylim=(1e1, 1e5), logscale=False,
-                   normalize_xlabel=None, normalize_ylabel=None, normalize_zlabel=None, show_diagonal=False):
+                   normalize_xlabel=None, normalize_ylabel=None, normalize_zlabel=None, show_diagonal=False, symlogscale=True):
     
     x = df[xlabel].values
     y = df[ylabel].values
@@ -171,12 +171,17 @@ def plot_2d_avg_hex(df, fig, ax, xlabel, ylabel, zlabel, nbins=20, vmin=None, vm
     if vmax == None:
         vmax = values.max()
         
+    print(values.min(), values.max())
+        
     if logscale:
         val_norm = mpl.colors.LogNorm(vmin=vmin, vmax=vmax)
+    elif symlogscale:
+        val_norm = mpl.colors.SymLogNorm(linthresh=1.0, vmin=vmin, vmax=vmax)
     else:
         val_norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
     cmap=plt.cm.viridis_r
 #     cmap=plt.cm.Blues
+#     cmap=plt.cm.RdBu
     
     ax.set_facecolor('#f7fbff')
     
@@ -486,7 +491,7 @@ def plot_push_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 0]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
+    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', logscale=True, nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
 
     
 
@@ -496,7 +501,7 @@ def plot_push_dataset_summary(df_data, exp_name):
     ax = axes[0, 1]
     
     plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
-                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='substrate_anti_exp', show_diagonal=True)
+                          vmin=0, vmax=1.5, logscale=False, normalize_zlabel='substrate_anti_exp', show_diagonal=True)
 
     
 
@@ -534,7 +539,7 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 0]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
+    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', logscale=True, nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
 
     
 
@@ -544,14 +549,14 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     ax = axes[0, 1]
     
     plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
-                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='substrate_anti_exp', show_diagonal=True)
+                          vmin=0, vmax=1.5, logscale=False, normalize_zlabel='substrate_anti_exp', show_diagonal=True)
     
     ##########################################################
 
     
     ax = axes[0, 2]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'pptase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
+    plot_2d_avg_hex(df_tmp, fig, ax, 'pptase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', logscale=True, nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), show_diagonal=True)
 
     
 
@@ -561,7 +566,7 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     ax = axes[0, 3]
     
     plot_2d_avg_hex(df_tmp, fig, ax, 'pptase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e1, 1e5), ylim=(1e1, 1e5), 
-                          vmin=0, vmax=1.5, logscale=True, normalize_zlabel='substrate_anti_exp', show_diagonal=True)
+                          vmin=0, vmax=1.5, logscale=False, normalize_zlabel='substrate_anti_exp', show_diagonal=True)
     
     
     ##########################################################
@@ -569,7 +574,7 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     
     ax = axes[0, 4]
     
-    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e-3, 1e2), ylim=(1e1, 1e5),
+    plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', logscale=True, nbins=20, xlim=(1e-3, 1e2), ylim=(1e1, 1e5),
                    normalize_xlabel='pptase_anti_exp')
 
     
@@ -580,7 +585,7 @@ def plot_pushpull_dataset_summary(df_data, exp_name):
     ax = axes[0, 5]
     
     plot_2d_avg_hex(df_tmp, fig, ax, 'kinase_anti_exp', 'substrate_anti_exp', 'phospho_anti_exp', nbins=20, xlim=(1e-3, 1e2), ylim=(1e1, 1e5), 
-                          vmin=0, vmax=1.5, logscale=True,  normalize_xlabel='pptase_anti_exp', normalize_zlabel='substrate_anti_exp')
+                          vmin=0, vmax=1.5, logscale=False,  normalize_xlabel='pptase_anti_exp', normalize_zlabel='substrate_anti_exp')
     
 
 

@@ -19,7 +19,7 @@ import thermo_models as thermo
 
 
 
-def setup_model_params(df_dataset_key, df_params=None):
+def setup_model_params(df_dataset_key, df_params=None, noise_models=None):
     
 
     # map of prefit param names to values
@@ -38,6 +38,36 @@ def setup_model_params(df_dataset_key, df_params=None):
     x0 = []
     bounds = []
     
+    if noise_models is not None:
+        
+        dataset_to_params['noise_model'] = []
+        
+        if isinstance(noise_models['phospho']['GFP2MOCU'], noise.LogNormalBGNoise):
+            # first set loss function parameters
+
+            if 'phospho_sigma' not in prefit_params and 'phospho_sigma' not in param_to_index:
+                param_to_index['phospho_sigma'] = len(x0)
+                x0.append(2.0)
+                bounds.append((0.5, 2.0))
+
+            dataset_to_params['noise_model'].append('phospho_sigma')
+            
+        
+        for exp_name, row in df_dataset_key.iterrows():
+            model = row['model']
+            if model == 'two_layer' or model == 'two_layer_nowriter' or model == 'two_layer_noeraser':  
+                if isinstance(noise_models['kinase2_phospho']['GFP2MOCU'], noise.LogNormalBGNoise):
+                    # first set loss function parameters
+
+                    if 'kinase2_phospho_sigma' not in prefit_params and 'kinase2_phospho_sigma' not in param_to_index:
+                        param_to_index['kinase2_phospho_sigma'] = len(x0)
+                        x0.append(2.0)
+                        bounds.append((0.5, 2.0))
+
+                    dataset_to_params['noise_model'].append('kinase2_phospho_sigma')
+                    
+                    break
+
     
     for exp_name, row in df_dataset_key.iterrows():
     
@@ -45,19 +75,42 @@ def setup_model_params(df_dataset_key, df_params=None):
         dataset_to_params[exp_name] = []
     
         model = row['model']
-        if model == 'non-pplatable':
-            continue
+        
+        # all models have a background noise model parameters
 
-        # initialize parameters used in every model
-        if 'bg_phospho_rate' not in prefit_params and 'bg_phospho_rate' not in param_to_index:
-            param_to_index['bg_phospho_rate'] = len(x0)
-            x0.append(-2.0)
-            bounds.append((-8, 1))
-    
-        # parameters used in every model
-        dataset_to_params[exp_name].append('bg_phospho_rate')
+        
+        # background phospho/dephospho rates
             
-        if model == 'push' or model == 'pushpull' or model == 'two_layer':
+        if model == 'substrate_only' or model == 'push' or model == 'pushpull':
+            
+            # substrate bg phospho rate
+            if 'sub_bg_phospho_rate' not in prefit_params and 'sub_bg_phospho_rate' not in param_to_index:
+                param_to_index['sub_bg_phospho_rate'] = len(x0)
+                x0.append(-2.0)
+                bounds.append((-8, 1))
+
+            dataset_to_params[exp_name].append('sub_bg_phospho_rate')
+            
+        if model == 'two_layer' or model == 'two_layer_nowriter' or model == 'two_layer_noeraser':
+                # background phospho rate for second kinase/ first substrate
+                if 'kin2_bg_phospho_rate' not in prefit_params and 'kin2_bg_phospho_rate' not in param_to_index:
+                    param_to_index['kin2_bg_phospho_rate'] = len(x0)
+                    x0.append(-2.0)
+                    bounds.append((-8, 1))
+
+                dataset_to_params[exp_name].append('kin2_bg_phospho_rate')
+                
+                # background phospho rate for second substrate
+                if 'sub2_bg_phospho_rate' not in prefit_params and 'sub2_bg_phospho_rate' not in param_to_index:
+                    param_to_index['sub2_bg_phospho_rate'] = len(x0)
+                    x0.append(-2.0)
+                    bounds.append((-8, 1))
+
+                dataset_to_params[exp_name].append('sub2_bg_phospho_rate')
+                
+                
+        # kinase parameters  
+        if model == 'push' or model == 'pushpull' or model == 'two_layer' or model == 'two_layer_noeraser':
             
             # assign kinase phospho rate
             label = row['kinase_variant']
@@ -77,7 +130,8 @@ def setup_model_params(df_dataset_key, df_params=None):
 
             dataset_to_params[exp_name].append(label)
             
-        if model == 'pushpull' or model == 'two_layer':
+        # pptase parameters
+        if model == 'pushpull' or model == 'two_layer' or model == 'two_layer_nowriter':
             
             # assign pptase phospho rate
             label = row['pptase_variant']
@@ -96,8 +150,9 @@ def setup_model_params(df_dataset_key, df_params=None):
                 bounds.append((-8, 8))
 
             dataset_to_params[exp_name].append(label)
-            
-        if model == 'two_layer':
+           
+        # second kinase / first substrate params
+        if model == 'two_layer' or model == 'two_layer_nowriter' or model == 'two_layer_noeraser':
             
             # assign kinase phospho rate
             label = row['kinase2_variant']
@@ -109,35 +164,30 @@ def setup_model_params(df_dataset_key, df_params=None):
             dataset_to_params[exp_name].append(label)
 
             # assign kinase zipper binding affinity
-            label = row['SH2_binding']
+            label = row['kinase2_zipper']
             if label not in prefit_params and label not in param_to_index:
                 param_to_index[label] = len(x0)
-                x0.append(1.0)
+                x0.append(3.0)
                 bounds.append((-8, 8))
 
             dataset_to_params[exp_name].append(label)
             
-            # background phospho and dephospho rates for second kinase
-            if 'bg_kinase2phospho_rate' not in prefit_params and 'bg_kinase2phospho_rate' not in param_to_index:
-                param_to_index['bg_kinase2phospho_rate'] = len(x0)
-                x0.append(-2.0)
-                bounds.append((-8, 1))
-                
-            if 'bg_kinase2dephospho_rate' not in prefit_params and 'bg_kinase2dephospho_rate' not in param_to_index:
-                param_to_index['bg_kinase2dephospho_rate'] = len(x0)
-                x0.append(-2.0)
-                bounds.append((-8, 1))
-    
-            dataset_to_params[exp_name].insert(0, 'bg_kinase2phospho_rate')
-            dataset_to_params[exp_name].insert(1, 'bg_kinase2dephospho_rate')
+            
             
     return  prefit_params, param_to_index, dataset_to_params, x0, bounds
         
 def predict(x, args, df_copy):
+        
+    (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params, noise_models) = args
     
-    (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params) = args
+#     print(x)
+
+    df_copy['phospho_MOCU_predict'] = 0.0
+    df_copy['kinase2_phospho_MOCU_predict'] = 0.0
     
     for exp_name, row in df_dataset_key.iterrows():
+        
+#         print(exp_name)
 
         params = []
         for p in dataset_to_params[exp_name]:
@@ -146,92 +196,152 @@ def predict(x, args, df_copy):
             else:
                 params.append(x[param_to_index[p]])
         
+#         print(exp_name, params)
+        
         params = 10.0**np.array(params)
-
+        
         df_tmp = df_copy.query("exp_name==@exp_name")
         
 #         print(exp_name, len(df_tmp.index))
 
         if row['model'] == 'substrate_only':
 
-            df_copy.loc[df_tmp.index, 'phospho_GFP_predict'] = thermo.predict_substrate_only(df_tmp['substrate_GFP_infer'].values, *params)
-            df_copy.loc[df_tmp.index, 'kinase2phospho_GFP_predict'] = 0.0
+            df_copy.loc[df_tmp.index, 'phospho_MOCU_predict'] = thermo.predict_substrate_only(df_tmp['substrate_MOCU_infer'].values, *params)
+            df_copy.loc[df_tmp.index, 'kinase2_phospho_MOCU_predict'] = 0.0
 
         elif row['model'] == 'non-pplatable':
 
-            df_copy.loc[df_tmp.index, 'phospho_GFP_predict'] = thermo.predict_nonpplatable(df_tmp['substrate_GFP_infer'].values)
-            df_copy.loc[df_tmp.index, 'kinase2phospho_GFP_predict'] = 0.0
+            df_copy.loc[df_tmp.index, 'phospho_MOCU_predict'] = thermo.predict_nonpplatable(df_tmp['substrate_MOCU_infer'].values, *params)
+            df_copy.loc[df_tmp.index, 'kinase2_phospho_MOCU_predict'] = 0.0
 
         elif row['model'] == 'push':
 
-            df_copy.loc[df_tmp.index, 'phospho_GFP_predict'] = thermo.predict_push(df_tmp['kinase_GFP_infer'].values, df_tmp['substrate_GFP_infer'].values, *params)
-            df_copy.loc[df_tmp.index, 'kinase2phospho_GFP_predict'] = 0.0
+            df_copy.loc[df_tmp.index, 'phospho_MOCU_predict'] = thermo.predict_push(df_tmp['kinase_MOCU_infer'].values, df_tmp['substrate_MOCU_infer'].values, *params)
+            df_copy.loc[df_tmp.index, 'kinase2_phospho_MOCU_predict'] = 0.0
 
         elif row['model'] == 'pushpull':
-            df_copy.loc[df_tmp.index, 'phospho_GFP_predict'] = thermo.predict_pushpull(df_tmp['kinase_GFP_infer'].values, df_tmp['pptase_GFP_infer'].values, df_tmp['substrate_GFP_infer'].values, *params)
-            df_copy.loc[df_tmp.index, 'kinase2phospho_GFP_predict'] = 0.0
+            df_copy.loc[df_tmp.index, 'phospho_MOCU_predict'] = thermo.predict_pushpull(df_tmp['kinase_MOCU_infer'].values, df_tmp['pptase_MOCU_infer'].values, df_tmp['substrate_MOCU_infer'].values, *params)
+            df_copy.loc[df_tmp.index, 'kinase2_phospho_MOCU_predict'] = 0.0
             
         elif row['model'] == 'two_layer':
             
-            kinase2phospho_GFP_predict, phospho_GFP_predict = thermo.predict_twolayerpushpull(df_tmp['kinase_GFP_infer'].values, df_tmp['pptase_GFP_infer'].values, df_tmp['kinase2_GFP_infer'].values, df_tmp['substrate_GFP_infer'].values, *params)
-            df_copy.loc[df_tmp.index, 'phospho_GFP_predict'] = phospho_GFP_predict
-            df_copy.loc[df_tmp.index, 'kinase2phospho_GFP_predict'] = kinase2phospho_GFP_predict
+            kinase2_phospho_MOCU_predict, phospho_MOCU_predict = thermo.predict_twolayer(df_tmp['kinase_MOCU_infer'].values, df_tmp['pptase_MOCU_infer'].values, df_tmp['kinase2_GFP_infer'].values, df_tmp['substrate_MOCU_infer'].values, *params)
+            df_copy.loc[df_tmp.index, 'phospho_MOCU_predict'] = phospho_MOCU_predict
+            df_copy.loc[df_tmp.index, 'kinase2_phospho_MOCU_predict'] = kinase2_phospho_MOCU_predict
+            
+        elif row['model'] == 'two_layer_nowriter':
+            
+            kinase2_phospho_MOCU_predict, phospho_MOCU_predict = thermo.predict_twolayer_nowriter(df_tmp['pptase_MOCU_infer'].values, df_tmp['kinase2_GFP_infer'].values, df_tmp['substrate_MOCU_infer'].values, *params)
+            df_copy.loc[df_tmp.index, 'phospho_MOCU_predict'] = phospho_MOCU_predict
+            df_copy.loc[df_tmp.index, 'kinase2_phospho_MOCU_predict'] = kinase2_phospho_MOCU_predict
+            
+        elif row['model'] == 'two_layer_noeraser':
+            
+            kinase2_phospho_MOCU_predict, phospho_MOCU_predict = thermo.predict_twolayer_nowriter(df_tmp['kinase_MOCU_infer'].values, df_tmp['kinase2_GFP_infer'].values, df_tmp['substrate_MOCU_infer'].values, *params)
+            df_copy.loc[df_tmp.index, 'phospho_MOCU_predict'] = phospho_MOCU_predict
+            df_copy.loc[df_tmp.index, 'kinase2_phospho_MOCU_predict'] = kinase2_phospho_MOCU_predict
             
     
-def loss(x, args):
+# def loss_lognormal(x, args):
 
     
-    (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params) = args
+#     (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params, cnoise) = args
     
     
-    df_copy = df_data.dropna().copy()
+#     df_copy = df_data.dropna().copy()
+
+#     predict(x, args, df_copy)
+        
+    
+#     loss = 0.0
+#     norm = 0.0
+#     for exp_name, row in df_dataset_key.iterrows():
+#         df_exp = df_data.query("exp_name==@exp_name")
+#         if len(df_exp.index) > 0:
+#             loss += np.sum((np.log10(df_exp['phospho_GFP_predict'])-np.log10(df_exp['phospho_GFP_infer']))**2)
+#             norm += np.sum((np.log10(df_exp['phospho_GFP_infer'])-np.mean(np.log10(df_exp['phospho_GFP_infer'])))**2)
+
+#     df_data = df_data.query("kinase2_phospho_GFP_infer>0.0")
+#     for exp_name, row in df_dataset_key.iterrows():
+#         df_exp = df_data.query("exp_name==@exp_name")
+#         if len(df_exp.index) > 0:
+#             loss += np.sum((np.log10(df_exp['kinase2_phospho_GFP_predict'])-np.log10(df_exp['kinase2_phospho_GFP_infer']))**2)
+#             norm += np.sum((np.log10(df_exp['kinase2_phospho_GFP_infer'])-np.mean(np.log10(df_exp['kinase2_phospho_GFP_infer'])))**2)
+
+
+#     print(loss/norm)
+        
+#     return loss / norm
+  
+    
+    
+def loss_lognormal_bg(x, args):
+
+    
+    (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params, noise_models) = args
+    
+    
+    df_copy = df_data.copy()
 
     predict(x, args, df_copy)
     
-  
+    params = []
+    for p in dataset_to_params['noise_model']:
+        if p in prefit_params:
+            params.append(prefit_params[p])
+        else:
+            params.append(x[param_to_index[p]])
+                    
+        
+    loss = 0.0
+    norm = 0.0
+    for exp_name, row in df_dataset_key.iterrows():
+        
+            # if phospho factor exists, then multiply prediction
+
+        if 'phospho_factor' in row.index.values:
+            phospho_factor = row['substrate_phospho_factor']
+        else:
+            phospho_factor = 1.0
+            
+        if 'kinase2_phospho_factor' in row.index.values:
+            kinase2_phospho_factor = row['kinase2_phospho_factor']
+        else:
+            kinase2_phospho_factor = 1.0
+            
+        
+        df_exp = df_copy.query("exp_name==@exp_name")
+        if len(df_exp.index) > 0:
+            loss += loglikelihood_lognormal_bg(df_exp['phospho_GFP_infer'].values, phospho_factor*df_exp['phospho_MOCU_predict'].values, noise_models['phospho']['GFP2MOCU'], params[0])
     
-    return loss_func(df_copy, df_dataset_key)
+        df_exp = df_exp.query("kinase2_phospho_GFP_infer>0.0")
+        if len(df_exp.index) > 0:
+            loss += loglikelihood_lognormal_bg(df_exp['kinase2_phospho_GFP_infer'].values, kinase2_phospho_factor*df_exp['kinase2_phospho_MOCU_predict'].values, noise_models['kinase2_phospho']['GFP2MOCU'], params[1])
+   
+    
+    print(loss, norm)
+        
+    return loss
+          
+    
+    
+    
+def loglikelihood_lognormal_bg(meas, predict, cnoise, sigma):
     
 
-    
-def loss_func(df_data, df_dataset_key):
-    
-    loss1 = 0.0
-    N = 0
-    for exp_name, row in df_dataset_key.iterrows():
-        df_exp = df_data.query("exp_name==@exp_name")
-        if len(df_exp.index) > 0:
-            loss1 += np.sum((np.log10(df_exp['phospho_GFP_predict'])-np.log10(df_exp['phospho_GFP_infer']))**2)
-#             loss1 += np.sum((df_exp['phospho_GFP_predict']/df_exp['substrate_GFP_infer']-df_exp['phospho_frac_infer'])**2)
-            
-        N += len(df_exp.index)
-        
-    loss1 /= N
-            
-    loss2 = 0.0
-    N = 0
-    df_data = df_data.query("kinase2phospho_GFP_infer>0.0")
-    for exp_name, row in df_dataset_key.iterrows():
-        df_exp = df_data.query("exp_name==@exp_name")
-        if len(df_exp.index) > 0:
-            loss2 += np.sum((np.log10(df_exp['kinase2phospho_GFP_predict'])-np.log10(df_exp['kinase2phospho_GFP_infer']))**2)
-#             loss2 += np.sum((df_exp['kinase2phospho_GFP_predict']/df_exp['substrate_GFP_infer']-df_exp['kinase2phospho_frac_infer'])**2)
-        N += len(df_exp.index)
-    
-    if N > 0:
-        loss2 /= N
-        
-    print(loss1+loss2)
-        
-    return loss1 + loss2
+
+    p = cnoise.calc_prob_meas(meas, predict, sigma) 
+
+    l = -np.sum(np.log(p + 1e-8)) / len(meas)
+
+#     print(l, sigma)
+
+    return l
     
     
+def fit(df_dataset_key, df_data, df_params=None, noise_models=None):
     
-    
-    
-def fit(df_dataset_key, df_data, df_params=None):
-    
-    prefit_params, param_to_index, dataset_to_params, x0, bounds = setup_model_params(df_dataset_key, df_params=df_params)
+    prefit_params, param_to_index, dataset_to_params, x0, bounds = setup_model_params(df_dataset_key, df_params=df_params, noise_models=noise_models)
     
     print(prefit_params)
     print(param_to_index)
@@ -242,7 +352,7 @@ def fit(df_dataset_key, df_data, df_params=None):
     if len(param_to_index) == 0:
         return df_params
     
-    args = (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params)
+    args = (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params, noise_models)
     
     def callback(x):
         print("#############################################################")
@@ -256,15 +366,11 @@ def fit(df_dataset_key, df_data, df_params=None):
         print("Total Time Elapsed", (end-start)/60, "minutes")
     
     start = time.time()
-    
-#     optimize_SGD(loss, x0, args=args, callback=callback)
-    
-    
+ 
               
-    res = opt.minimize(loss, x0, args=(args, ), method='L-BFGS-B', 
-                               jac='2-point', bounds=bounds, 
-                               options={'iprint':1, 'eps': 1e-6, 
-                                        'gtol': 1e-4, 'ftol':1e-4},
+    res = opt.minimize(loss_lognormal_bg, x0, args=(args, ), method='L-BFGS-B', 
+                               jac=None, bounds=bounds, 
+                               options={'iprint':1, 'gtol': 1e-4, 'ftol':1e-4},
                               callback=callback)
               
               
@@ -281,18 +387,16 @@ def fit(df_dataset_key, df_data, df_params=None):
     return df_params
 
 
-
-
-def calc_error(df_dataset_key, df_data, df_params, tol=0.01):
+def calc_error(df_dataset_key, df_data, df_params, tol=0.01, noise_models=None):
     
-    prefit_params, param_to_index, dataset_to_params, x0, bounds = setup_model_params(df_dataset_key, df_params=df_params.query("val_min != 0.0 and val_max != 0.0"))
+    prefit_params, param_to_index, dataset_to_params, x0, bounds = setup_model_params(df_dataset_key, df_params=df_params.query("val_min != 0.0 and val_max != 0.0"), noise_models=noise_models)
     
     print(prefit_params)
     print(param_to_index)
     print(dataset_to_params)
     print(bounds)
     
-    args = (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params)
+    args = (df_dataset_key, df_data, prefit_params, param_to_index, dataset_to_params, noise_models)
     
     for p in param_to_index:
         x0[param_to_index[p]] = df_params.query("name==@p").iloc[0]['val']
@@ -304,7 +408,7 @@ def calc_error(df_dataset_key, df_data, df_params, tol=0.01):
     val_max = np.zeros_like(x0)
 
     
-    f0 = loss(x0, args)
+    f0 = loss_lognormal_bg(x0, args)
     
     for p in param_to_index:
 
@@ -317,7 +421,7 @@ def calc_error(df_dataset_key, df_data, df_params, tol=0.01):
             x = x0.copy()
             x[i] = val
 
-            f = loss(x, args) - (1+tol)*f0
+            f = loss_lognormal_bg(x, args) - (1+tol)*f0
 
             print(f, val)
 
@@ -354,4 +458,62 @@ def calc_error(df_dataset_key, df_data, df_params, tol=0.01):
     
 
     return df_params
+
+
+def fit_bg_noise(meas, cnoise):
+
+
+    def loss(x, args):
+
+        (mu, sigma) = x.tolist()
+        c0 = np.exp(mu)
+
+        meas = args
+
+
+        p = cnoise.calc_prob_meas(meas, c0*np.ones_like(meas), sigma) 
+
+        l = -np.sum(np.log(p + 1e-8)) / len(meas)
+
+        print(l, c0, sigma)
+
+        return l
+    
+    
+    x0 = np.array([np.log(1e3), 1.0])
+    bounds = [(np.log(1e-8), np.log(1e6)), (0.1, 2.0)]
+    res = opt.minimize(loss, x0, args=(meas,), method='L-BFGS-B', bounds=bounds, 
+                       options={'iprint':1, 'gtol': 1e-4, 'ftol':1e-4})
+        
+    print(res)
+    
+    return res.x
+
+def fit_phospho_bg_noise(meas, predict, cnoise):
+
+
+    def loss(x, args):
+
+        sigma = x[0]
+
+        (meas, predict) = args
+
+
+        p = cnoise.calc_prob_meas(meas, predict, sigma) 
+
+        l = -np.sum(np.log(p + 1e-8)) / len(meas)
+
+        print(l, sigma)
+
+        return l
+    
+    
+    x0 = np.array([1.0])
+    bounds = [(0.1, 2.0)]
+    res = opt.minimize(loss, x0, args=((meas, predict), ), method='L-BFGS-B', bounds=bounds, 
+                       options={'iprint':1, 'gtol': 1e-4, 'ftol':1e-4})
+        
+    print(res)
+    
+    return res.x
     
