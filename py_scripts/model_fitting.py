@@ -13,7 +13,6 @@ import numpy.random as rand
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# import push_pull as pp
 import noise_models as noise
 import thermo_models as thermo
 
@@ -185,6 +184,7 @@ def predict(x, args, df_copy):
     df_copy['phospho_MOCU_predict'] = 0.0
     df_copy['kinase2_phospho_MOCU_predict'] = 0.0
     
+    
     for exp_name, row in df_dataset_key.iterrows():
         
 #         print(exp_name)
@@ -237,10 +237,12 @@ def predict(x, args, df_copy):
             
         elif row['model'] == 'two_layer_noeraser':
             
-            kinase2_phospho_MOCU_predict, phospho_MOCU_predict = thermo.predict_twolayer_nowriter(df_tmp['kinase_MOCU_infer'].values, df_tmp['kinase2_GFP_infer'].values, df_tmp['substrate_MOCU_infer'].values, *params)
+            kinase2_phospho_MOCU_predict, phospho_MOCU_predict = thermo.predict_twolayer_noeraser(df_tmp['kinase_MOCU_infer'].values, df_tmp['kinase2_GFP_infer'].values, df_tmp['substrate_MOCU_infer'].values, *params)
             df_copy.loc[df_tmp.index, 'phospho_MOCU_predict'] = phospho_MOCU_predict
             df_copy.loc[df_tmp.index, 'kinase2_phospho_MOCU_predict'] = kinase2_phospho_MOCU_predict
-            
+           
+        
+   
     
 # def loss_lognormal(x, args):
 
@@ -370,7 +372,7 @@ def fit(df_dataset_key, df_data, df_params=None, noise_models=None):
               
     res = opt.minimize(loss_lognormal_bg, x0, args=(args, ), method='L-BFGS-B', 
                                jac=None, bounds=bounds, 
-                               options={'iprint':1, 'gtol': 1e-4, 'ftol':1e-4},
+                               options={'iprint':1, 'gtol': 1e-8, 'ftol':1e-8},
                               callback=callback)
               
               
@@ -483,7 +485,7 @@ def fit_bg_noise(meas, cnoise):
     x0 = np.array([np.log(1e3), 1.0])
     bounds = [(np.log(1e-8), np.log(1e6)), (0.1, 2.0)]
     res = opt.minimize(loss, x0, args=(meas,), method='L-BFGS-B', bounds=bounds, 
-                       options={'iprint':1, 'gtol': 1e-4, 'ftol':1e-4})
+                       options={'iprint':1, 'gtol': 1e-8, 'ftol':1e-8})
         
     print(res)
     
@@ -511,7 +513,7 @@ def fit_phospho_bg_noise(meas, predict, cnoise):
     x0 = np.array([1.0])
     bounds = [(0.1, 2.0)]
     res = opt.minimize(loss, x0, args=((meas, predict), ), method='L-BFGS-B', bounds=bounds, 
-                       options={'iprint':1, 'gtol': 1e-4, 'ftol':1e-4})
+                       options={'iprint':1, 'gtol': 1e-8, 'ftol':1e-8})
         
     print(res)
     

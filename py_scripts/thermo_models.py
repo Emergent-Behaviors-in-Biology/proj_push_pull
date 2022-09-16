@@ -5,7 +5,9 @@ sys.path.insert(0, '../py_scripts')
 
 import numpy as np
 import scipy as sp
+from scipy import optimize
 import numpy.linalg as la
+import joblib
 
 from numba import njit
 
@@ -83,10 +85,12 @@ def predict_twolayer_nowriter(ET, S1T, S2T, vpS1bg, vpS2bg, vuES1, alphaES1, vpS
     
     Ncells = len(S1T)
     
-    S1pT_array = np.zeros_like(S1T)
-    S2pT_array = np.zeros_like(S2T)
+#     S1pT_array = np.zeros_like(S1T)
+#     S2pT_array = np.zeros_like(S2T)
     
-    for i in range(Ncells):
+    
+    
+    def loop(i):
         
 
 #         if i % 1000 == 0:
@@ -135,7 +139,7 @@ def predict_twolayer_nowriter(ET, S1T, S2T, vpS1bg, vpS2bg, vuES1, alphaES1, vpS
         x0[1] = 1.0 # S1u/S1T
                                       
         bounds = (0, 1)
-        res = sp.optimize.least_squares(func, x0=x0, bounds=bounds, jac='2-point', ftol=1e-8, xtol=1e-4, gtol=1e-8, verbose=0, 
+        res = optimize.least_squares(func, x0=x0, bounds=bounds, jac='2-point', ftol=1e-8, xtol=1e-4, gtol=1e-8, verbose=0, 
                                         method='trf', max_nfev=1000)
     
     
@@ -165,8 +169,14 @@ def predict_twolayer_nowriter(ET, S1T, S2T, vpS1bg, vpS2bg, vuES1, alphaES1, vpS
         S1pT = S1T[i] * vpS1bg / (vuES1*pES1p + vpS1bg + 1)
         S2pT = S2T[i] * (vpS1S2*pS1pS2u + vpS2bg) / (vpS1S2*pS1pS2u + vpS2bg + 1)
         
-        S1pT_array[i] = S1pT
-        S2pT_array[i] = S2pT
+        return S1pT, S2pT
+        
+    res = joblib.Parallel(n_jobs=joblib.cpu_count())(
+        joblib.delayed(loop)(i) for i in range(Ncells))
+        
+    S1pT_array, S2pT_array = zip(*res)
+    S1pT_array = np.array(S1pT_array)
+    S2pT_array = np.array(S2pT_array)
         
         
     return S1pT_array, S2pT_array
@@ -175,11 +185,10 @@ def predict_twolayer_noeraser(WT, S1T, S2T, vpS1bg, vpS2bg, vpWS1, alphaWS1, vpS
     
     Ncells = len(WT)
     
-    S1pT_array = np.zeros_like(WT)
-    S2pT_array = np.zeros_like(WT)
+#     S1pT_array = np.zeros_like(WT)
+#     S2pT_array = np.zeros_like(WT)
     
-    for i in range(Ncells):
-        
+    def loop(i):
 
 #         if i % 1000 == 0:
 #             print(i, "/", Ncells)
@@ -228,7 +237,7 @@ def predict_twolayer_noeraser(WT, S1T, S2T, vpS1bg, vpS2bg, vpWS1, alphaWS1, vpS
         
                               
         bounds = (0, 1)
-        res = sp.optimize.least_squares(func, x0=x0, bounds=bounds, jac='2-point', ftol=1e-8, xtol=1e-4, gtol=1e-8, verbose=0, 
+        res = optimize.least_squares(func, x0=x0, bounds=bounds, jac='2-point', ftol=1e-8, xtol=1e-4, gtol=1e-8, verbose=0, 
                                         method='trf', max_nfev=1000)
     
     
@@ -259,9 +268,14 @@ def predict_twolayer_noeraser(WT, S1T, S2T, vpS1bg, vpS2bg, vpWS1, alphaWS1, vpS
         S1pT = S1T[i] * (vpWS1*pWS1u + vpS1bg) / (vpWS1*pWS1u + vpS1bg + 1)
         S2pT = S2T[i] * (vpS1S2*pS1pS2u + vpS2bg) / (vpS1S2*pS1pS2u + vpS2bg + 1)
         
-        S1pT_array[i] = S1pT
-        S2pT_array[i] = S2pT
+        return S1pT, S2pT
         
+    res = joblib.Parallel(n_jobs=joblib.cpu_count())(
+        joblib.delayed(loop)(i) for i in range(Ncells))
+        
+    S1pT_array, S2pT_array = zip(*res)
+    S1pT_array = np.array(S1pT_array)
+    S2pT_array = np.array(S2pT_array)
         
     return S1pT_array, S2pT_array
     
@@ -269,11 +283,14 @@ def predict_twolayer(WT, ET, S1T, S2T, vpS1bg, vpS2bg, vpWS1, alphaWS1, vuES1, a
     
     Ncells = len(WT)
     
-    S1pT_array = np.zeros_like(WT)
-    S2pT_array = np.zeros_like(WT)
+#     S1pT_array = np.zeros_like(WT)
+#     S2pT_array = np.zeros_like(WT)
     
-    for i in range(Ncells):
+    
+    
+#     for i in range(Ncells):
         
+    def loop(i):
 
 #         if i % 1000 == 0:
 #             print(i, "/", Ncells)
@@ -316,7 +333,7 @@ def predict_twolayer(WT, ET, S1T, S2T, vpS1bg, vpS2bg, vpWS1, alphaWS1, vuES1, a
                               
 #         bounds = (-6, 0)
         bounds = (0, 1)
-        res = sp.optimize.least_squares(func, x0=x0, bounds=bounds, jac='2-point', ftol=1e-8, xtol=1e-4, gtol=1e-8, verbose=0, 
+        res = optimize.least_squares(func, x0=x0, bounds=bounds, jac='2-point', ftol=1e-8, xtol=1e-4, gtol=1e-8, verbose=0, 
                                         method='dogbox', max_nfev=1000)
         
     
@@ -356,9 +373,17 @@ def predict_twolayer(WT, ET, S1T, S2T, vpS1bg, vpS2bg, vpWS1, alphaWS1, vuES1, a
         S1pT = S1T[i] * (vpWS1*pWS1u + vpS1bg) / (vpWS1*pWS1u + vuES1*pES1p + vpS1bg + 1)
         S2pT = S2T[i] * (vpS1S2*pS1pS2u + vpS2bg) / (vpS1S2*pS1pS2u + vpS2bg + 1)
         
-        S1pT_array[i] = S1pT
-        S2pT_array[i] = S2pT
+#         S1pT_array[i] = S1pT
+#         S2pT_array[i] = S2pT
+
+        return S1pT, S2pT
         
+    res = joblib.Parallel(n_jobs=joblib.cpu_count())(
+        joblib.delayed(loop)(i) for i in range(Ncells))
+        
+    S1pT_array, S2pT_array = zip(*res)
+    S1pT_array = np.array(S1pT_array)
+    S2pT_array = np.array(S2pT_array)
         
     return S1pT_array, S2pT_array
     
